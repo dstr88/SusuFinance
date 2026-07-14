@@ -67,3 +67,7 @@ context/.obsidian/
 
 # Almstins-era GitHub workflows, parked out of .github so they never fire
 .almstins-legacy/
+
+# Private working docs — never commit
+SusuDocs.html
+GRENIER.md
