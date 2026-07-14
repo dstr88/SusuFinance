@@ -1,0 +1,44 @@
+---
+import './DemoBanner.css';
+/**
+ * DemoBanner.astro
+ *
+ * Sticky top bar shown to visitors in demo mode.
+ * Disappears when they sign up or click "Exit Demo".
+ */
+---
+
+<div class="demo-banner" role="banner" aria-label="Demo mode notice">
+	<div class="demo-banner__inner">
+		<span class="demo-badge">DEMO</span>
+		<p class="demo-banner__text">
+			You're in demo mode — <strong>add your wallet address</strong> to explore with your own data.
+		</p>
+		<div class="demo-banner__actions">
+			<a href="/signup" class="demo-btn demo-btn--signup">Sign up free →</a>
+			<a href="/api/demo/end" class="demo-btn demo-btn--exit">Exit demo</a>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	// Fire demo_start once per page load (banner appearing = demo is active)
+	if (typeof window.gtag === 'function') {
+		window.gtag('event', 'demo_start', { event_category: 'demo' });
+	}
+
+	// Track "Sign up free" click from demo banner
+	document.querySelector('.demo-btn--signup')?.addEventListener('click', () => {
+		if (typeof window.gtag === 'function') {
+			window.gtag('event', 'demo_signup_click', { event_category: 'demo' });
+		}
+	});
+
+	// Track "Exit demo" click
+	document.querySelector('.demo-btn--exit')?.addEventListener('click', () => {
+		if (typeof window.gtag === 'function') {
+			window.gtag('event', 'demo_exit', { event_category: 'demo' });
+		}
+	});
+</script>

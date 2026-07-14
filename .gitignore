@@ -1,0 +1,69 @@
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables — ignore EVERY .env variant in any directory.
+# (.env.local and db/.env.loacl leaked into git history because only the bare
+#  ".env" was listed here; .env.* + the no-slash rule covers nested files too.)
+.env
+.env.*
+*.loacl
+!.env.example
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# vscode user settings
+.vscode/settings.json
+stripe-temp/
+.vercel/
+
+.env
+dist.zip
+src/.claude/
+public/almstins-57ed5c37cfa6.json
+
+# Playwright
+tests/e2e/.auth/
+playwright-report/
+test-results/
+
+# Local database and personal tax documents
+*.db
+*.pdf
+
+# Private documentation — keep OUT of version control
+# Includes: CLAUDE.md, design.claude.md, marketing.claude.md, etc.
+*.claude.md
+CLAUDE.md
+MARKETING-READINESS-PLAN.md
+
+# Claude Code config/plans (any depth)
+.claude/
+
+# Unpublished third-party documents — never commit (repo is destined to be public)
+*.docx
+*.pdf
+
+# Almstins-era leftovers — not part of Grenier
+stripe.md
+ping.php
+public_html/
+context/.obsidian/
+
+# Almstins-era GitHub workflows, parked out of .github so they never fire
+.almstins-legacy/
