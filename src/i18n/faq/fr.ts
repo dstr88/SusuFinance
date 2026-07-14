@@ -953,7 +953,7 @@ export const items: FaqItem[] = [
     id: "faq-verify-domain",
     q: "J'ai un site web. Puis-je prouver mes adresses en utilisant mon domaine plutôt qu'en envoyant une transaction ?",
     a: `<p>
-          Oui. Dans le tableau de bord Verify, ouvrez le panneau Prove pour n'importe quelle destination d'adresse et passez à l'onglet Domaine. Saisissez votre domaine et SusuFinance génère un petit fichier JSON avec un token de défi unique. Téléversez-le sur votre serveur web à l'adresse <code>/.well-known/almstins-verify.json</code>, puis cliquez sur Vérifier. SusuFinance récupère le fichier, vérifie que le défi correspond et attache votre domaine comme éditeur vérifié de cette adresse.
+          Oui. Dans le tableau de bord Verify, ouvrez le panneau Prove pour n'importe quelle destination d'adresse et passez à l'onglet Domaine. Saisissez votre domaine et SusuFinance génère un petit fichier JSON avec un token de défi unique. Téléversez-le sur votre serveur web à l'adresse <code>/.well-known/susufinance-verify.json</code>, puis cliquez sur Vérifier. SusuFinance récupère le fichier, vérifie que le défi correspond et attache votre domaine comme éditeur vérifié de cette adresse.
         </p>
         <p>
           Si vous préférez le DNS plutôt qu'un fichier, vous pouvez également ajouter un enregistrement TXT à votre domaine. Le tableau de bord affiche les deux options côte à côte — utilisez celle qui convient le mieux à votre configuration d'hébergement.
@@ -969,7 +969,7 @@ export const items: FaqItem[] = [
           Oui, via le parcours Entité Vérifiée dans le tableau de bord Verify. Cela fonctionne en deux étapes :
         </p>
         <ol>
-          <li><strong>Prouvez votre domaine.</strong> Téléversez le fichier de défi SusuFinance sur <code>/.well-known/almstins-verify.json</code> sur votre domaine (ou ajoutez l'enregistrement DNS TXT). SusuFinance le récupère et confirme que vous contrôlez le domaine.</li>
+          <li><strong>Prouvez votre domaine.</strong> Téléversez le fichier de défi SusuFinance sur <code>/.well-known/susufinance-verify.json</code> sur votre domaine (ou ajoutez l'enregistrement DNS TXT). SusuFinance le récupère et confirme que vous contrôlez le domaine.</li>
           <li><strong>Connectez un endpoint d'adresses en direct.</strong> Une fois votre domaine prouvé, collez un endpoint HTTPS sur ce même domaine et une clé API en lecture seule. SusuFinance appelle l'endpoint régulièrement, lit votre liste actuelle d'adresses et les publie comme "vérifiées par votredomaine.com" sur le scanner public.</li>
         </ol>
         <p>

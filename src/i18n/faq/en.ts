@@ -953,7 +953,7 @@ export const items: FaqItem[] = [
     id: "faq-verify-domain",
     q: "I have a website. Can I prove my addresses using my domain instead of sending a transaction?",
     a: `<p>
-          Yes. On the Verify dashboard, open the Prove panel for any address destination and switch to the Domain tab. Enter your domain, and SusuFinance generates a small JSON file with a unique challenge token. Upload it to your web server at <code>/.well-known/almstins-verify.json</code>, then click Verify. SusuFinance fetches the file, checks the challenge matches, and attaches your domain as the verified publisher of that address.
+          Yes. On the Verify dashboard, open the Prove panel for any address destination and switch to the Domain tab. Enter your domain, and SusuFinance generates a small JSON file with a unique challenge token. Upload it to your web server at <code>/.well-known/susufinance-verify.json</code>, then click Verify. SusuFinance fetches the file, checks the challenge matches, and attaches your domain as the verified publisher of that address.
         </p>
         <p>
           If you prefer DNS over a file, you can instead add a TXT record to your domain. The dashboard shows both options side by side — use whichever your hosting setup makes easier.
@@ -969,7 +969,7 @@ export const items: FaqItem[] = [
           Yes, through the Verified Entity path on the Verify dashboard. It works in two steps:
         </p>
         <ol>
-          <li><strong>Prove your domain.</strong> Upload the SusuFinance challenge file to <code>/.well-known/almstins-verify.json</code> on your domain (or add the DNS TXT record). SusuFinance fetches it and confirms you control the domain.</li>
+          <li><strong>Prove your domain.</strong> Upload the SusuFinance challenge file to <code>/.well-known/susufinance-verify.json</code> on your domain (or add the DNS TXT record). SusuFinance fetches it and confirms you control the domain.</li>
           <li><strong>Connect a live address endpoint.</strong> Once your domain is proven, paste in an HTTPS endpoint on that same domain and a read-only API key. SusuFinance calls the endpoint on a regular schedule, reads back your current list of addresses, and mirrors them as "verified by yourdomain.com" on the public scanner.</li>
         </ol>
         <p>

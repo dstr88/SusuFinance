@@ -2,7 +2,7 @@
  * POST /api/verify/destinations/:id/challenge
  *
  * Phase 3 — issue (or re-show) the account-bound challenge for a domain, and return
- * the exact /.well-known/almstins-verify.json file the owner must publish. The file
+ * the exact /.well-known/susufinance-verify.json file the owner must publish. The file
  * lists all the tenant's registered receiving addresses, so one file vouches for
  * every address on that domain. Body: { domain }.
  */

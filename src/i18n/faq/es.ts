@@ -953,7 +953,7 @@ export const items: FaqItem[] = [
     id: "faq-verify-domain",
     q: "Tengo un sitio web. ¿Puedo verificar mis direcciones usando mi dominio en lugar de enviar una transacción?",
     a: `<p>
-          Sí. En el panel de Verify, abre el panel Prove para cualquier destino de dirección y cambia a la pestaña Dominio. Ingresa tu dominio y SusuFinance genera un pequeño archivo JSON con un token de desafío único. Súbelo a tu servidor web en <code>/.well-known/almstins-verify.json</code> y haz clic en Verificar. SusuFinance obtiene el archivo, verifica que el desafío coincida y adjunta tu dominio como el publicador verificado de esa dirección.
+          Sí. En el panel de Verify, abre el panel Prove para cualquier destino de dirección y cambia a la pestaña Dominio. Ingresa tu dominio y SusuFinance genera un pequeño archivo JSON con un token de desafío único. Súbelo a tu servidor web en <code>/.well-known/susufinance-verify.json</code> y haz clic en Verificar. SusuFinance obtiene el archivo, verifica que el desafío coincida y adjunta tu dominio como el publicador verificado de esa dirección.
         </p>
         <p>
           Si prefieres DNS en lugar de un archivo, también puedes agregar un registro TXT a tu dominio. El panel muestra ambas opciones una al lado de la otra — usa la que sea más fácil con tu configuración de hosting.
@@ -969,7 +969,7 @@ export const items: FaqItem[] = [
           Sí, a través de la ruta de Entidad Verificada en el panel de Verify. Funciona en dos pasos:
         </p>
         <ol>
-          <li><strong>Verifica tu dominio.</strong> Sube el archivo de desafío de SusuFinance a <code>/.well-known/almstins-verify.json</code> en tu dominio (o agrega el registro TXT DNS). SusuFinance lo obtiene y confirma que controlas el dominio.</li>
+          <li><strong>Verifica tu dominio.</strong> Sube el archivo de desafío de SusuFinance a <code>/.well-known/susufinance-verify.json</code> en tu dominio (o agrega el registro TXT DNS). SusuFinance lo obtiene y confirma que controlas el dominio.</li>
           <li><strong>Conecta un endpoint de dirección en vivo.</strong> Una vez verificado tu dominio, pega un endpoint HTTPS en ese mismo dominio y una API key de solo lectura. SusuFinance llama al endpoint periódicamente, lee tu lista actual de direcciones y las refleja como "verificadas por tudominio.com" en el escáner público.</li>
         </ol>
         <p>

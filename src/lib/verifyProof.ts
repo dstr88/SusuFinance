@@ -3,7 +3,7 @@
  *
  * A destination owner proves they control the domain that publishes an address by
  * hosting an SusuFinance-issued challenge at
- *   https://<domain>/.well-known/almstins-verify.json
+ *   https://<domain>/.well-known/susufinance-verify.json
  * We fetch it server-side, confirm the challenge token matches the one we issued
  * to THIS tenant for THIS domain (account-bound: copying another entity's file
  * fails — it carries their token, not ours), and read the address list the domain
@@ -24,9 +24,9 @@ import { lookup, resolveTxt } from 'node:dns/promises';
 import { isIP } from 'node:net';
 
 /** Where the owner publishes the proof. The path is fixed; the file is per-domain. */
-export const WELL_KNOWN_PATH = '/.well-known/almstins-verify.json';
+export const WELL_KNOWN_PATH = '/.well-known/susufinance-verify.json';
 
-const CHALLENGE_PREFIX = 'almstins-verify-';
+const CHALLENGE_PREFIX = 'susufinance-verify-';
 const FETCH_TIMEOUT_MS = 8_000;
 const MAX_BYTES = 64 * 1024; // a proof file is tiny; cap to avoid a hostile large body
 
@@ -249,13 +249,13 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 
 /**
  * Verify the challenge is published as a TXT record on the domain (root) or on the
- * dedicated `_almstins-verify.<domain>` host. Read-only DNS lookup — no HTTP, no SSRF
+ * dedicated `_susufinance-verify.<domain>` host. Read-only DNS lookup — no HTTP, no SSRF
  * surface. Returns ok when any record contains the token.
  */
 export async function verifyDnsTxt(rawDomain: string, expectedChallenge: string): Promise<DnsTxtResult> {
   const host = normalizeProofDomain(rawDomain);
   if (!host) return { ok: false, code: 'invalid_domain' };
-  const names = [host, `_almstins-verify.${host}`];
+  const names = [host, `_susufinance-verify.${host}`];
   const collected: string[] = [];
   let anyResolved = false;
   for (const name of names) {

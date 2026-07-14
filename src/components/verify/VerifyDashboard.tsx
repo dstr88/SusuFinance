@@ -146,7 +146,7 @@ interface VEntity {
   lastPullCount: number;
 }
 
-const ENTITY_WK_PATH = '/.well-known/almstins-verify.json';
+const ENTITY_WK_PATH = '/.well-known/susufinance-verify.json';
 // Mirrors buildProofFile(challenge, []) in verifyProof.ts — entity proof is
 // domain-only, so the published file carries the challenge and an empty list.
 function entityProofFile(challenge: string): string {
