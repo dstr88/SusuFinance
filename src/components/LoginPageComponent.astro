@@ -155,6 +155,7 @@ const isLockedOut = message === 'LOCKED_OUT';
       <p class="hub-hero__sub">{t.hub.sub}</p>
       <a class="hub-hero__cta" href="/wallet-checker">{t.hub.heroCta} →</a>
       <p class="hub-hero__free">{t.hub.heroFree}</p>
+      <a class="landing__changelog-link" href="/changelog">{t.hero.changelogLink}</a>
     </section>
 
     <!-- Three doors -->
@@ -848,6 +849,10 @@ const isLockedOut = message === 'LOCKED_OUT';
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
+    }
+    .hub-hero .landing__changelog-link {
+      display: inline-block;
+      margin-top: 1rem;
     }
     .landing__changelog-link {
       font-size: 0.72rem;
