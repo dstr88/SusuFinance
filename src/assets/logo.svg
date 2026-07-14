@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SusuFinance">
+  <title>SusuFinance</title>
+  <desc>A circle of members with one seat highlighted gold: whose turn it is to receive the pot.</desc>
+  <rect width="512" height="512" rx="115" fill="#143029"/>
+  <circle cx="256" cy="113" r="48" fill="#e8b64c"/>
+  <circle cx="365.6" cy="158.4" r="30" fill="#f2ede2"/>
+  <circle cx="411" cy="268" r="30" fill="#f2ede2"/>
+  <circle cx="365.6" cy="377.6" r="30" fill="#f2ede2"/>
+  <circle cx="256" cy="423" r="30" fill="#f2ede2"/>
+  <circle cx="146.4" cy="377.6" r="30" fill="#f2ede2"/>
+  <circle cx="101" cy="268" r="30" fill="#f2ede2"/>
+  <circle cx="146.4" cy="158.4" r="30" fill="#f2ede2"/>
+</svg>

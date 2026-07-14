@@ -1,6 +1,6 @@
 ---
 import LoginLayout from '../layouts/LoginLayout.astro';
-import SusuFinanceLogo from '../assets/logo.jpeg';
+import SusuFinanceLogo from '../assets/logo.svg';
 import { copy, LANGS, BRAND, BRAND_QUOTE, SUSUFINANCE_URL, type Lang } from '../i18n/verify';
 
 interface Props {
@@ -66,7 +66,7 @@ Authorization: Bearer <your-key>
       </div>
       <a class="vnav__login" href="/dashboard/verify">{t.nav.login}</a>
       <a class="vnav__logo" href="/" aria-label={t.nav.brandAria}>
-        <img src={SusuFinanceLogo.src} alt="SusuFinance" width="960" height="1104" loading="eager" decoding="async" />
+        <img src={SusuFinanceLogo.src} alt="SusuFinance" width="512" height="512" loading="eager" decoding="async" />
       </a>
     </div>
   </nav>
