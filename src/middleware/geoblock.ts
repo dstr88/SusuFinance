@@ -53,8 +53,8 @@ const BLOCKED_PAGE = `<!doctype html>
   .muted{font-size:0.85rem;color:rgba(245,248,255,0.45)}
 </style></head>
 <body><main>
-  <h1>Almstins isn't available in your region</h1>
-  <p>For legal and compliance reasons, Almstins cannot be offered in your location. We're sorry for the inconvenience.</p>
+  <h1>SusuFinance isn't available in your region</h1>
+  <p>For legal and compliance reasons, SusuFinance cannot be offered in your location. We're sorry for the inconvenience.</p>
   <p class="muted">If you believe this is an error, contact support@titaniumhut.com.</p>
 </main></body></html>`;
 
