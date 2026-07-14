@@ -356,7 +356,7 @@ function QrBadge({ d, t }: { d: Destination; t: VerifyDashboardLocale }) {
   const [dataUrl, setDataUrl] = useState('');
   useEffect(() => {
     let alive = true;
-    const scanUrl = `https://almstins.com/verify/scan?address=${encodeURIComponent(d.value)}`;
+    const scanUrl = `https://susufinance.com/verify/scan?address=${encodeURIComponent(d.value)}`;
     (async () => {
       try {
         const mod = (await import('qrcode')) as unknown as {
@@ -386,7 +386,7 @@ function QrBadge({ d, t }: { d: Destination; t: VerifyDashboardLocale }) {
 }
 
 // What a downloadable PAYMENT QR encodes: the bare receiving address (a wallet can pay
-// it; the Almstins checker extracts + verifies it) or a payment-link URL. PIX/UPI store
+// it; the SusuFinance checker extracts + verifies it) or a payment-link URL. PIX/UPI store
 // only a hash (the raw key is never kept), so no QR can be regenerated for them.
 function qrPayload(d: Destination): string | null {
   if (d.kind === 'address') return d.value;

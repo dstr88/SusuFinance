@@ -76,7 +76,7 @@ export const POST: APIRoute = async ({ request }) => {
 		userAlertEmail = typeof row?.alert_email === 'string' ? row.alert_email : null;
 	} catch { /* non-fatal */ }
 
-	const adminSubject = `[Almstins] Vault load error — wallet …${walletId.slice(-5)}`;
+	const adminSubject = `[SusuFinance] Vault load error — wallet …${walletId.slice(-5)}`;
 	const adminText = [
 		`Ref:    ${refCode}`,
 		`Wallet: …${walletId.slice(-5)}`,

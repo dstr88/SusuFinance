@@ -23,7 +23,7 @@ export interface TransitionLocale {
 
 export const en: TransitionLocale = {
   lang: 'en',
-  pageTitle: 'Choose Your View | Almstins',
+  pageTitle: 'Choose Your View | SusuFinance',
   welcomeBack: (firstName) => `Welcome back, ${firstName}.`,
   chooseView: 'Choose your view',
   subtitle: 'Jump into crypto vaults or traditional finance insights.',
@@ -35,7 +35,7 @@ export const en: TransitionLocale = {
 
 export const es: TransitionLocale = {
   lang: 'es',
-  pageTitle: 'Elige Tu Vista | Almstins',
+  pageTitle: 'Elige Tu Vista | SusuFinance',
   welcomeBack: (firstName) => `Bienvenido de nuevo, ${firstName}.`,
   chooseView: 'Elige tu vista',
   subtitle: 'Accede a tu crypto vault o a tus finanzas tradicionales.',
@@ -47,7 +47,7 @@ export const es: TransitionLocale = {
 
 export const fr: TransitionLocale = {
   lang: 'fr',
-  pageTitle: 'Choisissez Votre Vue | Almstins',
+  pageTitle: 'Choisissez Votre Vue | SusuFinance',
   welcomeBack: (firstName) => `Bon retour, ${firstName}.`,
   chooseView: 'Choisissez votre vue',
   subtitle: 'Accédez à vos crypto vaults ou à vos finances traditionnelles.',

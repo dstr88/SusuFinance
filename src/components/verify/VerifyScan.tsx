@@ -6,7 +6,7 @@ import './VerifyScan.css';
 /**
  * Public customer-scan. A customer scans (or pastes) the address from a merchant's
  * sign/QR and gets two independent answers, no account required:
- *  1. Verification — is this a PROVEN Almstins destination? (entity domain or a
+ *  1. Verification — is this a PROVEN SusuFinance destination? (entity domain or a
  *     merchant's self-listed label, via /api/verify/lookup)
  *  2. Safety — is the address itself flagged? (scam/OFAC/honeypot, via /api/wallet-check)
  * Read-only: the scanned value is checked, never stored.
@@ -205,7 +205,7 @@ export default function VerifyScan({ initialAddress = '' }: { initialAddress?: s
   return (
     <main className="vs">
       <h1 className="vs__title">Verify before you pay</h1>
-      <p className="vs__sub">Scan or paste the address from a sign, QR, or checkout. We confirm whether it’s a verified Almstins destination and screen it for scams — no account needed.</p>
+      <p className="vs__sub">Scan or paste the address from a sign, QR, or checkout. We confirm whether it’s a verified SusuFinance destination and screen it for scams — no account needed.</p>
 
       <form className="vs__row" onSubmit={(e) => { e.preventDefault(); void check(); }}>
         <input className="vs__input" value={value} onChange={(e) => setValue(e.target.value)}
@@ -235,8 +235,8 @@ export default function VerifyScan({ initialAddress = '' }: { initialAddress?: s
             {lookup.verified
               ? (who
                   ? `Registered to ${who}${lookup.source === 'entity' ? ' (published on its domain)' : lookup.domain ? ` · verified via ${lookup.domain}` : ''}.`
-                  : 'A proven Almstins destination.')
-              : `No account has proven control of this ${noun} with Almstins. That doesn’t mean it’s unsafe — only that it isn’t verified here.`}
+                  : 'A proven SusuFinance destination.')
+              : `No account has proven control of this ${noun} with SusuFinance. That doesn’t mean it’s unsafe — only that it isn’t verified here.`}
           </p>
         </div>
       )}

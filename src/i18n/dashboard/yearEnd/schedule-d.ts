@@ -118,7 +118,7 @@ export interface ScheduleDLocale {
 
 export const en: ScheduleDLocale = {
   lang: 'en',
-  pageTitle: 'Schedule D | Almstins',
+  pageTitle: 'Schedule D | SusuFinance',
   backLink: '← Tax Center',
   heroTitle: 'Capital Gains & Losses Summary',
   heroSubtitle: 'Totals laid out in the US Schedule D line-by-line format, for your reference.',
@@ -154,7 +154,7 @@ export const en: ScheduleDLocale = {
   line5Desc: 'Net short-term gain/loss from partnerships, S-corps (Schedule K-1)',
   line6Desc: 'Short-term capital loss carryover (from prior-year Schedule D Worksheet)',
   line6Note:
-    'Enter as negative number. Value shown is Almstins estimate from loss carryforward tracker.',
+    'Enter as negative number. Value shown is SusuFinance estimate from loss carryforward tracker.',
   line7Desc: 'Net short-term capital gain or (loss)',
   line7Note: 'Lines 1a + 1b + 2 + 3 + 4 + 5 + 6. Transfer to Schedule D line 7.',
   line8aDesc:
@@ -195,15 +195,15 @@ export const en: ScheduleDLocale = {
     `Form 8949 Box ${box} · ${count} transactions · Proceeds ${proceeds} · Basis ${basis}`,
   printHeaderBadge: 'Informational summary — not for filing',
   printHeaderTitle: 'Capital Gains & Losses — US Schedule D format',
-  printSuffix: 'Prepared by Almstins · Informational, not for filing',
+  printSuffix: 'Prepared by SusuFinance · Informational, not for filing',
   printStLtNote: 'Short-term + Long-term net',
   carryEstimateNote:
-    'Enter as negative number. Value shown is Almstins estimate from loss carryforward tracker.',
+    'Enter as negative number. Value shown is SusuFinance estimate from loss carryforward tracker.',
 };
 
 export const es: ScheduleDLocale = {
   lang: 'es',
-  pageTitle: 'Schedule D | Almstins',
+  pageTitle: 'Schedule D | SusuFinance',
   backLink: '← Centro Fiscal',
   heroTitle: 'Resumen de Ganancias y Pérdidas de Capital',
   heroSubtitle:
@@ -245,7 +245,7 @@ export const es: ScheduleDLocale = {
   line6Desc:
     'Arrastre de pérdida de capital a corto plazo (de la Hoja de Trabajo del Schedule D del año anterior)',
   line6Note:
-    'Ingresa como número negativo. El valor mostrado es la estimación de Almstins del rastreador de pérdidas a trasladar.',
+    'Ingresa como número negativo. El valor mostrado es la estimación de SusuFinance del rastreador de pérdidas a trasladar.',
   line7Desc: 'Ganancia o (pérdida) neta de capital a corto plazo',
   line7Note:
     'Líneas 1a + 1b + 2 + 3 + 4 + 5 + 6. Transfiere al Schedule D, Línea 7.',
@@ -293,15 +293,15 @@ export const es: ScheduleDLocale = {
     `Casilla ${box} del Form 8949 · ${count} transacciones · Ingresos ${proceeds} · Base de costo ${basis}`,
   printHeaderBadge: 'Resumen informativo — no apto para presentación',
   printHeaderTitle: 'Ganancias y pérdidas de capital — formato Schedule D de EE. UU.',
-  printSuffix: 'Preparado por Almstins · Informativo, no para presentación',
+  printSuffix: 'Preparado por SusuFinance · Informativo, no para presentación',
   printStLtNote: 'Neto a corto plazo + largo plazo',
   carryEstimateNote:
-    'Ingresa como número negativo. El valor mostrado es la estimación de Almstins del rastreador de pérdidas a trasladar.',
+    'Ingresa como número negativo. El valor mostrado es la estimación de SusuFinance del rastreador de pérdidas a trasladar.',
 };
 
 export const fr: ScheduleDLocale = {
   lang: 'fr',
-  pageTitle: 'Schedule D | Almstins',
+  pageTitle: 'Schedule D | SusuFinance',
   backLink: '← Centre fiscal',
   heroTitle: 'Récapitulatif des gains et pertes en capital',
   heroSubtitle:
@@ -343,7 +343,7 @@ export const fr: ScheduleDLocale = {
   line6Desc:
     "Report de perte en capital à court terme (de la Feuille de calcul du Schedule D de l'année précédente)",
   line6Note:
-    "Saisir en négatif. La valeur affichée est l'estimation Almstins du suivi des pertes à reporter.",
+    "Saisir en négatif. La valeur affichée est l'estimation SusuFinance du suivi des pertes à reporter.",
   line7Desc: 'Gain ou (perte) net(te) en capital à court terme',
   line7Note:
     'Lignes 1a + 1b + 2 + 3 + 4 + 5 + 6. Reporter sur le Schedule D, Ligne 7.',
@@ -391,10 +391,10 @@ export const fr: ScheduleDLocale = {
     `Case ${box} du Form 8949 · ${count} transactions · Produits ${proceeds} · Base de coût ${basis}`,
   printHeaderBadge: 'Récapitulatif informatif — non destiné au dépôt',
   printHeaderTitle: 'Gains et pertes en capital — format Schedule D américain',
-  printSuffix: 'Préparé par Almstins · Informatif, non destiné au dépôt',
+  printSuffix: 'Préparé par SusuFinance · Informatif, non destiné au dépôt',
   printStLtNote: 'Net à court terme + long terme',
   carryEstimateNote:
-    "Saisir en négatif. La valeur affichée est l'estimation Almstins du suivi des pertes à reporter.",
+    "Saisir en négatif. La valeur affichée est l'estimation SusuFinance du suivi des pertes à reporter.",
 };
 
 const MAP: Record<Lang, ScheduleDLocale> = { en, es, fr };

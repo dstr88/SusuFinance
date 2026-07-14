@@ -16,7 +16,7 @@ import { sendMail } from './email';
 import { getBounceAlertEmail } from '@/i18n/emails/bounceAlert';
 import { isLang } from '@/lib/i18n/locale';
 
-const APP_BASE = process.env.APP_URL || 'https://almstins.com';
+const APP_BASE = process.env.APP_URL || 'https://susufinance.com';
 const BOUNCE_WINDOW_SECONDS = 4;
 
 async function ensureBounceTable(): Promise<void> {

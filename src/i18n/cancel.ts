@@ -17,7 +17,7 @@ export interface CancelLocale {
 
 export const en: CancelLocale = {
   lang: 'en',
-  pageTitle: 'Payment Canceled | Almstins',
+  pageTitle: 'Payment Canceled | SusuFinance',
   heading: 'Checkout canceled',
   body: 'Your payment was not completed. You can try again anytime.',
   backHome: 'Back to home',
@@ -25,7 +25,7 @@ export const en: CancelLocale = {
 
 export const es: CancelLocale = {
   lang: 'es',
-  pageTitle: 'Pago cancelado | Almstins',
+  pageTitle: 'Pago cancelado | SusuFinance',
   heading: 'Pago cancelado',
   body: 'Tu pago no se completó. Puedes intentarlo de nuevo cuando quieras.',
   backHome: 'Volver al inicio',
@@ -33,7 +33,7 @@ export const es: CancelLocale = {
 
 export const fr: CancelLocale = {
   lang: 'fr',
-  pageTitle: 'Paiement annulé | Almstins',
+  pageTitle: 'Paiement annulé | SusuFinance',
   heading: 'Paiement annulé',
   body: "Votre paiement n'a pas été finalisé. Vous pouvez réessayer à tout moment.",
   backHome: "Retour à l'accueil",

@@ -1,8 +1,8 @@
 /**
- * Almstins Verify — Phase 3: proof of control (domain attestation).
+ * SusuFinance Verify — Phase 3: proof of control (domain attestation).
  *
  * A destination owner proves they control the domain that publishes an address by
- * hosting an Almstins-issued challenge at
+ * hosting an SusuFinance-issued challenge at
  *   https://<domain>/.well-known/almstins-verify.json
  * We fetch it server-side, confirm the challenge token matches the one we issued
  * to THIS tenant for THIS domain (account-bound: copying another entity's file

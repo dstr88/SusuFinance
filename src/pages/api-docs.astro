@@ -3,15 +3,15 @@ import Layout from '@/layouts/LoginLayout.astro';
 ---
 
 <Layout
-  title="Almstins API Docs"
+  title="SusuFinance API Docs"
   description="Public API reference for wallet safety, dApp safety, and verified address lookups."
   lang="en"
   noindex={false}
 >
   <div class="docs-page">
     <header class="docs-header">
-      <a href="/login" class="back-link">← Almstins</a>
-      <h1 class="docs-title">Almstins Public API</h1>
+      <a href="/login" class="back-link">← SusuFinance</a>
+      <h1 class="docs-title">SusuFinance Public API</h1>
       <p class="docs-sub">Three free endpoints for wallet safety, site safety, and verified address lookups. No login required for unauthenticated use. Add an <code>X-Api-Key</code> header for higher rate limits.</p>
     </header>
 
@@ -159,7 +159,7 @@ X-Api-Key: alm_your_key_here</code></pre>
           <span class="rate-limit-pill">30 req/min · 60/min with key</span>
         </div>
 
-        <p class="endpoint-desc">Check whether a crypto address has been verified by its owner through Almstins Verify. Returns the publishing domain only — never a tenant ID or legal identity.</p>
+        <p class="endpoint-desc">Check whether a crypto address has been verified by its owner through SusuFinance Verify. Returns the publishing domain only — never a tenant ID or legal identity.</p>
 
         <h3 class="sub-heading">Request</h3>
         <div class="code-block">
@@ -197,7 +197,7 @@ X-Api-Key: alm_your_key_here</code></pre>
               <tr><th>Field</th><th>Type</th><th>Description</th></tr>
             </thead>
             <tbody>
-              <tr><td><code>verified</code></td><td>boolean</td><td>Whether this address is in the Almstins registry</td></tr>
+              <tr><td><code>verified</code></td><td>boolean</td><td>Whether this address is in the SusuFinance registry</td></tr>
               <tr><td><code>domain</code></td><td>string | null</td><td>The domain that published this address</td></tr>
               <tr><td><code>source</code></td><td>string | null</td><td><code>entity</code> (domain-published) or <code>merchant</code> (QR-proven)</td></tr>
               <tr><td><code>chain</code></td><td>string | null</td><td>Chain the address was registered on</td></tr>
@@ -227,7 +227,7 @@ X-Api-Key: alm_your_key_here</code></pre>
       <!-- Get an API key -->
       <section class="docs-section docs-section--cta">
         <h2 class="section-title">Get an API Key</h2>
-        <p>API keys are free. Log in to Almstins and go to <strong>Settings → API Keys</strong> to create one. Each key increases your rate limit to 60 req/min across all three endpoints.</p>
+        <p>API keys are free. Log in to SusuFinance and go to <strong>Settings → API Keys</strong> to create one. Each key increases your rate limit to 60 req/min across all three endpoints.</p>
         <a href="/dashboard/verify" class="cta-btn">Open Dashboard →</a>
       </section>
 

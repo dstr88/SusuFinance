@@ -14,7 +14,7 @@ const isOwner = String(session.tenantId).toLowerCase() === OWNER_TENANT_ID;
 const petroTier = session.isDemo ? 'free' : await getPetroSubscription(session.tenantId);
 ---
 
-<Layout title="PetroTins | Almstins" noindex={true} logoutRedirect="/petro-tins">
+<Layout title="PetroTins | SusuFinance" noindex={true} logoutRedirect="/petro-tins">
   <section class="dt-page">
     <div class="hero-bleed">
       <NetWorthHero title="PetroTins" subtitle="Debt, budget & business — the real numbers" />

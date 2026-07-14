@@ -1,7 +1,7 @@
 ---
 import LoginLayout from '../layouts/LoginLayout.astro';
-import AlmstinsLogo from '../assets/logo.jpeg';
-import { copy, LANGS, BRAND, BRAND_QUOTE, ALMSTINS_URL, type Lang } from '../i18n/verify';
+import SusuFinanceLogo from '../assets/logo.jpeg';
+import { copy, LANGS, BRAND, BRAND_QUOTE, SUSUFINANCE_URL, type Lang } from '../i18n/verify';
 
 interface Props {
   lang: Lang;
@@ -12,7 +12,7 @@ const t = copy[lang];
 
 const title = `${BRAND} — ${t.meta.tagline}`;
 const here = LANGS.find((l) => l.code === lang) ?? LANGS[0];
-const canonical = `https://almstins.com${here.href}`;
+const canonical = `https://susufinance.com${here.href}`;
 
 // Language-neutral integration contract shown to exchanges (code, not translated).
 const EXCHANGE_CONTRACT = `GET  https://<your-domain>/almstins/addresses
@@ -32,9 +32,9 @@ Authorization: Bearer <your-key>
   <!-- Per-language SEO alternates -->
   <Fragment slot="head">
     {LANGS.map((l) => (
-      <link rel="alternate" hreflang={l.code} href={`https://almstins.com${l.href}`} />
+      <link rel="alternate" hreflang={l.code} href={`https://susufinance.com${l.href}`} />
     ))}
-    <link rel="alternate" hreflang="x-default" href="https://almstins.com/verify" />
+    <link rel="alternate" hreflang="x-default" href="https://susufinance.com/verify" />
   </Fragment>
 
   <!-- JSON-LD: WebApplication -->
@@ -47,12 +47,12 @@ Authorization: Bearer <your-key>
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Any',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    creator: { '@type': 'Organization', name: 'Almstins', url: 'https://almstins.com' },
+    creator: { '@type': 'Organization', name: 'SusuFinance', url: 'https://susufinance.com' },
     featureList: t.jsonld.featureList,
   })} />
 
   <!-- Top nav -->
-  <nav class="vnav" aria-label="Almstins">
+  <nav class="vnav" aria-label="SusuFinance">
     <a class="vnav__brand" href="/" aria-label={t.nav.brandAria}>
       <span class="vnav__wordmark">{BRAND}</span>
       <span class="vnav__tagline">{t.nav.tagline}</span>
@@ -66,7 +66,7 @@ Authorization: Bearer <your-key>
       </div>
       <a class="vnav__login" href="/dashboard/verify">{t.nav.login}</a>
       <a class="vnav__logo" href="/" aria-label={t.nav.brandAria}>
-        <img src={AlmstinsLogo.src} alt="AlmsTins" width="960" height="1104" loading="eager" decoding="async" />
+        <img src={SusuFinanceLogo.src} alt="SusuFinance" width="960" height="1104" loading="eager" decoding="async" />
       </a>
     </div>
   </nav>
@@ -141,7 +141,7 @@ Authorization: Bearer <your-key>
       <h2 id="vfinal-h" class="vfinal__heading">{t.finalCta.heading}</h2>
       <a class="vbtn vbtn--lg" href="/dashboard/verify">{t.finalCta.button}</a>
       <p class="vfinal__sub">{t.finalCta.sub}</p>
-      <a class="vfinal__footer" href="https://almstins.com" aria-label={t.finalCta.footerAria}>{ALMSTINS_URL}</a>
+      <a class="vfinal__footer" href="https://susufinance.com" aria-label={t.finalCta.footerAria}>{SUSUFINANCE_URL}</a>
     </section>
 
     <!-- Section 8 — Verified vendors (how to get verified + the exchange path) -->

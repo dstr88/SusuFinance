@@ -1,4 +1,4 @@
-// Almstins Verify — monitoring/re-validation alert email — EN · ES · FR.
+// SusuFinance Verify — monitoring/re-validation alert email — EN · ES · FR.
 //
 // Sent by the Phase-5 watchman cron (/api/cron/verify-monitor) to the destination
 // owner's alert_email. Three kinds:
@@ -30,7 +30,7 @@ export interface VerifyAlertEmailLocale {
     kind: VerifyAlertKind;
     domain: string;       // the verified domain, or the destination label/page for 'destination_swap'
     items: string[];      // affected addresses / the conflicting value(s) found on the page
-    appBase: string;      // e.g. "https://almstins.com"
+    appBase: string;      // e.g. "https://susufinance.com"
   }) => RenderedEmail;
 }
 
@@ -53,7 +53,7 @@ export const en: VerifyAlertEmailLocale = {
           `Manage your verified addresses:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -70,7 +70,7 @@ export const en: VerifyAlertEmailLocale = {
           `Manage your verified endpoint:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -89,7 +89,7 @@ export const en: VerifyAlertEmailLocale = {
           `Manage your verified addresses:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -107,7 +107,7 @@ export const en: VerifyAlertEmailLocale = {
           `Review your monitored destinations:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -123,7 +123,7 @@ export const en: VerifyAlertEmailLocale = {
         `Re-verify:`,
         `${manage}`,
         ``,
-        `— Almstins Verify`,
+        `— SusuFinance Verify`,
       ].join('\n'),
     };
   },
@@ -146,7 +146,7 @@ export const es: VerifyAlertEmailLocale = {
           `Gestiona tus direcciones verificadas:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -165,7 +165,7 @@ export const es: VerifyAlertEmailLocale = {
           `Gestiona tus direcciones verificadas:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -182,7 +182,7 @@ export const es: VerifyAlertEmailLocale = {
           `Gestiona tu endpoint verificado:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -200,7 +200,7 @@ export const es: VerifyAlertEmailLocale = {
           `Revisa tus destinos monitoreados:`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -216,7 +216,7 @@ export const es: VerifyAlertEmailLocale = {
         `Vuelve a verificar:`,
         `${manage}`,
         ``,
-        `— Almstins Verify`,
+        `— SusuFinance Verify`,
       ].join('\n'),
     };
   },
@@ -239,7 +239,7 @@ export const fr: VerifyAlertEmailLocale = {
           `Gérez vos adresses vérifiées :`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -258,7 +258,7 @@ export const fr: VerifyAlertEmailLocale = {
           `Gérez vos adresses vérifiées :`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -275,7 +275,7 @@ export const fr: VerifyAlertEmailLocale = {
           `Gérez votre point d'accès vérifié :`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -293,7 +293,7 @@ export const fr: VerifyAlertEmailLocale = {
           `Vérifiez vos destinations surveillées :`,
           `${manage}`,
           ``,
-          `— Almstins Verify`,
+          `— SusuFinance Verify`,
         ].join('\n'),
       };
     }
@@ -309,7 +309,7 @@ export const fr: VerifyAlertEmailLocale = {
         `Revérifier :`,
         `${manage}`,
         ``,
-        `— Almstins Verify`,
+        `— SusuFinance Verify`,
       ].join('\n'),
     };
   },

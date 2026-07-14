@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     await db.execute({ sql: `DELETE FROM petro_tins WHERE tenant_id = ?`, args: [tenantId] }).catch(() => {});
     await db.execute({ sql: `DELETE FROM petro_subscriptions WHERE tenant_id = ?`, args: [tenantId] }).catch(() => {});
 
-    // Almstins data
+    // SusuFinance data
     await db.execute({ sql: `DELETE FROM import_transactions WHERE tenant_id = ?`, args: [tenantId] }).catch(() => {});
     await db.execute({ sql: `DELETE FROM wallet_snapshots WHERE tenant_id = ?`, args: [tenantId] }).catch(() => {});
     await db.execute({ sql: `DELETE FROM wallets WHERE tenant_id = ?`, args: [tenantId] }).catch(() => {});

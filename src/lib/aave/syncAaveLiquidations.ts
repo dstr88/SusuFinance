@@ -229,7 +229,7 @@ ON CONFLICT DO NOTHING`,
 				        AND au.alert_email IS NOT NULL`,
 				args: [tenantId],
 			});
-			const appBase = process.env.AUTH_URL ?? 'https://almstins.com';
+			const appBase = process.env.AUTH_URL ?? 'https://susufinance.com';
 			for (const row of alertRes.rows) {
 				const toEmail = typeof (row as Record<string, unknown>).alert_email === 'string'
 					? String((row as Record<string, unknown>).alert_email)

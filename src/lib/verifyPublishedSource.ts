@@ -1,5 +1,5 @@
 /**
- * Almstins Verify — Phase 5 published-source swap monitor.
+ * SusuFinance Verify — Phase 5 published-source swap monitor.
  *
  * A merchant attaches the PUBLIC page where they publish a destination (a "pay to
  * this address" page, a donation page, an invoice, a checkout that embeds a Stripe

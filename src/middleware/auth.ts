@@ -52,7 +52,7 @@ export function isPublicPath(pathname: string): boolean {
 		// POST/DELETE self-enforce requireTenantSession (+ paid plan), so exposing
 		// the path is safe; the write methods stay gated inside the handler.
 		pathname === '/api/community-rating' ||
-		// Almstins Verify — public merchant landing (canonical /verify; /verify/es, /verify/fr;
+		// SusuFinance Verify — public merchant landing (canonical /verify; /verify/es, /verify/fr;
 		// /marchand is the Francophone-Africa promo URL that redirects to /verify/fr)
 		pathname === '/verify' ||
 		pathname.startsWith('/verify/') ||

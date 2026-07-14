@@ -26,7 +26,7 @@ export interface PricesCopy {
 export const en: PricesCopy = {
   lang: 'en',
   meta: {
-    title: 'Almstins Pricing — Start Free, Pay for More Capacity',
+    title: 'SusuFinance Pricing — Start Free, Pay for More Capacity',
     description: 'Track your crypto across wallets, exchanges, and DeFi with cost basis and a full tax breakdown — free for up to 3 wallets. Verify protects your published payment addresses, free during early access.',
   },
   nav: { login: 'Log in', signup: 'Sign up free' },
@@ -62,7 +62,7 @@ export const en: PricesCopy = {
 export const es: PricesCopy = {
   lang: 'es',
   meta: {
-    title: 'Precios de Almstins — Empieza gratis, paga por más capacidad',
+    title: 'Precios de SusuFinance — Empieza gratis, paga por más capacidad',
     description: 'Controla tu cripto en billeteras, exchanges y DeFi con costo base y un desglose fiscal completo — gratis hasta 3 billeteras. Verify protege las direcciones de pago que publicas, gratis durante el acceso anticipado.',
   },
   nav: { login: 'Iniciar sesión', signup: 'Crear cuenta gratis' },
@@ -98,7 +98,7 @@ export const es: PricesCopy = {
 export const fr: PricesCopy = {
   lang: 'fr',
   meta: {
-    title: 'Tarifs Almstins — Commencez gratuitement, payez pour plus de capacité',
+    title: 'Tarifs SusuFinance — Commencez gratuitement, payez pour plus de capacité',
     description: "Suivez votre crypto sur vos portefeuilles, exchanges et DeFi avec le coût de base et un récapitulatif fiscal complet — gratuit jusqu'à 3 portefeuilles. Verify protège les adresses de paiement que vous publiez, gratuit pendant l'accès anticipé.",
   },
   nav: { login: 'Se connecter', signup: 'Créer un compte gratuit' },

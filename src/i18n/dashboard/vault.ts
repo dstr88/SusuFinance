@@ -42,8 +42,8 @@ export interface VaultLocale {
 
 export const en: VaultLocale = {
   lang: 'en',
-  pageTitle: 'Vault | Almstins',
-  demoPageTitle: 'Demo Vault | Almstins',
+  pageTitle: 'Vault | SusuFinance',
+  demoPageTitle: 'Demo Vault | SusuFinance',
   heroTitle: 'Vault',
   heroSubtitle: 'TradFi + DeFi vault overview',
   demoBanner: (have) =>
@@ -71,8 +71,8 @@ export const en: VaultLocale = {
 
 export const es: VaultLocale = {
   lang: 'es',
-  pageTitle: 'Bóveda | Almstins',
-  demoPageTitle: 'Bóveda Demo | Almstins',
+  pageTitle: 'Bóveda | SusuFinance',
+  demoPageTitle: 'Bóveda Demo | SusuFinance',
   heroTitle: 'Bóveda',
   heroSubtitle: 'Resumen de la bóveda TradFi + DeFi',
   demoBanner: (have) =>
@@ -100,8 +100,8 @@ export const es: VaultLocale = {
 
 export const fr: VaultLocale = {
   lang: 'fr',
-  pageTitle: 'Coffre | Almstins',
-  demoPageTitle: 'Coffre Démo | Almstins',
+  pageTitle: 'Coffre | SusuFinance',
+  demoPageTitle: 'Coffre Démo | SusuFinance',
   heroTitle: 'Coffre',
   heroSubtitle: 'Aperçu du coffre TradFi + DeFi',
   demoBanner: (have) =>

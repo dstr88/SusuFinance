@@ -20,7 +20,7 @@ import { getPromoExpiry } from '@/i18n/emails/promoExpiry';
 
 export const prerender = false;
 
-const APP_BASE = process.env.AUTH_URL ?? 'https://almstins.com';
+const APP_BASE = process.env.AUTH_URL ?? 'https://susufinance.com';
 const SENTINEL = '9999-12-31T23:59:59Z';
 
 function json(body: unknown, status = 200) {

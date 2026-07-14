@@ -2,15 +2,15 @@
  * campaignEmail.ts — Resend sender for marketing/lifecycle email (the onboarding drip).
  *
  * Separate from src/lib/email.ts (nodemailer, used for transactional alerts) — campaign
- * mail goes through Resend's HTTP API with RESEND_API_KEY. Sending domain almstins.com is
- * verified in Resend, so any @almstins.com From address works. No npm dep — just fetch.
+ * mail goes through Resend's HTTP API with RESEND_API_KEY. Sending domain susufinance.com is
+ * verified in Resend, so any @susufinance.com From address works. No npm dep — just fetch.
  *
  * Adjust FROM / REPLY_TO below if you want a different sender identity.
  */
 const RESEND_API_KEY = (import.meta.env.RESEND_API_KEY ?? process.env.RESEND_API_KEY ?? '') as string;
 
 /** Founder-personal sender — onboarding drips read better from a person than "no-reply". */
-const CAMPAIGN_FROM = 'Donnie at Almstins <donnie@almstins.com>';
+const CAMPAIGN_FROM = 'Donnie at SusuFinance <donnie@susufinance.com>';
 /** Replies land in the owner's real inbox. */
 const CAMPAIGN_REPLY_TO = 'donnie@titaniumhut.com';
 

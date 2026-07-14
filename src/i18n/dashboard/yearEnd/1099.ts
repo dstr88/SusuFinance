@@ -38,8 +38,8 @@ export interface T1099Locale {
   tableFormProceeds: string;
   /** "1099 Basis" */
   tableFormBasis: string;
-  tableAlmstinsProceeds: string;
-  tableAlmstinsBasis: string;
+  tableSusuFinanceProceeds: string;
+  tableSusuFinanceBasis: string;
   tableDeltaProceeds: string;
   tableDeltaBasis: string;
   tableStatus: string;
@@ -75,11 +75,11 @@ export interface T1099Locale {
 
 export const en: T1099Locale = {
   lang: 'en',
-  pageTitle: '1099 Reconciliation | Almstins',
+  pageTitle: '1099 Reconciliation | SusuFinance',
   backLink: '← Summary',
   heroTitle: '1099 Reconciliation',
   heroSub:
-    'Upload a 1099-DA or 1099-B CSV from your exchange and compare it line-by-line against what Almstins calculated. Catch discrepancies early.',
+    'Upload a 1099-DA or 1099-B CSV from your exchange and compare it line-by-line against what SusuFinance calculated. Catch discrepancies early.',
   uploadCardTitle: 'Upload New Form',
   labelFormType: 'Form type',
   labelTaxYear: 'Tax year',
@@ -98,19 +98,19 @@ export const en: T1099Locale = {
   tableAsset: 'Asset',
   tableFormProceeds: '1099 Proceeds',
   tableFormBasis: '1099 Basis',
-  tableAlmstinsProceeds: 'Almstins Proceeds',
-  tableAlmstinsBasis: 'Almstins Basis',
+  tableSusuFinanceProceeds: 'SusuFinance Proceeds',
+  tableSusuFinanceBasis: 'SusuFinance Basis',
   tableDeltaProceeds: 'Δ Proceeds',
   tableDeltaBasis: 'Δ Basis',
   tableStatus: 'Status',
   guidanceTitle: 'How to read this',
-  guidanceMatched: '<strong>Matched</strong> — Almstins and the exchange agree within $1.',
+  guidanceMatched: '<strong>Matched</strong> — SusuFinance and the exchange agree within $1.',
   guidanceProceedsDiff:
-    '<strong>Proceeds diff</strong> — The exchange reported different proceeds. Check for missing trades in Almstins.',
+    '<strong>Proceeds diff</strong> — The exchange reported different proceeds. Check for missing trades in SusuFinance.',
   guidanceBasisDiff:
     '<strong>Basis diff</strong> — Cost basis differs. May indicate wash-sale adjustments or missing import data.',
   guidanceUnmatched:
-    '<strong>Unmatched</strong> — The exchange reported an asset Almstins has no record of. Import the missing data.',
+    '<strong>Unmatched</strong> — The exchange reported an asset SusuFinance has no record of. Import the missing data.',
   historyCardTitle: 'Previous Uploads',
   historyLoading: 'Loading…',
   historyEmpty: 'No uploads yet.',
@@ -132,11 +132,11 @@ export const en: T1099Locale = {
 
 export const es: T1099Locale = {
   lang: 'es',
-  pageTitle: 'Conciliación 1099 | Almstins',
+  pageTitle: 'Conciliación 1099 | SusuFinance',
   backLink: '← Resumen',
   heroTitle: 'Conciliación 1099',
   heroSub:
-    'Sube un CSV de 1099-DA o 1099-B de tu exchange y compáralo línea por línea con lo que calculó Almstins. Detecta discrepancias a tiempo.',
+    'Sube un CSV de 1099-DA o 1099-B de tu exchange y compáralo línea por línea con lo que calculó SusuFinance. Detecta discrepancias a tiempo.',
   uploadCardTitle: 'Subir nuevo formulario',
   labelFormType: 'Tipo de formulario',
   labelTaxYear: 'Año fiscal',
@@ -155,19 +155,19 @@ export const es: T1099Locale = {
   tableAsset: 'Activo',
   tableFormProceeds: '1099 Ingresos',
   tableFormBasis: '1099 Base de coste',
-  tableAlmstinsProceeds: 'Almstins Ingresos',
-  tableAlmstinsBasis: 'Almstins Base de coste',
+  tableSusuFinanceProceeds: 'SusuFinance Ingresos',
+  tableSusuFinanceBasis: 'SusuFinance Base de coste',
   tableDeltaProceeds: 'Δ Ingresos',
   tableDeltaBasis: 'Δ Base de coste',
   tableStatus: 'Estado',
   guidanceTitle: 'Cómo interpretar esto',
-  guidanceMatched: '<strong>Coincidente</strong> — Almstins y el exchange coinciden dentro de $1.',
+  guidanceMatched: '<strong>Coincidente</strong> — SusuFinance y el exchange coinciden dentro de $1.',
   guidanceProceedsDiff:
-    '<strong>Diferencia en ingresos</strong> — El exchange reportó ingresos distintos. Verifica si faltan operaciones en Almstins.',
+    '<strong>Diferencia en ingresos</strong> — El exchange reportó ingresos distintos. Verifica si faltan operaciones en SusuFinance.',
   guidanceBasisDiff:
     '<strong>Diferencia en base de coste</strong> — La base de coste difiere. Puede indicar ajustes por wash-sale o datos de importación faltantes.',
   guidanceUnmatched:
-    '<strong>Sin coincidencia</strong> — El exchange reportó un activo del que Almstins no tiene registro. Importa los datos faltantes.',
+    '<strong>Sin coincidencia</strong> — El exchange reportó un activo del que SusuFinance no tiene registro. Importa los datos faltantes.',
   historyCardTitle: 'Subidas anteriores',
   historyLoading: 'Cargando…',
   historyEmpty: 'Aún no hay subidas.',
@@ -189,11 +189,11 @@ export const es: T1099Locale = {
 
 export const fr: T1099Locale = {
   lang: 'fr',
-  pageTitle: 'Rapprochement 1099 | Almstins',
+  pageTitle: 'Rapprochement 1099 | SusuFinance',
   backLink: '← Résumé',
   heroTitle: 'Rapprochement 1099',
   heroSub:
-    "Importez un CSV 1099-DA ou 1099-B de votre exchange et comparez-le ligne par ligne avec les calculs d'Almstins. Détectez les écarts tôt.",
+    "Importez un CSV 1099-DA ou 1099-B de votre exchange et comparez-le ligne par ligne avec les calculs d'SusuFinance. Détectez les écarts tôt.",
   uploadCardTitle: 'Importer un nouveau formulaire',
   labelFormType: 'Type de formulaire',
   labelTaxYear: 'Année fiscale',
@@ -212,19 +212,19 @@ export const fr: T1099Locale = {
   tableAsset: 'Actif',
   tableFormProceeds: '1099 Produits',
   tableFormBasis: '1099 Coût de base',
-  tableAlmstinsProceeds: 'Almstins Produits',
-  tableAlmstinsBasis: 'Almstins Coût de base',
+  tableSusuFinanceProceeds: 'SusuFinance Produits',
+  tableSusuFinanceBasis: 'SusuFinance Coût de base',
   tableDeltaProceeds: 'Δ Produits',
   tableDeltaBasis: 'Δ Coût de base',
   tableStatus: 'Statut',
   guidanceTitle: 'Comment lire ceci',
-  guidanceMatched: "<strong>Correspondance</strong> — Almstins et l'exchange s'accordent à $1 près.",
+  guidanceMatched: "<strong>Correspondance</strong> — SusuFinance et l'exchange s'accordent à $1 près.",
   guidanceProceedsDiff:
-    "<strong>Écart de produits</strong> — L'exchange a déclaré des produits différents. Vérifiez les transactions manquantes dans Almstins.",
+    "<strong>Écart de produits</strong> — L'exchange a déclaré des produits différents. Vérifiez les transactions manquantes dans SusuFinance.",
   guidanceBasisDiff:
     "<strong>Écart de coût de base</strong> — Le coût de base diffère. Peut indiquer des ajustements wash-sale ou des données d'importation manquantes.",
   guidanceUnmatched:
-    "<strong>Sans correspondance</strong> — L'exchange a déclaré un actif qu'Almstins ne connaît pas. Importez les données manquantes.",
+    "<strong>Sans correspondance</strong> — L'exchange a déclaré un actif qu'SusuFinance ne connaît pas. Importez les données manquantes.",
   historyCardTitle: 'Importations précédentes',
   historyLoading: 'Chargement…',
   historyEmpty: "Aucune importation pour l'instant.",

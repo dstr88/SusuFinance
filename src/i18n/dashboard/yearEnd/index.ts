@@ -64,7 +64,7 @@ export interface YearEndLocale {
 
 export const en: YearEndLocale = {
   lang: 'en',
-  pageTitle: 'Tax Center | Almstins',
+  pageTitle: 'Tax Center | SusuFinance',
   hubTitle: 'Tax Center',
   hubSub:
     'All your crypto tax tools in one place. Not a tax preparation service — always consult a CPA before filing.',
@@ -96,7 +96,7 @@ export const en: YearEndLocale = {
   reconciliationLabel: 'Reconciliation',
   recon1099Title: '1099 Reconciliation',
   recon1099Desc:
-    'Upload a 1099-DA or 1099-B CSV from your exchange and compare it against Almstins\' computed gains. Quickly spot discrepancies early.',
+    'Upload a 1099-DA or 1099-B CSV from your exchange and compare it against SusuFinance\' computed gains. Quickly spot discrepancies early.',
   exportLabel: 'Export',
   yearSummaryPdfTitle: 'Year Summary PDF',
   yearSummaryPdfDesc:
@@ -109,12 +109,12 @@ export const en: YearEndLocale = {
   yearPillNote: 'Opens the Year Summary Report filtered to that tax year.',
   disclaimerStrong: 'Disclaimer:',
   disclaimerText:
-    'Almstins is a record-keeping and analysis tool, not a tax preparation service. The information here is based on the transaction data you have provided and may be incomplete if imports are missing or wallets are unsynced. Nothing on this page constitutes tax, legal, or financial advice. Consult a qualified CPA or tax professional before filing.',
+    'SusuFinance is a record-keeping and analysis tool, not a tax preparation service. The information here is based on the transaction data you have provided and may be incomplete if imports are missing or wallets are unsynced. Nothing on this page constitutes tax, legal, or financial advice. Consult a qualified CPA or tax professional before filing.',
 };
 
 export const es: YearEndLocale = {
   lang: 'es',
-  pageTitle: 'Centro Fiscal | Almstins',
+  pageTitle: 'Centro Fiscal | SusuFinance',
   hubTitle: 'Centro Fiscal',
   hubSub:
     'Todas tus herramientas fiscales de criptomonedas en un solo lugar. No es un servicio de preparación de impuestos — consulta siempre a un CPA antes de presentar tu declaración.',
@@ -146,7 +146,7 @@ export const es: YearEndLocale = {
   reconciliationLabel: 'Conciliación',
   recon1099Title: 'Conciliación 1099',
   recon1099Desc:
-    'Sube un CSV 1099-DA o 1099-B de tu exchange y compáralo con las ganancias calculadas por Almstins. Detecta discrepancias fácilmente y con anticipación.',
+    'Sube un CSV 1099-DA o 1099-B de tu exchange y compáralo con las ganancias calculadas por SusuFinance. Detecta discrepancias fácilmente y con anticipación.',
   exportLabel: 'Exportar',
   yearSummaryPdfTitle: 'PDF Resumen Anual',
   yearSummaryPdfDesc:
@@ -159,12 +159,12 @@ export const es: YearEndLocale = {
   yearPillNote: 'Abre el Informe Anual filtrado por ese año fiscal.',
   disclaimerStrong: 'Aviso legal:',
   disclaimerText:
-    'Almstins es una herramienta de registro y análisis, no un servicio de preparación de impuestos. La información aquí se basa en los datos de transacciones que has proporcionado y puede estar incompleta si faltan importaciones o las wallets no están sincronizadas. Nada en esta página constituye asesoramiento fiscal, legal o financiero. Consulta a un CPA o profesional fiscal calificado antes de presentar tu declaración.',
+    'SusuFinance es una herramienta de registro y análisis, no un servicio de preparación de impuestos. La información aquí se basa en los datos de transacciones que has proporcionado y puede estar incompleta si faltan importaciones o las wallets no están sincronizadas. Nada en esta página constituye asesoramiento fiscal, legal o financiero. Consulta a un CPA o profesional fiscal calificado antes de presentar tu declaración.',
 };
 
 export const fr: YearEndLocale = {
   lang: 'fr',
-  pageTitle: 'Centre Fiscal | Almstins',
+  pageTitle: 'Centre Fiscal | SusuFinance',
   hubTitle: 'Centre Fiscal',
   hubSub:
     'Tous vos outils fiscaux crypto en un seul endroit. Pas un service de préparation fiscale — consultez toujours un CPA avant de déposer votre déclaration.',
@@ -196,7 +196,7 @@ export const fr: YearEndLocale = {
   reconciliationLabel: 'Rapprochement',
   recon1099Title: 'Rapprochement 1099',
   recon1099Desc:
-    "Importez un CSV 1099-DA ou 1099-B de votre exchange et comparez-le aux gains calculés par Almstins. Repérez rapidement les écarts en avance.",
+    "Importez un CSV 1099-DA ou 1099-B de votre exchange et comparez-le aux gains calculés par SusuFinance. Repérez rapidement les écarts en avance.",
   exportLabel: 'Exporter',
   yearSummaryPdfTitle: 'PDF Récapitulatif Annuel',
   yearSummaryPdfDesc:
@@ -209,7 +209,7 @@ export const fr: YearEndLocale = {
   yearPillNote: "Ouvre le Rapport Annuel filtré sur cette année fiscale.",
   disclaimerStrong: 'Avertissement :',
   disclaimerText:
-    "Almstins est un outil de tenue de registres et d'analyse, pas un service de préparation fiscale. Les informations ici sont basées sur les données de transactions que vous avez fournies et peuvent être incomplètes si des importations manquent ou si des wallets ne sont pas synchronisées. Rien sur cette page ne constitue un conseil fiscal, juridique ou financier. Consultez un CPA ou un professionnel fiscal qualifié avant de déposer votre déclaration.",
+    "SusuFinance est un outil de tenue de registres et d'analyse, pas un service de préparation fiscale. Les informations ici sont basées sur les données de transactions que vous avez fournies et peuvent être incomplètes si des importations manquent ou si des wallets ne sont pas synchronisées. Rien sur cette page ne constitue un conseil fiscal, juridique ou financier. Consultez un CPA ou un professionnel fiscal qualifié avant de déposer votre déclaration.",
 };
 
 const MAP: Record<Lang, YearEndLocale> = { en, es, fr };

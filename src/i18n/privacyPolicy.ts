@@ -28,16 +28,16 @@ export const en: PrivacyLocale = {
   summaryLabel: 'Privacy Policy',
   ariaLabel: 'Privacy Policy',
   body: `
-<h1>ALMSTINS PRIVACY POLICY</h1>
+<h1>SUSUFINANCE PRIVACY POLICY</h1>
 <p><strong>Effective Date:</strong> June 20, 2026 &nbsp;&middot;&nbsp; <strong>Version:</strong> 1.1<br/>
-<strong>Operator:</strong> Almstins LLC ("Almstins," "we," "us," "our")</p>
+<strong>Operator:</strong> SusuFinance LLC ("SusuFinance," "we," "us," "our")</p>
 
 <hr/>
 
 <h2>1. Introduction</h2>
-<p>This Privacy Policy explains what information Almstins collects, how we use and protect it, and the choices you have, when you use almstins.com and related applications and features (the "Service").</p>
+<p>This Privacy Policy explains what information SusuFinance collects, how we use and protect it, and the choices you have, when you use susufinance.com and related applications and features (the "Service").</p>
 
-<p><strong>Core principle — tenant isolation.</strong> Almstins operates under strict tenant isolation. Your data belongs to you, is segregated from every other user, is never accessed by operators, and is never used for any purpose other than providing the Service to you.</p>
+<p><strong>Core principle — tenant isolation.</strong> SusuFinance operates under strict tenant isolation. Your data belongs to you, is segregated from every other user, is never accessed by operators, and is never used for any purpose other than providing the Service to you.</p>
 
 <h2>2. Our Privacy Architecture (Binding Guarantees)</h2>
 <p>These are architectural commitments that shape every section below:</p>
@@ -97,8 +97,8 @@ export const en: PrivacyLocale = {
   <li><strong>Labels are private.</strong> Any label you apply (e.g., "Joe's Coffee") lives only in your account and is never published or shared across tenants.</li>
   <li><strong>No attribution.</strong> We never associate an address with a person or build a public address-to-identity map. Where you use your own records to evidence your own ownership, that is your voluntary self-disclosure — not something we perform on you or others.</li>
   <li><strong>Retention/deletion:</strong> addresses are retained while needed to provide the Service and per legal retention requirements; you may delete them subject to Section 8.</li>
-  <li><strong>Almstins Verify — registered Destinations:</strong> if you use Almstins Verify, we store the payment Destinations you register (receiving addresses, QR codes, or links) and the <strong>ownership-proof artifacts</strong> you provide (e.g., a signature or domain record). This data is your own, held under tenant isolation, and used <strong>only</strong> to monitor those Destinations and alert you to changes. Camera-based QR scans (B.5.6 of the User Agreement) are <strong>decoded on-device</strong> — we receive only the decoded destination string, never the image. We do <strong>not</strong> link your Destinations to your customers and do <strong>not</strong> monitor third parties. A Destination you register is linked <strong>only to your own account (your email), privately and under tenant isolation</strong> — never shown to other users or the public, and never used to identify you. This is your voluntary self-association of your own Destination; it is not attribution of any third party, and we still perform no KYC and build no public or cross-tenant address-to-identity map.</li>
-  <li><strong>Almstins Verified Entity — public address verification (B.8):</strong> if you operate a Verified Entity (an exchange, business, institution, or other organization), you may register a domain you control and publish, on that domain, the receiving addresses you represent as your own. Here, <strong>by design and at your choice, the verified addresses and the domain that published them are shown publicly</strong> — so anyone can check an address before paying it. This is your organization's <strong>voluntary self-disclosure of its own addresses</strong>, not attribution we perform. We confirm control by <strong>Domain Attestation</strong> (an Almstins-issued challenge you place on your own domain) and an optional per-address signature; we then <strong>read, cache, and mirror</strong> what your domain publishes — your published record is the source of truth. <strong>Your account identity (email), the proof artifacts, and the link between your account and your domain stay private and tenant-isolated</strong>, never displayed. We still <strong>never</strong> link a <strong>third party's</strong> address to an identity, perform no KYC, and build no public or cross-tenant address-to-identity directory for anyone who has not themselves proven control. We do not use public verification lookups to profile who is checking. You can revoke an address at any time by removing it from your published record. Applies where and when this Surface is offered.</li>
+  <li><strong>SusuFinance Verify — registered Destinations:</strong> if you use SusuFinance Verify, we store the payment Destinations you register (receiving addresses, QR codes, or links) and the <strong>ownership-proof artifacts</strong> you provide (e.g., a signature or domain record). This data is your own, held under tenant isolation, and used <strong>only</strong> to monitor those Destinations and alert you to changes. Camera-based QR scans (B.5.6 of the User Agreement) are <strong>decoded on-device</strong> — we receive only the decoded destination string, never the image. We do <strong>not</strong> link your Destinations to your customers and do <strong>not</strong> monitor third parties. A Destination you register is linked <strong>only to your own account (your email), privately and under tenant isolation</strong> — never shown to other users or the public, and never used to identify you. This is your voluntary self-association of your own Destination; it is not attribution of any third party, and we still perform no KYC and build no public or cross-tenant address-to-identity map.</li>
+  <li><strong>SusuFinance Verified Entity — public address verification (B.8):</strong> if you operate a Verified Entity (an exchange, business, institution, or other organization), you may register a domain you control and publish, on that domain, the receiving addresses you represent as your own. Here, <strong>by design and at your choice, the verified addresses and the domain that published them are shown publicly</strong> — so anyone can check an address before paying it. This is your organization's <strong>voluntary self-disclosure of its own addresses</strong>, not attribution we perform. We confirm control by <strong>Domain Attestation</strong> (an SusuFinance-issued challenge you place on your own domain) and an optional per-address signature; we then <strong>read, cache, and mirror</strong> what your domain publishes — your published record is the source of truth. <strong>Your account identity (email), the proof artifacts, and the link between your account and your domain stay private and tenant-isolated</strong>, never displayed. We still <strong>never</strong> link a <strong>third party's</strong> address to an identity, perform no KYC, and build no public or cross-tenant address-to-identity directory for anyone who has not themselves proven control. We do not use public verification lookups to profile who is checking. You can revoke an address at any time by removing it from your published record. Applies where and when this Surface is offered.</li>
 </ul>
 
 <h2>6. Community Safety Features (Flags, Reviews, Claims, Badges)</h2>
@@ -116,7 +116,7 @@ export const en: PrivacyLocale = {
 <p><em>Applies to the optional merchant tier, when offered.</em></p>
 <ul>
   <li><strong>One-time scans</strong> (QR/address) are decoded <strong>on-device</strong>; no image is stored or transmitted by that action.</li>
-  <li><strong>Continuous/always-on camera monitoring</strong>, if enabled by a merchant, may capture third parties (bystanders, employees, customers). <strong>The merchant is the controller of that capture</strong> and is responsible for obtaining required consents, posting notices, and observing retention limits under applicable biometric, surveillance, two-party-consent, and employee-monitoring laws. Almstins does not request or use such footage to identify individuals.</li>
+  <li><strong>Continuous/always-on camera monitoring</strong>, if enabled by a merchant, may capture third parties (bystanders, employees, customers). <strong>The merchant is the controller of that capture</strong> and is responsible for obtaining required consents, posting notices, and observing retention limits under applicable biometric, surveillance, two-party-consent, and employee-monitoring laws. SusuFinance does not request or use such footage to identify individuals.</li>
 </ul>
 
 <h2>8. AI Features</h2>
@@ -156,13 +156,13 @@ export const en: PrivacyLocale = {
   <li><strong>Opt out</strong> of analytics and optional features;</li>
   <li><strong>Port</strong> your data via export in a standard format.</li>
 </ul>
-<p>We do not sell personal information and do not "share" it for cross-context behavioral advertising. To exercise any right, contact <strong>privacy@almstins.com</strong>.</p>
+<p>We do not sell personal information and do not "share" it for cross-context behavioral advertising. To exercise any right, contact <strong>privacy@susufinance.com</strong>.</p>
 
 <h2>17. Changes to This Policy</h2>
 <p>We may update this Policy. Material changes will be notified by email or in-product notice; continued use after the effective date constitutes acceptance.</p>
 
 <h2>18. Contact</h2>
-<p>Privacy Officer — Almstins LLC — <strong>privacy@almstins.com</strong></p>
+<p>Privacy Officer — SusuFinance LLC — <strong>privacy@susufinance.com</strong></p>
 `,
 };
 
@@ -171,16 +171,16 @@ export const es: PrivacyLocale = {
   summaryLabel: 'Política de Privacidad',
   ariaLabel: 'Política de Privacidad',
   body: `
-<h1>POLÍTICA DE PRIVACIDAD DE ALMSTINS</h1>
+<h1>POLÍTICA DE PRIVACIDAD DE SUSUFINANCE</h1>
 <p><strong>Fecha de Vigencia:</strong> 20 de junio de 2026 &nbsp;&middot;&nbsp; <strong>Versión:</strong> 1.1<br/>
-<strong>Operador:</strong> Almstins LLC ("Almstins," "nosotros," "nos," "nuestro")</p>
+<strong>Operador:</strong> SusuFinance LLC ("SusuFinance," "nosotros," "nos," "nuestro")</p>
 
 <hr/>
 
 <h2>1. Introducción</h2>
-<p>Esta Política de Privacidad explica qué información recopila Almstins, cómo la utilizamos y protegemos, y las opciones que usted tiene al usar almstins.com y las aplicaciones y funciones relacionadas (el "Servicio").</p>
+<p>Esta Política de Privacidad explica qué información recopila SusuFinance, cómo la utilizamos y protegemos, y las opciones que usted tiene al usar susufinance.com y las aplicaciones y funciones relacionadas (el "Servicio").</p>
 
-<p><strong>Principio fundamental — aislamiento de inquilinos.</strong> Almstins opera bajo un estricto aislamiento de inquilinos. Sus datos le pertenecen a usted, están segregados de los de cualquier otro usuario, ningún operador puede acceder a ellos, y nunca se utilizan para ningún propósito distinto al de prestarle el Servicio.</p>
+<p><strong>Principio fundamental — aislamiento de inquilinos.</strong> SusuFinance opera bajo un estricto aislamiento de inquilinos. Sus datos le pertenecen a usted, están segregados de los de cualquier otro usuario, ningún operador puede acceder a ellos, y nunca se utilizan para ningún propósito distinto al de prestarle el Servicio.</p>
 
 <h2>2. Nuestra Arquitectura de Privacidad (Garantías Vinculantes)</h2>
 <p>Estos son compromisos arquitectónicos que fundamentan cada sección a continuación:</p>
@@ -240,8 +240,8 @@ export const es: PrivacyLocale = {
   <li><strong>Las etiquetas son privadas.</strong> Cualquier etiqueta que aplique (p. ej., "Café de Juan") reside únicamente en su cuenta y nunca se publica ni se comparte entre inquilinos.</li>
   <li><strong>Sin atribución.</strong> Nunca asociamos una dirección con una persona ni construimos un mapa público de dirección-a-identidad. Cuando usted utiliza sus propios registros para acreditar su propia titularidad, eso constituye una divulgación voluntaria de su parte — no algo que realizamos sobre usted ni sobre terceros.</li>
   <li><strong>Retención/eliminación:</strong> las direcciones se conservan mientras sean necesarias para prestar el Servicio y de conformidad con los requisitos legales de retención; usted puede eliminarlas conforme a la Sección 8.</li>
-  <li><strong>Almstins Verify — Destinos registrados:</strong> si usa Almstins Verify, almacenamos los Destinos de pago que usted registra (direcciones de recepción, códigos QR o enlaces) y los <strong>artefactos de prueba de titularidad</strong> que proporciona (p. ej., una firma o un registro de dominio). Estos datos son suyos, se conservan bajo aislamiento de inquilinos y se utilizan <strong>únicamente</strong> para supervisar esos Destinos y alertarle de cambios. Los escaneos de QR mediante cámara (B.5.6 del Acuerdo de Usuario) se <strong>decodifican en el dispositivo</strong> — recibimos únicamente la cadena de destino decodificada, nunca la imagen. <strong>No</strong> vinculamos sus Destinos con sus clientes y <strong>no</strong> supervisamos a terceros. Un Destino que usted registra se vincula <strong>únicamente a su propia cuenta (su correo electrónico), de forma privada y bajo aislamiento de inquilinos</strong> — nunca se muestra a otros usuarios ni al público, y nunca se utiliza para identificarle. Esto es su auto-asociación voluntaria de su propio Destino; no es atribución de ningún tercero, y seguimos sin realizar KYC y sin construir ningún mapa público o entre inquilinos de dirección-a-identidad.</li>
-  <li><strong>Almstins Verified Entity — verificación pública de direcciones (B.8):</strong> si opera una Verified Entity (un exchange, negocio, institución u otra organización), puede registrar un dominio que controla y publicar, en ese dominio, las direcciones de recepción que declara como propias. Aquí, <strong>por diseño y por su elección, las direcciones verificadas y el dominio que las publicó se muestran públicamente</strong> — para que cualquiera pueda comprobar una dirección antes de pagarla. Esto es la <strong>autodivulgación voluntaria de su organización sobre sus propias direcciones</strong>, no una atribución que nosotros realicemos. Confirmamos el control mediante <strong>Domain Attestation</strong> (un desafío emitido por Almstins que usted coloca en su propio dominio) y una firma opcional por dirección; luego <strong>leemos, almacenamos en caché y reflejamos</strong> lo que su dominio publica — su registro publicado es la fuente de verdad. <strong>La identidad de su cuenta (correo electrónico), los artefactos de prueba y el vínculo entre su cuenta y su dominio permanecen privados y bajo aislamiento de inquilinos</strong>, nunca se muestran. Seguimos sin vincular <strong>nunca</strong> la dirección de un <strong>tercero</strong> con una identidad, sin realizar KYC y sin construir ningún directorio público o entre inquilinos de dirección-a-identidad para quien no haya demostrado el control por sí mismo. No usamos las consultas públicas de verificación para perfilar a quién consulta. Puede revocar una dirección en cualquier momento eliminándola de su registro publicado. Se aplica cuando y donde se ofrezca esta Superficie.</li>
+  <li><strong>SusuFinance Verify — Destinos registrados:</strong> si usa SusuFinance Verify, almacenamos los Destinos de pago que usted registra (direcciones de recepción, códigos QR o enlaces) y los <strong>artefactos de prueba de titularidad</strong> que proporciona (p. ej., una firma o un registro de dominio). Estos datos son suyos, se conservan bajo aislamiento de inquilinos y se utilizan <strong>únicamente</strong> para supervisar esos Destinos y alertarle de cambios. Los escaneos de QR mediante cámara (B.5.6 del Acuerdo de Usuario) se <strong>decodifican en el dispositivo</strong> — recibimos únicamente la cadena de destino decodificada, nunca la imagen. <strong>No</strong> vinculamos sus Destinos con sus clientes y <strong>no</strong> supervisamos a terceros. Un Destino que usted registra se vincula <strong>únicamente a su propia cuenta (su correo electrónico), de forma privada y bajo aislamiento de inquilinos</strong> — nunca se muestra a otros usuarios ni al público, y nunca se utiliza para identificarle. Esto es su auto-asociación voluntaria de su propio Destino; no es atribución de ningún tercero, y seguimos sin realizar KYC y sin construir ningún mapa público o entre inquilinos de dirección-a-identidad.</li>
+  <li><strong>SusuFinance Verified Entity — verificación pública de direcciones (B.8):</strong> si opera una Verified Entity (un exchange, negocio, institución u otra organización), puede registrar un dominio que controla y publicar, en ese dominio, las direcciones de recepción que declara como propias. Aquí, <strong>por diseño y por su elección, las direcciones verificadas y el dominio que las publicó se muestran públicamente</strong> — para que cualquiera pueda comprobar una dirección antes de pagarla. Esto es la <strong>autodivulgación voluntaria de su organización sobre sus propias direcciones</strong>, no una atribución que nosotros realicemos. Confirmamos el control mediante <strong>Domain Attestation</strong> (un desafío emitido por SusuFinance que usted coloca en su propio dominio) y una firma opcional por dirección; luego <strong>leemos, almacenamos en caché y reflejamos</strong> lo que su dominio publica — su registro publicado es la fuente de verdad. <strong>La identidad de su cuenta (correo electrónico), los artefactos de prueba y el vínculo entre su cuenta y su dominio permanecen privados y bajo aislamiento de inquilinos</strong>, nunca se muestran. Seguimos sin vincular <strong>nunca</strong> la dirección de un <strong>tercero</strong> con una identidad, sin realizar KYC y sin construir ningún directorio público o entre inquilinos de dirección-a-identidad para quien no haya demostrado el control por sí mismo. No usamos las consultas públicas de verificación para perfilar a quién consulta. Puede revocar una dirección en cualquier momento eliminándola de su registro publicado. Se aplica cuando y donde se ofrezca esta Superficie.</li>
 </ul>
 
 <h2>6. Funciones de Seguridad Comunitaria (Marcadores, Reseñas, Reclamaciones, Insignias)</h2>
@@ -259,7 +259,7 @@ export const es: PrivacyLocale = {
 <p><em>Aplicable al nivel de comerciante opcional, cuando esté disponible.</em></p>
 <ul>
   <li><strong>Los escaneos puntuales</strong> (QR/dirección) se decodifican <strong>en el dispositivo</strong>; ninguna imagen es almacenada ni transmitida por esa acción.</li>
-  <li><strong>La monitorización continua/permanente por cámara</strong>, si es habilitada por un comerciante, puede capturar a terceros (transeúntes, empleados, clientes). <strong>El comerciante es el responsable del tratamiento de dicha captura</strong> y es responsable de obtener los consentimientos requeridos, publicar avisos y respetar los límites de retención conforme a las leyes aplicables en materia biométrica, de vigilancia, de consentimiento de dos partes y de monitorización de empleados. Almstins no solicita ni utiliza dichas grabaciones para identificar a individuos.</li>
+  <li><strong>La monitorización continua/permanente por cámara</strong>, si es habilitada por un comerciante, puede capturar a terceros (transeúntes, empleados, clientes). <strong>El comerciante es el responsable del tratamiento de dicha captura</strong> y es responsable de obtener los consentimientos requeridos, publicar avisos y respetar los límites de retención conforme a las leyes aplicables en materia biométrica, de vigilancia, de consentimiento de dos partes y de monitorización de empleados. SusuFinance no solicita ni utiliza dichas grabaciones para identificar a individuos.</li>
 </ul>
 
 <h2>8. Funciones de IA</h2>
@@ -299,13 +299,13 @@ export const es: PrivacyLocale = {
   <li><strong>Optar por no participar</strong> en analíticas y funciones opcionales;</li>
   <li><strong>Portar</strong> sus datos mediante exportación en un formato estándar.</li>
 </ul>
-<p>No vendemos información personal ni la "compartimos" para publicidad conductual entre contextos. Para ejercer cualquier derecho, contacte a <strong>privacy@almstins.com</strong>.</p>
+<p>No vendemos información personal ni la "compartimos" para publicidad conductual entre contextos. Para ejercer cualquier derecho, contacte a <strong>privacy@susufinance.com</strong>.</p>
 
 <h2>17. Cambios a Esta Política</h2>
 <p>Podemos actualizar esta Política. Los cambios materiales serán notificados por correo electrónico o mediante un aviso dentro del producto; el uso continuado tras la fecha de vigencia constituye la aceptación de los mismos.</p>
 
 <h2>18. Contacto</h2>
-<p>Responsable de Privacidad — Almstins LLC — <strong>privacy@almstins.com</strong></p>
+<p>Responsable de Privacidad — SusuFinance LLC — <strong>privacy@susufinance.com</strong></p>
 `,
 };
 
@@ -314,16 +314,16 @@ export const fr: PrivacyLocale = {
   summaryLabel: 'Politique de Confidentialité',
   ariaLabel: 'Politique de Confidentialité',
   body: `
-<h1>POLITIQUE DE CONFIDENTIALITÉ D'ALMSTINS</h1>
+<h1>POLITIQUE DE CONFIDENTIALITÉ D'SUSUFINANCE</h1>
 <p><strong>Date d'entrée en vigueur :</strong> 20 juin 2026 &nbsp;&middot;&nbsp; <strong>Version :</strong> 1.1<br/>
-<strong>Opérateur :</strong> Almstins LLC (« Almstins », « nous », « notre »)</p>
+<strong>Opérateur :</strong> SusuFinance LLC (« SusuFinance », « nous », « notre »)</p>
 
 <hr/>
 
 <h2>1. Introduction</h2>
-<p>La présente Politique de Confidentialité explique les informations qu'Almstins collecte, la manière dont nous les utilisons et les protégeons, ainsi que les choix dont vous disposez lorsque vous utilisez almstins.com et les applications et fonctionnalités associées (le « Service »).</p>
+<p>La présente Politique de Confidentialité explique les informations qu'SusuFinance collecte, la manière dont nous les utilisons et les protégeons, ainsi que les choix dont vous disposez lorsque vous utilisez susufinance.com et les applications et fonctionnalités associées (le « Service »).</p>
 
-<p><strong>Principe fondamental — isolation des locataires.</strong> Almstins fonctionne selon une stricte isolation des locataires. Vos données vous appartiennent, sont séparées de celles de tout autre utilisateur, ne sont jamais accessibles aux opérateurs, et ne sont jamais utilisées à d'autres fins que la fourniture du Service.</p>
+<p><strong>Principe fondamental — isolation des locataires.</strong> SusuFinance fonctionne selon une stricte isolation des locataires. Vos données vous appartiennent, sont séparées de celles de tout autre utilisateur, ne sont jamais accessibles aux opérateurs, et ne sont jamais utilisées à d'autres fins que la fourniture du Service.</p>
 
 <h2>2. Notre Architecture de Confidentialité (Garanties Contraignantes)</h2>
 <p>Il s'agit d'engagements architecturaux qui fondent chaque section ci-dessous :</p>
@@ -383,8 +383,8 @@ export const fr: PrivacyLocale = {
   <li><strong>Les étiquettes sont privées.</strong> Toute étiquette que vous appliquez (p. ex., « Café de Jean ») ne réside que dans votre compte et n'est jamais publiée ni partagée entre locataires.</li>
   <li><strong>Pas d'attribution.</strong> Nous n'associons jamais une adresse à une personne et ne constituons pas de carte publique adresse-vers-identité. Lorsque vous utilisez vos propres enregistrements pour prouver votre propre propriété, il s'agit de votre divulgation volontaire — et non de quelque chose que nous effectuons sur vous ou sur d'autres.</li>
   <li><strong>Conservation/suppression :</strong> les adresses sont conservées aussi longtemps que nécessaire pour fournir le Service et conformément aux exigences légales de conservation ; vous pouvez les supprimer conformément à la Section 8.</li>
-  <li><strong>Almstins Verify — Destinations enregistrées :</strong> si vous utilisez Almstins Verify, nous stockons les Destinations de paiement que vous enregistrez (adresses de réception, codes QR ou liens) ainsi que les <strong>artefacts de preuve de propriété</strong> que vous fournissez (p. ex., une signature ou un enregistrement de domaine). Ces données vous appartiennent, sont conservées sous isolation des locataires et utilisées <strong>uniquement</strong> pour surveiller ces Destinations et vous alerter en cas de changement. Les scans de QR par caméra (B.5.6 de l'Accord d'utilisateur) sont <strong>décodés sur l'appareil</strong> — nous ne recevons que la chaîne de destination décodée, jamais l'image. Nous <strong>ne</strong> relions <strong>pas</strong> vos Destinations à vos clients et <strong>ne</strong> surveillons <strong>pas</strong> de tiers. Une Destination que vous enregistrez est liée <strong>uniquement à votre propre compte (votre e-mail), de manière privée et sous isolation des locataires</strong> — jamais montrée à d'autres utilisateurs ni au public, et jamais utilisée pour vous identifier. Il s'agit de votre auto-association volontaire de votre propre Destination ; ce n'est pas l'attribution d'un tiers, et nous n'effectuons toujours aucun KYC et ne constituons aucune carte publique ou inter-locataires adresse-vers-identité.</li>
-  <li><strong>Almstins Verified Entity — vérification publique des adresses (B.8) :</strong> si vous exploitez une Verified Entity (un exchange, une entreprise, une institution ou une autre organisation), vous pouvez enregistrer un domaine que vous contrôlez et publier, sur ce domaine, les adresses de réception que vous déclarez comme étant les vôtres. Ici, <strong>par conception et selon votre choix, les adresses vérifiées et le domaine qui les a publiées sont affichés publiquement</strong> — afin que quiconque puisse vérifier une adresse avant de la payer. Il s'agit de l'<strong>auto-divulgation volontaire par votre organisation de ses propres adresses</strong>, et non d'une attribution que nous effectuons. Nous confirmons le contrôle par <strong>Domain Attestation</strong> (un défi émis par Almstins que vous placez sur votre propre domaine) et une signature facultative par adresse ; nous <strong>lisons, mettons en cache et reflétons</strong> ensuite ce que votre domaine publie — votre enregistrement publié fait foi. <strong>L'identité de votre compte (e-mail), les artefacts de preuve et le lien entre votre compte et votre domaine demeurent privés et sous isolation des locataires</strong>, jamais affichés. Nous ne relions toujours <strong>jamais</strong> l'adresse d'un <strong>tiers</strong> à une identité, n'effectuons aucun KYC et ne constituons aucun répertoire public ou inter-locataires adresse-vers-identité pour quiconque n'a pas lui-même prouvé le contrôle. Nous n'utilisons pas les consultations publiques de vérification pour profiler qui consulte. Vous pouvez révoquer une adresse à tout moment en la retirant de votre enregistrement publié. S'applique lorsque et là où cette Surface est proposée.</li>
+  <li><strong>SusuFinance Verify — Destinations enregistrées :</strong> si vous utilisez SusuFinance Verify, nous stockons les Destinations de paiement que vous enregistrez (adresses de réception, codes QR ou liens) ainsi que les <strong>artefacts de preuve de propriété</strong> que vous fournissez (p. ex., une signature ou un enregistrement de domaine). Ces données vous appartiennent, sont conservées sous isolation des locataires et utilisées <strong>uniquement</strong> pour surveiller ces Destinations et vous alerter en cas de changement. Les scans de QR par caméra (B.5.6 de l'Accord d'utilisateur) sont <strong>décodés sur l'appareil</strong> — nous ne recevons que la chaîne de destination décodée, jamais l'image. Nous <strong>ne</strong> relions <strong>pas</strong> vos Destinations à vos clients et <strong>ne</strong> surveillons <strong>pas</strong> de tiers. Une Destination que vous enregistrez est liée <strong>uniquement à votre propre compte (votre e-mail), de manière privée et sous isolation des locataires</strong> — jamais montrée à d'autres utilisateurs ni au public, et jamais utilisée pour vous identifier. Il s'agit de votre auto-association volontaire de votre propre Destination ; ce n'est pas l'attribution d'un tiers, et nous n'effectuons toujours aucun KYC et ne constituons aucune carte publique ou inter-locataires adresse-vers-identité.</li>
+  <li><strong>SusuFinance Verified Entity — vérification publique des adresses (B.8) :</strong> si vous exploitez une Verified Entity (un exchange, une entreprise, une institution ou une autre organisation), vous pouvez enregistrer un domaine que vous contrôlez et publier, sur ce domaine, les adresses de réception que vous déclarez comme étant les vôtres. Ici, <strong>par conception et selon votre choix, les adresses vérifiées et le domaine qui les a publiées sont affichés publiquement</strong> — afin que quiconque puisse vérifier une adresse avant de la payer. Il s'agit de l'<strong>auto-divulgation volontaire par votre organisation de ses propres adresses</strong>, et non d'une attribution que nous effectuons. Nous confirmons le contrôle par <strong>Domain Attestation</strong> (un défi émis par SusuFinance que vous placez sur votre propre domaine) et une signature facultative par adresse ; nous <strong>lisons, mettons en cache et reflétons</strong> ensuite ce que votre domaine publie — votre enregistrement publié fait foi. <strong>L'identité de votre compte (e-mail), les artefacts de preuve et le lien entre votre compte et votre domaine demeurent privés et sous isolation des locataires</strong>, jamais affichés. Nous ne relions toujours <strong>jamais</strong> l'adresse d'un <strong>tiers</strong> à une identité, n'effectuons aucun KYC et ne constituons aucun répertoire public ou inter-locataires adresse-vers-identité pour quiconque n'a pas lui-même prouvé le contrôle. Nous n'utilisons pas les consultations publiques de vérification pour profiler qui consulte. Vous pouvez révoquer une adresse à tout moment en la retirant de votre enregistrement publié. S'applique lorsque et là où cette Surface est proposée.</li>
 </ul>
 
 <h2>6. Fonctionnalités de Sécurité Communautaire (Signalements, Avis, Revendications, Badges)</h2>
@@ -402,7 +402,7 @@ export const fr: PrivacyLocale = {
 <p><em>Applicable au niveau commerçant optionnel, lorsqu'il est proposé.</em></p>
 <ul>
   <li><strong>Les scans ponctuels</strong> (QR/adresse) sont décodés <strong>sur l'appareil</strong> ; aucune image n'est stockée ni transmise par cette action.</li>
-  <li><strong>La surveillance continue par caméra</strong>, si elle est activée par un commerçant, peut capturer des tiers (passants, employés, clients). <strong>Le commerçant est le responsable du traitement de cette capture</strong> et est tenu d'obtenir les consentements requis, d'afficher des avis et de respecter les limites de conservation en vertu des lois applicables en matière biométrique, de surveillance, de consentement des deux parties et de surveillance des employés. Almstins ne demande pas et n'utilise pas ces enregistrements pour identifier des individus.</li>
+  <li><strong>La surveillance continue par caméra</strong>, si elle est activée par un commerçant, peut capturer des tiers (passants, employés, clients). <strong>Le commerçant est le responsable du traitement de cette capture</strong> et est tenu d'obtenir les consentements requis, d'afficher des avis et de respecter les limites de conservation en vertu des lois applicables en matière biométrique, de surveillance, de consentement des deux parties et de surveillance des employés. SusuFinance ne demande pas et n'utilise pas ces enregistrements pour identifier des individus.</li>
 </ul>
 
 <h2>8. Fonctionnalités d'IA</h2>
@@ -442,13 +442,13 @@ export const fr: PrivacyLocale = {
   <li><strong>Vous opposer</strong> aux analyses et aux fonctionnalités optionnelles ;</li>
   <li><strong>Portabiliser</strong> vos données via une exportation dans un format standard.</li>
 </ul>
-<p>Nous ne vendons pas d'informations personnelles et ne les « partageons » pas à des fins de publicité comportementale transcontextuelle. Pour exercer tout droit, contactez <strong>privacy@almstins.com</strong>.</p>
+<p>Nous ne vendons pas d'informations personnelles et ne les « partageons » pas à des fins de publicité comportementale transcontextuelle. Pour exercer tout droit, contactez <strong>privacy@susufinance.com</strong>.</p>
 
 <h2>17. Modifications de Cette Politique</h2>
 <p>Nous pouvons mettre à jour cette Politique. Les modifications importantes seront notifiées par e-mail ou par un avis dans le produit ; la poursuite de l'utilisation après la date d'entrée en vigueur constitue une acceptation.</p>
 
 <h2>18. Contact</h2>
-<p>Responsable de la Confidentialité — Almstins LLC — <strong>privacy@almstins.com</strong></p>
+<p>Responsable de la Confidentialité — SusuFinance LLC — <strong>privacy@susufinance.com</strong></p>
 `,
 };
 

@@ -78,7 +78,7 @@ export interface AnalyticsLocale {
 
 export const en: AnalyticsLocale = {
   lang: 'en',
-  pageTitle: 'Analytics | Almstins',
+  pageTitle: 'Analytics | SusuFinance',
   heading: 'Analytics',
   subheading: 'Daily aggregates + (optional) last 100 detailed logs.',
   // GA4
@@ -144,7 +144,7 @@ export const en: AnalyticsLocale = {
 
 export const es: AnalyticsLocale = {
   lang: 'es',
-  pageTitle: 'Analíticas | Almstins',
+  pageTitle: 'Analíticas | SusuFinance',
   heading: 'Analíticas',
   subheading: 'Agregados diarios + (opcional) últimos 100 registros detallados.',
   // GA4
@@ -210,7 +210,7 @@ export const es: AnalyticsLocale = {
 
 export const fr: AnalyticsLocale = {
   lang: 'fr',
-  pageTitle: 'Analytique | Almstins',
+  pageTitle: 'Analytique | SusuFinance',
   heading: 'Analytique',
   subheading: 'Agrégats quotidiens + (optionnel) 100 derniers journaux détaillés.',
   // GA4

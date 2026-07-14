@@ -18,16 +18,16 @@ export interface Props {
 }
 
 const {
-  title = 'Sign In | Almstins',
-  description = 'Sign in to your Almstins account to track your crypto portfolio, DeFi positions, and year-end summaries.',
+  title = 'Sign In | SusuFinance',
+  description = 'Sign in to your SusuFinance account to track your crypto portfolio, DeFi positions, and year-end summaries.',
   noindex = true,
   lang = 'en',
   canonical,
   favicon = '/favicon.webp',
   ogImage = '/og-default.png',
 } = Astro.props;
-const canonicalHref = canonical ?? `https://almstins.com${Astro.url.pathname}`;
-const ogImageHref = ogImage.startsWith('http') ? ogImage : `https://almstins.com${ogImage}`;
+const canonicalHref = canonical ?? `https://susufinance.com${Astro.url.pathname}`;
+const ogImageHref = ogImage.startsWith('http') ? ogImage : `https://susufinance.com${ogImage}`;
 ---
 
 <!doctype html>
@@ -41,13 +41,13 @@ const ogImageHref = ogImage.startsWith('http') ? ogImage : `https://almstins.com
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content={`https://almstins.com${Astro.url.pathname}`} />
+		<meta property="og:url" content={`https://susufinance.com${Astro.url.pathname}`} />
 		<meta property="og:image" content={ogImageHref} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImageHref} />
-		<meta name="author" content="AlmsTins" />
+		<meta name="author" content="SusuFinance" />
 		<meta property="article:author" content="https://www.linkedin.com/company/almstins/" />
 		<link rel="canonical" href={canonicalHref} />
 		<slot name="head" />

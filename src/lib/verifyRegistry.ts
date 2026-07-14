@@ -1,5 +1,5 @@
 /**
- * Almstins Verify — Destination registry (Phase 1).
+ * SusuFinance Verify — Destination registry (Phase 1).
  *
  * A Destination is a payment endpoint a merchant publishes and wants to monitor
  * for swaps: a crypto receiving address (kind='address') or a payment QR
@@ -299,7 +299,7 @@ export function registrableLabel(host: string): string {
 /**
  * Does a business name "derive from" a domain — its slug equals the domain's registrable
  * brand label? This is the anti-squat anchor: only the controller of exactly that domain
- * can claim the name. We let DNS arbitrate the name; Almstins does no KYC.
+ * can claim the name. We let DNS arbitrate the name; SusuFinance does no KYC.
  */
 export function nameMatchesDomain(label: string, domain: string): boolean {
   const s = nameSlug(normalizeName(label));
@@ -459,7 +459,7 @@ export async function createDestination(
       return {
         ok: false,
         error: 'claimed_elsewhere',
-        message: 'This payment link is already verified by another Almstins account.',
+        message: 'This payment link is already verified by another SusuFinance account.',
       };
     }
   }
@@ -483,7 +483,7 @@ export async function createDestination(
     // address it can only be the per-tenant index (a concurrent same-value insert).
     console.warn('[verify] destination insert blocked (unique violation?):', e);
     return isQr
-      ? { ok: false, error: 'claimed_elsewhere', message: 'This payment link is already verified by another Almstins account.' }
+      ? { ok: false, error: 'claimed_elsewhere', message: 'This payment link is already verified by another SusuFinance account.' }
       : { ok: false, error: 'duplicate', message: 'You have already registered this destination.' };
   }
   const row = await db.execute({
@@ -530,10 +530,10 @@ async function notifyOwnerNewDestination(
     const what = dest.kind === 'qr' ? `payment QR (${dest.rail})` : `${dest.rail} address`;
 
     const subject = first
-      ? `New Almstins Verify signup — ${name}`
-      : `Almstins Verify — ${name} added a destination`;
+      ? `New SusuFinance Verify signup — ${name}`
+      : `SusuFinance Verify — ${name} added a destination`;
     const text = [
-      first ? 'A new business just started using Almstins Verify.' : 'An existing Verify business added another destination.',
+      first ? 'A new business just started using SusuFinance Verify.' : 'An existing Verify business added another destination.',
       '',
       `Business name: ${name}`,
       `Account email: ${email}`,
@@ -542,7 +542,7 @@ async function notifyOwnerNewDestination(
       `Proof status:  ${dest.proven ? 'proven on save (QR/link)' : 'unproven — awaiting self-send'}`,
       `Destinations:  ${total} total for this business`,
       '',
-      'Admin dashboard: https://almstins.com/admin',
+      'Admin dashboard: https://susufinance.com/admin',
     ].join('\n');
 
     await sendMail({ to: OWNER_NOTIFY_EMAIL, subject, text });

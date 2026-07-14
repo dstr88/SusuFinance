@@ -248,7 +248,7 @@ export interface GainsLocale {
 
 export const en: GainsLocale = {
   lang: 'en',
-  pageTitle: 'Gains Summary | Almstins',
+  pageTitle: 'Gains Summary | SusuFinance',
   backLink: '← Tax Center',
   heroTitle: 'Gains Summary',
   heroSub: (year) => `Realized gains overview for ${year}.`,
@@ -462,7 +462,7 @@ export const en: GainsLocale = {
 
 export const es: GainsLocale = {
   lang: 'es',
-  pageTitle: "Resumen de Ganancias | Almstins",
+  pageTitle: "Resumen de Ganancias | SusuFinance",
   backLink: "← Centro Fiscal",
   heroTitle: "Resumen de Ganancias",
   heroSub: (year) => `Resumen de ganancias realizadas para ${year}.`,
@@ -677,7 +677,7 @@ export const es: GainsLocale = {
 
 export const fr: GainsLocale = {
   lang: 'fr',
-  pageTitle: "Récapitulatif des Plus-values | Almstins",
+  pageTitle: "Récapitulatif des Plus-values | SusuFinance",
   backLink: "← Centre Fiscal",
   heroTitle: "Récapitulatif des Plus-values",
   heroSub: (year) => `Aperçu des plus-values réalisées pour ${year}.`,

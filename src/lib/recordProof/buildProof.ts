@@ -19,11 +19,11 @@ import { signManifest, getSigningKeyId, canonicalManifestBytes } from './signing
 export const PROOF_FORMAT = 'almstins-merkle-v1';
 export const TREE_ALGO = 'sha256-merkle-v1';
 export const DISCLAIMER =
-  "This proof attests INTEGRITY (these report lines are unaltered), ORIGIN (signed by Almstins' " +
+  "This proof attests INTEGRITY (these report lines are unaltered), ORIGIN (signed by SusuFinance' " +
   'published key), and reproducibility (the figures re-compute from the same inputs under the published ' +
   'method). It does NOT attest tax CORRECTNESS, completeness of your records, or fitness for filing.';
 
-const APP_BASE = process.env.APP_URL ?? 'https://almstins.com';
+const APP_BASE = process.env.APP_URL ?? 'https://susufinance.com';
 
 export interface ProofManifest {
   v: number;

@@ -29,7 +29,7 @@ export interface TradfiLocale {
 
 export const en: TradfiLocale = {
   lang: 'en',
-  pageTitle: 'Traditional Finance | Almstins',
+  pageTitle: 'Traditional Finance | SusuFinance',
   heroSubtitle: 'Traditional finance overview',
   tinTotals: 'Totals',
   debtLabel: 'Debt',
@@ -43,7 +43,7 @@ export const en: TradfiLocale = {
 
 export const es: TradfiLocale = {
   lang: 'es',
-  pageTitle: 'Finanzas tradicionales | Almstins',
+  pageTitle: 'Finanzas tradicionales | SusuFinance',
   heroSubtitle: 'Resumen de finanzas tradicionales',
   tinTotals: 'Totales',
   debtLabel: 'Deuda',
@@ -57,7 +57,7 @@ export const es: TradfiLocale = {
 
 export const fr: TradfiLocale = {
   lang: 'fr',
-  pageTitle: 'Finances traditionnelles | Almstins',
+  pageTitle: 'Finances traditionnelles | SusuFinance',
   heroSubtitle: 'Aperçu des finances traditionnelles',
   tinTotals: 'Totaux',
   debtLabel: 'Dette',

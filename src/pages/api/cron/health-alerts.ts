@@ -19,7 +19,7 @@ import { getHealthAlert } from '@/i18n/emails/healthAlert';
 export const prerender = false;
 
 const RATE_LIMIT_HOURS = 4;
-const AAVE_HEALTH_BASE  = process.env.AUTH_URL ?? 'https://almstins.com';
+const AAVE_HEALTH_BASE  = process.env.AUTH_URL ?? 'https://susufinance.com';
 
 export const GET: APIRoute = async ({ request }) => {
 	// ── Auth ────────────────────────────────────────────────────────────────

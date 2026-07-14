@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (ADMIN_EMAIL) {
     sendMail({
       to: ADMIN_EMAIL,
-      subject: `[Almstins] New question: ${subject}`,
+      subject: `[SusuFinance] New question: ${subject}`,
       text: `A visitor submitted a question via the login page.\n\nSubject: ${subject}\n\n${text}\n\n—\nView in admin: /admin`,
     }).catch((e: unknown) =>
       console.warn('[contact] email failed:', e instanceof Error ? e.message : e),

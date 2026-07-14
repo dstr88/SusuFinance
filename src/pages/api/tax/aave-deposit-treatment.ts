@@ -2,7 +2,7 @@
  * POST /api/tax/aave-deposit-treatment  { treatment: 'tax_event' | 'undecided' | 'not_tax_event' }
  *
  * The tenant's district-level choice for how supplying assets into a DeFi contract
- * (Aave) is treated. Informational/organizational — Almstins never files. Persists
+ * (Aave) is treated. Informational/organizational — SusuFinance never files. Persists
  * via jurisdictionProfile.setAaveDepositTax; the annual breakdown reads it back.
  */
 import type { APIRoute } from 'astro';

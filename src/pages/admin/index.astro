@@ -147,7 +147,7 @@ const [
 	`),
 ]);
 
-// ── Almstins Verify — real business signups (excludes owner + demo tenants) ───
+// ── SusuFinance Verify — real business signups (excludes owner + demo tenants) ───
 const [verifySignups, verifyProvenCount] = await Promise.all([
   safeQ(`
     SELECT
@@ -199,7 +199,7 @@ const fmtDate = (iso: string | null) => {
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Admin Dashboard · AlmsTins</title>
+	<title>Admin Dashboard · SusuFinance</title>
 	<link rel="icon" type="image/webp" href="/favicon.webp" />
 	<link rel="icon" href="/favicon.ico" sizes="any" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -538,9 +538,9 @@ const fmtDate = (iso: string | null) => {
 		</div>
 	</div>
 
-	<!-- ── Almstins Verify — business signups ─────────────────────── -->
+	<!-- ── SusuFinance Verify — business signups ─────────────────────── -->
 	<div class="section">
-		<div class="section-title">Almstins Verify — business signups <span class="inbox-count">{verifyBusinessCount}</span></div>
+		<div class="section-title">SusuFinance Verify — business signups <span class="inbox-count">{verifyBusinessCount}</span></div>
 		<div class="stat-grid" style="margin-bottom:1rem;">
 			<div class="stat-card highlight">
 				<div class="stat-label">Businesses</div>

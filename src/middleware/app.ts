@@ -155,7 +155,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 			if (pathname === '/' || pathname === '') {
 				return finish(Response.redirect('https://tradifitins.com/petro-tins', 303));
 			}
-			// Fall through to normal auth middleware — login redirects will use almstins.com
+			// Fall through to normal auth middleware — login redirects will use susufinance.com
 		}
 
 		if (!isDev && request.headers.get('x-forwarded-proto') === 'http') {

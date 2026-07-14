@@ -23,7 +23,7 @@ export interface WalletErrorAlertLocale {
 export const en: WalletErrorAlertLocale = {
   lang: 'en',
   render: ({ refCode }) => ({
-    subject: `Almstins — a wallet could not load`,
+    subject: `SusuFinance — a wallet could not load`,
     text: [
       `One of your wallets could not load its latest balance. Your funds are safe —`,
       `this is a display error, not a wallet issue.`,
@@ -38,7 +38,7 @@ export const en: WalletErrorAlertLocale = {
 export const es: WalletErrorAlertLocale = {
   lang: 'es',
   render: ({ refCode }) => ({
-    subject: `Almstins — una billetera no pudo cargarse`,
+    subject: `SusuFinance — una billetera no pudo cargarse`,
     text: [
       `Una de tus billeteras no pudo cargar su saldo más reciente. Tus fondos están seguros —`,
       `esto es un error de visualización, no un problema con tu billetera.`,
@@ -53,7 +53,7 @@ export const es: WalletErrorAlertLocale = {
 export const fr: WalletErrorAlertLocale = {
   lang: 'fr',
   render: ({ refCode }) => ({
-    subject: `Almstins — un portefeuille n'a pas pu se charger`,
+    subject: `SusuFinance — un portefeuille n'a pas pu se charger`,
     text: [
       `L'un de vos portefeuilles n'a pas pu charger son solde le plus récent. Vos fonds sont en sécurité —`,
       `il s'agit d'une erreur d'affichage, pas d'un problème de portefeuille.`,

@@ -1,5 +1,5 @@
 /**
- * API key management for the Almstins public API.
+ * API key management for the SusuFinance public API.
  *
  * Key format: alm_ + 32 random hex chars
  * Storage: SHA-256 hash of the raw key is stored — raw key is never persisted.

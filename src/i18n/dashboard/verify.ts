@@ -5,7 +5,7 @@
 // Island props are serialized to JSON, so every value here is a plain string —
 // interpolation uses {n}/{what} tokens replaced client-side, never functions.
 //
-// "Almstins Verify" is a brand name and stays as-is. Chain names (Ethereum, Bitcoin,
+// "SusuFinance Verify" is a brand name and stays as-is. Chain names (Ethereum, Bitcoin,
 // …) are proper nouns and live in the component, not here; only the URL rail label
 // is translated. ES/FR are first-pass.
 
@@ -196,12 +196,12 @@ export interface VerifyDashboardLocale {
 
 export const en: VerifyDashboardLocale = {
   lang: 'en',
-  pageTitle: 'Verify | Almstins',
-  heroKicker: 'Almstins Verify',
+  pageTitle: 'Verify | SusuFinance',
+  heroKicker: 'SusuFinance Verify',
   heroTitle: 'Watch your receiving addresses',
-  heroSub: 'Register the payment destinations you publish — Almstins watches them for swaps.',
-  heroAlt: "A merchant's Scan-to-Pay crypto QR protected by a glowing Almstins Verify shield",
-  notice: "Almstins Verify is in beta — and free. You're welcome to register up to 3 destinations, and one of them can be a payment QR code instead of a wallet address (so: 2 wallets + 1 QR). They're held privately under your account. Paid plans coming soon.",
+  heroSub: 'Register the payment destinations you publish — SusuFinance watches them for swaps.',
+  heroAlt: "A merchant's Scan-to-Pay crypto QR protected by a glowing SusuFinance Verify shield",
+  notice: "SusuFinance Verify is in beta — and free. You're welcome to register up to 3 destinations, and one of them can be a payment QR code instead of a wallet address (so: 2 wallets + 1 QR). They're held privately under your account. Paid plans coming soon.",
   loadError: 'Could not load your destinations.',
   railUrl: 'Link / URL',
   addressesTitle: 'Receiving addresses',
@@ -225,7 +225,7 @@ export const en: VerifyDashboardLocale = {
   addError: 'Could not add that destination.',
   addErrDuplicate: 'You have already registered this destination.',
   addErrInvalid: 'A destination value is required.',
-  addErrClaimed: 'This payment link is already verified by another Almstins account.',
+  addErrClaimed: 'This payment link is already verified by another SusuFinance account.',
   addErrNameTaken: 'That business name is verified by another business. Choose a different name.',
   verifyTitle: 'Verify a sign',
   verifyHint: 'Scan or paste the QR / address from a sign, invoice, or checkout to confirm it still matches a destination you registered — before anyone pays it.',
@@ -287,7 +287,7 @@ export const en: VerifyDashboardLocale = {
   ssUnavailable: 'Couldn’t reach the chain — try again in a moment.',
   qrBadgeBtn: '📱 QR badge',
   paymentQrBtn: '📥 Download QR',
-  paymentQrHint: 'A printable QR of this receiving destination — put it on your counter, invoice, or checkout. Customers scan it to pay, and can check it against Almstins before they send. (Prove the destination so the check shows “verified.”)',
+  paymentQrHint: 'A printable QR of this receiving destination — put it on your counter, invoice, or checkout. Customers scan it to pay, and can check it against SusuFinance before they send. (Prove the destination so the check shows “verified.”)',
   qrBadgeHint: 'Customers scan this to confirm this address is really yours. Print it or add it to your sign, invoice, or checkout.',
   qrBadgeDownload: 'Download PNG',
   provenBy: 'Published by {domain}',
@@ -366,7 +366,7 @@ export const en: VerifyDashboardLocale = {
   ],
   howToExchangeTitle: 'Publishing many addresses? (exchanges & platforms)',
   howToExchangeSteps: [
-    'Publish your official address list on your own domain, and prove the domain once by hosting a single Almstins file on it.',
+    'Publish your official address list on your own domain, and prove the domain once by hosting a single SusuFinance file on it.',
     'Connect a read-only API endpoint that returns the list, plus a key — we only ever read it, and never move funds.',
     'We keep the list in sync, so any customer can verify an official address against your domain before they send.',
   ],
@@ -381,12 +381,12 @@ export const en: VerifyDashboardLocale = {
 
 export const es: VerifyDashboardLocale = {
   lang: 'es',
-  pageTitle: 'Verify | Almstins',
-  heroKicker: 'Almstins Verify',
+  pageTitle: 'Verify | SusuFinance',
+  heroKicker: 'SusuFinance Verify',
   heroTitle: 'Vigila tus direcciones de cobro',
-  heroSub: 'Registra los destinos de pago que publicas — Almstins los vigila por si los cambian.',
-  heroAlt: 'El QR cripto de cobro de un comercio protegido por un escudo brillante de Almstins Verify',
-  notice: 'Almstins Verify está en beta — y es gratis. Puedes registrar hasta 3 destinos, y uno de ellos puede ser un código QR de pago en lugar de una dirección de billetera (es decir: 2 billeteras + 1 QR). Se guardan de forma privada en tu cuenta. Precios próximamente.',
+  heroSub: 'Registra los destinos de pago que publicas — SusuFinance los vigila por si los cambian.',
+  heroAlt: 'El QR cripto de cobro de un comercio protegido por un escudo brillante de SusuFinance Verify',
+  notice: 'SusuFinance Verify está en beta — y es gratis. Puedes registrar hasta 3 destinos, y uno de ellos puede ser un código QR de pago en lugar de una dirección de billetera (es decir: 2 billeteras + 1 QR). Se guardan de forma privada en tu cuenta. Precios próximamente.',
   loadError: 'No se pudieron cargar tus destinos.',
   railUrl: 'Enlace / URL',
   addressesTitle: 'Direcciones de cobro',
@@ -410,7 +410,7 @@ export const es: VerifyDashboardLocale = {
   addError: 'No se pudo añadir ese destino.',
   addErrDuplicate: 'Ya registraste este destino.',
   addErrInvalid: 'Se requiere un valor de destino.',
-  addErrClaimed: 'Este enlace de pago ya está verificado por otra cuenta de Almstins.',
+  addErrClaimed: 'Este enlace de pago ya está verificado por otra cuenta de SusuFinance.',
   addErrNameTaken: 'Ese nombre de negocio está verificado por otro negocio. Elige un nombre diferente.',
   verifyTitle: 'Verifica un letrero',
   verifyHint: 'Escanea o pega el QR / la dirección de un letrero, factura o pantalla de pago para confirmar que todavía coincide con un destino que registraste — antes de que alguien pague.',
@@ -472,7 +472,7 @@ export const es: VerifyDashboardLocale = {
   ssUnavailable: 'No se pudo acceder a la cadena — inténtalo de nuevo en un momento.',
   qrBadgeBtn: '📱 Código QR',
   paymentQrBtn: '📥 Descargar QR',
-  paymentQrHint: 'Un QR imprimible de este destino de cobro — ponlo en tu mostrador, factura o pantalla de pago. Los clientes lo escanean para pagar, y pueden comprobarlo contra Almstins antes de enviar. (Demuestra el destino para que la comprobación muestre «verificado».)',
+  paymentQrHint: 'Un QR imprimible de este destino de cobro — ponlo en tu mostrador, factura o pantalla de pago. Los clientes lo escanean para pagar, y pueden comprobarlo contra SusuFinance antes de enviar. (Demuestra el destino para que la comprobación muestre «verificado».)',
   qrBadgeHint: 'Los clientes lo escanean para confirmar que esta dirección es realmente tuya. Imprímelo o añádelo a tu letrero, factura o pantalla de pago.',
   qrBadgeDownload: 'Descargar PNG',
   provenBy: 'Publicado por {domain}',
@@ -551,7 +551,7 @@ export const es: VerifyDashboardLocale = {
   ],
   howToExchangeTitle: '¿Publicas muchas direcciones? (exchanges y plataformas)',
   howToExchangeSteps: [
-    'Publica tu lista oficial de direcciones en tu propio dominio y demuestra el dominio una vez alojando en él un único archivo de Almstins.',
+    'Publica tu lista oficial de direcciones en tu propio dominio y demuestra el dominio una vez alojando en él un único archivo de SusuFinance.',
     'Conecta un endpoint de API de solo lectura que devuelva la lista, más una clave — solo la leemos y nunca movemos fondos.',
     'Mantenemos la lista sincronizada, para que cualquier cliente verifique una dirección oficial contra tu dominio antes de enviar.',
   ],
@@ -566,12 +566,12 @@ export const es: VerifyDashboardLocale = {
 
 export const fr: VerifyDashboardLocale = {
   lang: 'fr',
-  pageTitle: 'Verify | Almstins',
-  heroKicker: 'Almstins Verify',
+  pageTitle: 'Verify | SusuFinance',
+  heroKicker: 'SusuFinance Verify',
   heroTitle: 'Surveillez vos adresses de réception',
-  heroSub: 'Enregistrez les destinations de paiement que vous publiez — Almstins les surveille contre les substitutions.',
-  heroAlt: 'Le QR crypto « Scan-to-Pay » d’un commerçant protégé par un bouclier lumineux Almstins Verify',
-  notice: 'Almstins Verify est en bêta — et gratuit. Vous pouvez enregistrer jusqu’à 3 destinations, et l’une d’elles peut être un QR code de paiement au lieu d’une adresse de portefeuille (soit : 2 portefeuilles + 1 QR). Elles restent privées sur votre compte. Tarifs bientôt disponibles.',
+  heroSub: 'Enregistrez les destinations de paiement que vous publiez — SusuFinance les surveille contre les substitutions.',
+  heroAlt: 'Le QR crypto « Scan-to-Pay » d’un commerçant protégé par un bouclier lumineux SusuFinance Verify',
+  notice: 'SusuFinance Verify est en bêta — et gratuit. Vous pouvez enregistrer jusqu’à 3 destinations, et l’une d’elles peut être un QR code de paiement au lieu d’une adresse de portefeuille (soit : 2 portefeuilles + 1 QR). Elles restent privées sur votre compte. Tarifs bientôt disponibles.',
   loadError: 'Impossible de charger vos destinations.',
   railUrl: 'Lien / URL',
   addressesTitle: 'Adresses de réception',
@@ -595,7 +595,7 @@ export const fr: VerifyDashboardLocale = {
   addError: 'Impossible d’ajouter cette destination.',
   addErrDuplicate: 'Vous avez déjà enregistré cette destination.',
   addErrInvalid: 'Une valeur de destination est requise.',
-  addErrClaimed: 'Ce lien de paiement est déjà vérifié par un autre compte Almstins.',
+  addErrClaimed: 'Ce lien de paiement est déjà vérifié par un autre compte SusuFinance.',
   addErrNameTaken: 'Ce nom d’entreprise est vérifié par une autre entreprise. Choisissez un autre nom.',
   verifyTitle: 'Vérifier une affiche',
   verifyHint: 'Scannez ou collez le QR / l’adresse d’une affiche, d’une facture ou d’une page de paiement pour confirmer qu’il correspond toujours à une destination que vous avez enregistrée — avant tout paiement.',
@@ -657,7 +657,7 @@ export const fr: VerifyDashboardLocale = {
   ssUnavailable: 'Impossible d’accéder à la chaîne — réessayez dans un instant.',
   qrBadgeBtn: '📱 Badge QR',
   paymentQrBtn: '📥 Télécharger le QR',
-  paymentQrHint: 'Un QR imprimable de cette destination de réception — mettez-le sur votre comptoir, facture ou page de paiement. Les clients le scannent pour payer, et peuvent le vérifier auprès d’Almstins avant d’envoyer. (Prouvez la destination pour que la vérification affiche « vérifié ».)',
+  paymentQrHint: 'Un QR imprimable de cette destination de réception — mettez-le sur votre comptoir, facture ou page de paiement. Les clients le scannent pour payer, et peuvent le vérifier auprès d’SusuFinance avant d’envoyer. (Prouvez la destination pour que la vérification affiche « vérifié ».)',
   qrBadgeHint: 'Les clients le scannent pour confirmer que cette adresse est bien la vôtre. Imprimez-le ou ajoutez-le à votre panneau, facture ou page de paiement.',
   qrBadgeDownload: 'Télécharger le PNG',
   provenBy: 'Publié par {domain}',
@@ -736,7 +736,7 @@ export const fr: VerifyDashboardLocale = {
   ],
   howToExchangeTitle: 'Vous publiez de nombreuses adresses ? (exchanges et plateformes)',
   howToExchangeSteps: [
-    'Publiez votre liste officielle d’adresses sur votre propre domaine et prouvez le domaine une fois en y hébergeant un seul fichier Almstins.',
+    'Publiez votre liste officielle d’adresses sur votre propre domaine et prouvez le domaine une fois en y hébergeant un seul fichier SusuFinance.',
     'Connectez un point de terminaison d’API en lecture seule qui renvoie la liste, plus une clé — nous la lisons seulement et ne déplaçons jamais de fonds.',
     'Nous gardons la liste synchronisée, pour que tout client vérifie une adresse officielle par rapport à votre domaine avant d’envoyer.',
   ],

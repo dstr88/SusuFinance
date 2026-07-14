@@ -4,7 +4,7 @@
  * Reads the chain for a NEW outgoing transaction from the address after the
  * challenge was issued. If found, flips the destination to proven
  * (proof_method='micro_deposit') through the claim-once guard. Read-only — no
- * funds move; Almstins only observes public chain data.
+ * funds move; SusuFinance only observes public chain data.
  *
  * Returns { ok, outcome, ref? } where outcome is a code the UI maps to copy:
  *   proven | not_yet | no_challenge | claimed_elsewhere | unsupported_rail |

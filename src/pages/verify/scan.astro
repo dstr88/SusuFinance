@@ -1,5 +1,5 @@
 ---
-// Public customer-scan — confirm a merchant's address is a verified Almstins
+// Public customer-scan — confirm a merchant's address is a verified SusuFinance
 // destination and screen it for scams, no account required. /verify/* is public
 // (isPublicPath), and a QR badge deep-links here with ?address=.
 import '@/styles/tokens.css';
@@ -11,8 +11,8 @@ const initialAddress = Astro.url.searchParams.get('address') ?? '';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Verify before you pay — Almstins</title>
-  <meta name="description" content="Scan or paste a crypto address to confirm it's a verified Almstins destination and screen it for scams — no account needed." />
+  <title>Verify before you pay — SusuFinance</title>
+  <meta name="description" content="Scan or paste a crypto address to confirm it's a verified SusuFinance destination and screen it for scams — no account needed." />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="/favicon-verify.png" />
   <style is:global>

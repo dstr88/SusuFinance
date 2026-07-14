@@ -11,12 +11,12 @@ export const prerender = false;
 
 const page = (title: string, body: string) => `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>${title} · Almstins</title></head>
+<meta name="robots" content="noindex"><title>${title} · SusuFinance</title></head>
 <body style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0a0f1a;color:#f5f8ff;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;padding:24px;">
 <div style="max-width:440px;text-align:center;">
-<div style="font-weight:700;font-size:20px;margin-bottom:14px;">Almstins</div>
+<div style="font-weight:700;font-size:20px;margin-bottom:14px;">SusuFinance</div>
 <p style="color:rgba(245,248,255,.72);line-height:1.65;font-size:15px;">${body}</p>
-<a href="https://almstins.com" style="color:#2dd4a8;text-decoration:none;font-weight:600;">almstins.com</a>
+<a href="https://susufinance.com" style="color:#2dd4a8;text-decoration:none;font-weight:600;">susufinance.com</a>
 </div></body></html>`;
 
 const html = (body: string) =>
@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ url }) => {
   const ok = await unsubscribeByToken(token).catch(() => false);
   return html(
     ok
-      ? page('Unsubscribed', 'You’re unsubscribed from the Almstins welcome emails. You’ll still receive important account and security notices.')
+      ? page('Unsubscribed', 'You’re unsubscribed from the SusuFinance welcome emails. You’ll still receive important account and security notices.')
       : page('Link not recognized', 'That unsubscribe link looks invalid or has already been used. If you keep getting these emails, just reply to one and we’ll take care of it.'),
   );
 };

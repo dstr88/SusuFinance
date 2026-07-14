@@ -17,8 +17,8 @@ export const PETRO_FAQ: FaqItem[] = [
     a: 'Yes — for Debt Tins. When you log a Payment entry, the balance drops by that amount. When you log a Charge, it goes up. The utilization bar and interest calculations update immediately.',
   },
   {
-    q: 'Can I use PetroTins and Almstins with the same account?',
-    a: 'Yes. One login works for both. PetroTins is for personal finance (debt, budget, bills). Almstins is for crypto portfolio tracking and bookkeeping. Same account, separate dashboards.',
+    q: 'Can I use PetroTins and SusuFinance with the same account?',
+    a: 'Yes. One login works for both. PetroTins is for personal finance (debt, budget, bills). SusuFinance is for crypto portfolio tracking and bookkeeping. Same account, separate dashboards.',
   },
   {
     q: 'Is there a mobile app?',

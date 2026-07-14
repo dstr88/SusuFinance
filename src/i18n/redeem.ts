@@ -32,7 +32,7 @@ export interface RedeemLocale {
 
 export const en: RedeemLocale = {
   lang: 'en',
-  pageTitle: 'Redeem Promo Code | Almstins',
+  pageTitle: 'Redeem Promo Code | SusuFinance',
   cardTitle: 'Redeem a Promo Code',
   cardSub: 'Enter your code below to unlock your plan upgrade instantly. No credit card required.',
   placeholder: 'e.g. LAUNCH2026',
@@ -48,7 +48,7 @@ export const en: RedeemLocale = {
 
 export const es: RedeemLocale = {
   lang: 'es',
-  pageTitle: 'Canjear código promocional | Almstins',
+  pageTitle: 'Canjear código promocional | SusuFinance',
   cardTitle: 'Canjear un código promocional',
   cardSub: 'Introduce tu código a continuación para activar tu mejora de plan al instante. Sin tarjeta de crédito.',
   placeholder: 'p.ej. LAUNCH2026',
@@ -64,7 +64,7 @@ export const es: RedeemLocale = {
 
 export const fr: RedeemLocale = {
   lang: 'fr',
-  pageTitle: 'Utiliser un code promo | Almstins',
+  pageTitle: 'Utiliser un code promo | SusuFinance',
   cardTitle: 'Utiliser un code promo',
   cardSub: "Saisissez votre code ci-dessous pour activer immédiatement votre mise à niveau. Aucune carte bancaire requise.",
   placeholder: 'ex. LAUNCH2026',

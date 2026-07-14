@@ -76,7 +76,7 @@ export interface ResearchLocale {
 // ── English ───────────────────────────────────────────────────────────────────
 export const en: ResearchLocale = {
   lang: 'en',
-  pageTitle: 'Research | Almstins',
+  pageTitle: 'Research | SusuFinance',
 
   stickyHeading: 'This is where the mysteries live.',
   stickyBody:
@@ -134,7 +134,7 @@ export const en: ResearchLocale = {
 // ── Spanish ───────────────────────────────────────────────────────────────────
 export const es: ResearchLocale = {
   lang: 'es',
-  pageTitle: 'Investigación | Almstins',
+  pageTitle: 'Investigación | SusuFinance',
 
   stickyHeading: "Aquí viven los misterios.",
   stickyBody:
@@ -192,7 +192,7 @@ export const es: ResearchLocale = {
 // ── French ────────────────────────────────────────────────────────────────────
 export const fr: ResearchLocale = {
   lang: 'fr',
-  pageTitle: "Recherche | Almstins",
+  pageTitle: "Recherche | SusuFinance",
 
   stickyHeading: "C'est ici que vivent les mystères.",
   stickyBody:

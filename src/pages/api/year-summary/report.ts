@@ -617,12 +617,12 @@ function buildPdf(
     vline('Entries committed', `${m.leaf_count}  (short ${m.counts.short_term} · long ${m.counts.long_term} · income ${m.counts.income} · held ${m.counts.held} · review ${m.counts.unsettled})`);
     vline('Data source', m.data_source);
     vline('Generated', m.generated_at);
-    vline('Signed', proof.signature ? `Yes — Almstins key ${proof.signature.key_id}` : 'No (unsigned — set ALMSTINS_SIGNING_KEY to activate signing)');
+    vline('Signed', proof.signature ? `Yes — SusuFinance key ${proof.signature.key_id}` : 'No (unsigned — set SUSUFINANCE_SIGNING_KEY to activate signing)');
     if (m.prev_root) vline('Links to prior record', `${m.prev_root}  (tamper-evident chain across years)`);
     doc.moveDown(0.5);
     doc.fontSize(8.5).font('Helvetica-Bold').fillColor(SALMON).text('How anyone can verify this record', MARGIN, doc.y);
     doc.moveDown(0.2).fontSize(8).font('Helvetica').fillColor('#333333')
-      .text(`Download the proof bundle (almstins-${year}-proof.json) and upload it at ${m.verify_url}, or run the standalone offline verifier — no account, no trust in Almstins required.`, MARGIN, doc.y, { width: CONTENT_W });
+      .text(`Download the proof bundle (almstins-${year}-proof.json) and upload it at ${m.verify_url}, or run the standalone offline verifier — no account, no trust in SusuFinance required.`, MARGIN, doc.y, { width: CONTENT_W });
     doc.moveDown(0.6);
     doc.fontSize(7.5).font('Helvetica-Oblique').fillColor(MID_GRAY)
       .text(m.disclaimer, MARGIN, doc.y, { width: CONTENT_W });
@@ -643,7 +643,7 @@ export const GET: APIRoute = async ({ request }) => {
     if (plan.id === 'free' && !isOwner(tenantId)) {
       return new Response(
         JSON.stringify({
-          error: 'The Year Summary PDF is available on any paid plan. Upgrade at almstins.com/dashboard/billing.',
+          error: 'The Year Summary PDF is available on any paid plan. Upgrade at susufinance.com/dashboard/billing.',
           planRequired: 'paid',
           currentPlan: plan.id,
         }),

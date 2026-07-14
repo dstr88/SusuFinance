@@ -1,22 +1,22 @@
 /**
- * Almstins Verify — merchant landing page copy (EN / ES / FR).
+ * SusuFinance Verify — merchant landing page copy (EN / ES / FR).
  *
  * Mirrors the i18n convention in src/i18n/walletChecker.ts: a typed copy
  * interface + one entry per Lang. Markup lives once in
  * src/components/VerifyPage.astro and renders from copy[lang].
  *
- * Brand-locked strings are NOT translated — see BRAND, BRAND_QUOTE, ALMSTINS_URL.
- * Swapping the product name (e.g. "Almstins Guard") is a one-line change to BRAND.
+ * Brand-locked strings are NOT translated — see BRAND, BRAND_QUOTE, SUSUFINANCE_URL.
+ * Swapping the product name (e.g. "SusuFinance Guard") is a one-line change to BRAND.
  */
 
 export type Lang = 'en' | 'es' | 'fr';
 
 /** Product name — brand-locked, never translated. Single source of truth. */
-export const BRAND = 'Almstins Verify';
+export const BRAND = 'SusuFinance Verify';
 /** Section 5 brand line — brand-locked, never translated. */
 export const BRAND_QUOTE = 'Your wallet never touches our server — because we never ask for it.';
 /** Footer link — brand-locked, never translated. */
-export const ALMSTINS_URL = 'almstins.com';
+export const SUSUFINANCE_URL = 'susufinance.com';
 
 export const LANGS: Array<{ code: Lang; href: string; label: string; aria: string }> = [
   { code: 'en', href: '/verify',    label: 'EN', aria: 'View in English' },
@@ -75,7 +75,7 @@ const en: VerifyCopy = {
     ],
   },
   nav: {
-    brandAria: 'Almstins home',
+    brandAria: 'SusuFinance home',
     tagline: 'Verify the addresses your customers pay',
     login: 'Sign in',
   },
@@ -131,7 +131,7 @@ const en: VerifyCopy = {
       },
       {
         title: 'We never touch your funds.',
-        body: "Almstins can't move a coin. There's nothing to steal here.",
+        body: "SusuFinance can't move a coin. There's nothing to steal here.",
       },
       {
         title: "We can't see your customers.",
@@ -147,7 +147,7 @@ const en: VerifyCopy = {
     heading: 'Check before money moves.',
     button: 'Create your free account',
     sub: 'Register + verify 2 wallets + 1 QR. No card, no wallet connection.',
-    footerAria: 'Almstins home',
+    footerAria: 'SusuFinance home',
   },
   vendors: {
     heading: 'Verified vendors',
@@ -184,7 +184,7 @@ const es: VerifyCopy = {
     ],
   },
   nav: {
-    brandAria: 'Inicio de Almstins',
+    brandAria: 'Inicio de SusuFinance',
     tagline: 'Verifica las direcciones donde te pagan tus clientes',
     login: 'Iniciar sesión',
   },
@@ -240,7 +240,7 @@ const es: VerifyCopy = {
       },
       {
         title: 'Nunca tocamos tus fondos.',
-        body: 'Almstins no puede mover ni una moneda. Aquí no hay nada que robar.',
+        body: 'SusuFinance no puede mover ni una moneda. Aquí no hay nada que robar.',
       },
       {
         title: 'No podemos ver a tus clientes.',
@@ -256,7 +256,7 @@ const es: VerifyCopy = {
     heading: 'Comprueba antes de que el dinero se mueva.',
     button: 'Crea tu cuenta gratis',
     sub: 'Registra + verifica 2 direcciones + 1 QR. Sin tarjeta, sin conexión de billetera.',
-    footerAria: 'Inicio de Almstins',
+    footerAria: 'Inicio de SusuFinance',
   },
   vendors: {
     heading: 'Comercios verificados',
@@ -293,7 +293,7 @@ const fr: VerifyCopy = {
     ],
   },
   nav: {
-    brandAria: 'Accueil Almstins',
+    brandAria: 'Accueil SusuFinance',
     tagline: 'Vérifiez les adresses où vos clients vous paient',
     login: 'Se connecter',
   },
@@ -349,7 +349,7 @@ const fr: VerifyCopy = {
       },
       {
         title: 'Nous ne touchons jamais à vos fonds.',
-        body: "Almstins ne peut pas déplacer la moindre pièce. Il n'y a rien à voler ici.",
+        body: "SusuFinance ne peut pas déplacer la moindre pièce. Il n'y a rien à voler ici.",
       },
       {
         title: 'Nous ne pouvons pas voir vos clients.',
@@ -365,7 +365,7 @@ const fr: VerifyCopy = {
     heading: 'Vérifiez avant que l\'argent ne bouge.',
     button: 'Créez votre compte gratuit',
     sub: 'Enregistrez + vérifiez 2 adresses + 1 QR. Sans carte, sans connexion de portefeuille.',
-    footerAria: 'Accueil Almstins',
+    footerAria: 'Accueil SusuFinance',
   },
   vendors: {
     heading: 'Commerçants vérifiés',

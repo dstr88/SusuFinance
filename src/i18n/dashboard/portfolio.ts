@@ -59,7 +59,7 @@ export interface PortfolioLocale {
 
 export const en: PortfolioLocale = {
   lang: 'en',
-  pageTitle: 'Portfolio Performance | Almstins',
+  pageTitle: 'Portfolio Performance | SusuFinance',
   loadingLabel: 'Loading portfolio…',
   errorTitle: 'Failed to load portfolio data',
   errorSub: 'Please refresh and try again.',
@@ -93,7 +93,7 @@ export const en: PortfolioLocale = {
 
 export const es: PortfolioLocale = {
   lang: 'es',
-  pageTitle: 'Rendimiento del portafolio | Almstins',
+  pageTitle: 'Rendimiento del portafolio | SusuFinance',
   loadingLabel: 'Cargando portafolio…',
   errorTitle: 'Error al cargar los datos del portafolio',
   errorSub: 'Por favor, actualiza la página e inténtalo de nuevo.',
@@ -127,7 +127,7 @@ export const es: PortfolioLocale = {
 
 export const fr: PortfolioLocale = {
   lang: 'fr',
-  pageTitle: 'Performance du portefeuille | Almstins',
+  pageTitle: 'Performance du portefeuille | SusuFinance',
   loadingLabel: 'Chargement du portefeuille…',
   errorTitle: 'Impossible de charger les données du portefeuille',
   errorSub: 'Veuillez actualiser la page et réessayer.',

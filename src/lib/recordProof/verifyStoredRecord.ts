@@ -15,7 +15,7 @@ export interface StoredVerification {
   manifest: ProofManifest; // PII-free
 }
 
-/** Currently-published Almstins keys (for verifying the stored signature). */
+/** Currently-published SusuFinance keys (for verifying the stored signature). */
 function localPublishedKeys(): PublishedKey[] {
   const pub = getPublicKeyHex();
   const kid = getSigningKeyId();

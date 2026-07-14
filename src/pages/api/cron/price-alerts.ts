@@ -20,7 +20,7 @@ import { getPriceAlertEmail } from '@/i18n/emails/priceAlert';
 export const prerender = false;
 
 const RATE_LIMIT_HOURS = 4;
-const APP_BASE = process.env.AUTH_URL ?? 'https://almstins.com';
+const APP_BASE = process.env.AUTH_URL ?? 'https://susufinance.com';
 
 function json(body: unknown, status = 200) {
 	return new Response(JSON.stringify(body, null, 2), {

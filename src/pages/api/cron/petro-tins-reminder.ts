@@ -130,7 +130,7 @@ export const GET: APIRoute = async ({ request }) => {
           : '',
         ``,
         `Log in to check things off as you pay them:`,
-        `https://almstins.com/dashboard/petro-tins`,
+        `https://susufinance.com/dashboard/petro-tins`,
         ``,
         `— PetroTins`,
       ].filter(l => l !== undefined).join('\n');
@@ -157,7 +157,7 @@ export const GET: APIRoute = async ({ request }) => {
               <td style="padding:0.75rem 0.75rem 0;text-align:right;color:#ef4444;font-weight:800">${fmt(totalUnpaid)}</td>
             </tr>` : ''}
           </table>
-          <a href="https://almstins.com/dashboard/petro-tins"
+          <a href="https://susufinance.com/dashboard/petro-tins"
              style="display:inline-block;background:#f59e0b;color:#09090f;font-weight:700;padding:0.65rem 1.5rem;border-radius:8px;text-decoration:none">
             Check off paid bills →
           </a>

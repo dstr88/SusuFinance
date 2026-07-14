@@ -31,7 +31,7 @@ function alertOwner(key: string, subject: string, body: string): void {
 	alerted.add(key);
 	void sendMail({
 		to: OWNER_EMAIL,
-		subject: `[Almstins] GSB alert: ${subject}`,
+		subject: `[SusuFinance] GSB alert: ${subject}`,
 		text: `${body}\n\nThis is a one-time alert per process. Time: ${new Date().toISOString()}`,
 	}).catch((e) => console.warn('[gsb] alert email failed:', e instanceof Error ? e.message : e));
 }
@@ -294,7 +294,7 @@ async function gsbCanary(key: string): Promise<void> {
 			[
 				"Google's own permanent test URLs (testsafebrowsing.appspot.com) no longer match the hashes our code computes for them, checked via fullHashes:find.",
 				'',
-				'What this means: Almstins computes a URL\'s Safe Browsing hash by canonicalizing the URL to Google\'s v4 spec. That behavioral check just failed, which means Google has changed their URL-canonicalization rules (the static self-test cannot detect this, because it only validates our code against our stored copy of Google\'s vectors). Local GSB matching may now produce false negatives until the code is updated. The checker still falls back to the per-call Lookup API, so live checks are not broken.',
+				'What this means: SusuFinance computes a URL\'s Safe Browsing hash by canonicalizing the URL to Google\'s v4 spec. That behavioral check just failed, which means Google has changed their URL-canonicalization rules (the static self-test cannot detect this, because it only validates our code against our stored copy of Google\'s vectors). Local GSB matching may now produce false negatives until the code is updated. The checker still falls back to the per-call Lookup API, so live checks are not broken.',
 				'',
 				'How to fix: re-read https://developers.google.com/safe-browsing/v4/urls-hashing , diff the canonicalization rules AND the official test vectors against src/lib/gsbCanon.ts, and update the algorithm + the CANON_VECTORS array to match. Then redeploy.',
 				'',

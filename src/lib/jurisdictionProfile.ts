@@ -6,9 +6,9 @@
  * Adding a new jurisdiction means adding a profile entry here — no page
  * code needs to change.
  *
- * Profiles are intentionally narrow: Almstins is a bookkeeping /
+ * Profiles are intentionally narrow: SusuFinance is a bookkeeping /
  * record-keeping tool.  Nothing here constitutes tax advice or implies
- * Almstins performs jurisdiction-specific compliance functions.
+ * SusuFinance performs jurisdiction-specific compliance functions.
  */
 
 import { db } from './db';
@@ -129,7 +129,7 @@ export async function setJurisdiction(
 // Supplying an asset into a DeFi contract (Aave) is a contested tax event: some
 // districts treat receiving the aToken as a taxable crypto-to-crypto disposal,
 // others as a non-taxable deposit. This is the user's per-district choice; it is
-// NOT advice and Almstins never files — it only organizes the record accordingly.
+// NOT advice and SusuFinance never files — it only organizes the record accordingly.
 //   'undecided'     → flag deposits for review (default; keeps today's non-taxable books)
 //   'tax_event'     → realize the gain/loss on supply, step basis up to FMV
 //   'not_tax_event' → non-taxable pass-through, stop flagging

@@ -12,19 +12,19 @@ type State =
   | { s: 'error'; message: string };
 
 const VERDICT_COPY: Record<VerifyOutcome['verdict'], { icon: string; title: string; cls: string }> = {
-  verified:     { icon: '✅', title: 'Genuine, unaltered Almstins record', cls: 'ok' },
+  verified:     { icon: '✅', title: 'Genuine, unaltered SusuFinance record', cls: 'ok' },
   unverifiable: { icon: '⚠️', title: 'Intact, but origin not confirmed',    cls: 'warn' },
   tampered:     { icon: '❌', title: 'Does not verify — altered or corrupt', cls: 'err' },
 };
 
 const CODE_DETAIL: Record<VerifyOutcome['code'], string> = {
-  ok: 'The Merkle root matches these entries and the signature is valid against the published Almstins key.',
+  ok: 'The Merkle root matches these entries and the signature is valid against the published SusuFinance key.',
   root_mismatch: 'The entries do not hash to the recorded Merkle root — at least one line was changed.',
   leaf_count_mismatch: 'The number of entries does not match the manifest.',
   bad_signature: 'The signature does not match the manifest under the published key.',
   unknown_key: 'Signed, but with a key id not in the published key list (provide the key, or it may be rotated/forged).',
   unsigned: 'No signature present — integrity holds, but origin cannot be attested.',
-  malformed: 'This file is not a valid Almstins proof bundle.',
+  malformed: 'This file is not a valid SusuFinance proof bundle.',
 };
 
 export default function VerifyRecord() {
@@ -42,7 +42,7 @@ export default function VerifyRecord() {
     }
     // Resolve published keys: a pasted key (full offline trust) wins; else fetch the well-known list.
     let keys: PublishedKey[] = [];
-    let keySource = 'published key (almstins.com/.well-known)';
+    let keySource = 'published key (susufinance.com/.well-known)';
     const pk = pastedKey.trim().toLowerCase();
     if (/^[0-9a-f]{64}$/.test(pk) && bundle?.signature?.key_id) {
       keys = [{ key_id: bundle.signature.key_id, public_key_hex: pk }];
@@ -75,7 +75,7 @@ export default function VerifyRecord() {
   return (
     <div className="vr">
       <header className="vr__head">
-        <h1 className="vr__title">Verify an Almstins record</h1>
+        <h1 className="vr__title">Verify an SusuFinance record</h1>
         <p className="vr__sub">
           Upload the proof bundle (<code>almstins-&lt;year&gt;-proof.json</code>) from a Year-Summary. It is checked
           <strong> in your browser</strong> — no account, and you do not have to trust this site.
@@ -95,9 +95,9 @@ export default function VerifyRecord() {
 
       <details className="vr__adv">
         <summary>Advanced — verify against a key you paste (full offline trust)</summary>
-        <input className="vr__key-input" placeholder="Almstins public key (64 hex chars)" spellCheck={false}
+        <input className="vr__key-input" placeholder="SusuFinance public key (64 hex chars)" spellCheck={false}
           value={pastedKey} onChange={(e) => setPastedKey(e.target.value)} />
-        <p className="vr__hint">Leave blank to fetch the key from almstins.com/.well-known. For zero trust in this site, run the standalone offline verifier instead.</p>
+        <p className="vr__hint">Leave blank to fetch the key from susufinance.com/.well-known. For zero trust in this site, run the standalone offline verifier instead.</p>
       </details>
 
       {state.s === 'verifying' && <div className="vr__pending">Verifying…</div>}
@@ -127,7 +127,7 @@ function Result({ bundle, outcome, keySource }: { bundle: ProofBundle; outcome: 
         <div><dt>Generated</dt><dd>{m.generated_at}</dd></div>
         <div><dt>Entries committed</dt><dd>{m.leaf_count} (short {m.counts.short_term} · long {m.counts.long_term} · income {m.counts.income} · held {m.counts.held} · review {m.counts.unsettled})</dd></div>
         <div><dt>Merkle root</dt><dd className="vr__mono">{m.merkle_root}</dd></div>
-        <div><dt>Signed by</dt><dd>{bundle.signature ? `Almstins key ${bundle.signature.key_id}` : 'Unsigned'}</dd></div>
+        <div><dt>Signed by</dt><dd>{bundle.signature ? `SusuFinance key ${bundle.signature.key_id}` : 'Unsigned'}</dd></div>
         <div><dt>Checked against</dt><dd>{keySource}</dd></div>
         {m.prev_root && <div><dt>Prior record</dt><dd className="vr__mono">{m.prev_root}</dd></div>}
       </dl>

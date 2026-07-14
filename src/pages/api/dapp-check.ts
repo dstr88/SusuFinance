@@ -403,7 +403,7 @@ export const GET: APIRoute = async ({ url, request, clientAddress }) => {
   // Short-circuit: community-confirmed phishing domain
   if (localDbHit) {
     const localResult: SourceResult = {
-      name:    'Almstins Community',
+      name:    'SusuFinance Community',
       verdict: 'flagged',
       detail:  'Flagged via community-reported phishing airdrop token',
       icon:    '🚨',

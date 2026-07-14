@@ -1,5 +1,5 @@
 /**
- * GET /api/cron/verify-monitor — Almstins Verify "watchman" (Phase 5).
+ * GET /api/cron/verify-monitor — SusuFinance Verify "watchman" (Phase 5).
  *
  * One cron, two re-validation passes (each isolated — a failure in one never blocks
  * the other), using the freshness design: ≤24h max-stale TTL (enforced in the public
@@ -38,7 +38,7 @@ import { checkPublishedSource } from '@/lib/verifyPublishedSource';
 
 export const prerender = false;
 
-const APP_BASE = process.env.AUTH_URL ?? 'https://almstins.com';
+const APP_BASE = process.env.AUTH_URL ?? 'https://susufinance.com';
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export const GET: APIRoute = async ({ request }) => {

@@ -1,5 +1,5 @@
 /**
- * Almstins Verify — Verified Entity (hosted-API-endpoint variant).
+ * SusuFinance Verify — Verified Entity (hosted-API-endpoint variant).
  *
  * A large entity (exchange, institution) proves control of its domain, then hands us
  * an authenticated endpoint on that domain + an API key. We pull its live address

@@ -1,7 +1,7 @@
 // Post-checkout success page — page-level strings (EN · ES · FR).
 //
 // Cookie-based i18n: success.astro reads getLang(Astro.request) and selects
-// via getSuccess(lang). Jargon/tickers/Stripe/Almstins/domain values stay English.
+// via getSuccess(lang). Jargon/tickers/Stripe/SusuFinance/domain values stay English.
 // ES/FR are first-pass.
 
 import type { Lang } from '@/lib/i18n/locale';
@@ -29,7 +29,7 @@ export interface SuccessLocale {
 
 export const en: SuccessLocale = {
   lang: 'en',
-  pageTitle: 'Payment Successful | Almstins',
+  pageTitle: 'Payment Successful | SusuFinance',
   heading: 'Payment successful',
   initialMessage: 'Thanks! We are confirming your domain registration now.',
   domainLabel: 'Domain:',
@@ -48,7 +48,7 @@ export const en: SuccessLocale = {
 
 export const es: SuccessLocale = {
   lang: 'es',
-  pageTitle: 'Pago exitoso | Almstins',
+  pageTitle: 'Pago exitoso | SusuFinance',
   heading: 'Pago exitoso',
   initialMessage: '¡Gracias! Estamos confirmando el registro de tu dominio ahora.',
   domainLabel: 'Dominio:',
@@ -67,7 +67,7 @@ export const es: SuccessLocale = {
 
 export const fr: SuccessLocale = {
   lang: 'fr',
-  pageTitle: 'Paiement réussi | Almstins',
+  pageTitle: 'Paiement réussi | SusuFinance',
   heading: 'Paiement réussi',
   initialMessage:
     'Merci ! Nous confirmons votre enregistrement de domaine maintenant.',

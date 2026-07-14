@@ -2,7 +2,7 @@
  * GET /api/verify/lookup?address=<addr-or-url>
  *
  * PUBLIC, login-free. Answers one question: has someone proven this destination is
- * theirs with Almstins? Two inputs share the endpoint:
+ * theirs with SusuFinance? Two inputs share the endpoint:
  *   - a crypto ADDRESS → an entity's domain-published address, or a merchant's proven
  *     self-listing (the `address` param name is kept for back-compat)
  *   - an http(s) URL / payment LINK → a merchant's proven QR (account_claim)

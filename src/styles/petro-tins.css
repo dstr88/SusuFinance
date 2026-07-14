@@ -4,7 +4,7 @@
  * (landing, docs, legal) shares the same tokens, reset, and base typography.
  * Token values are reconciled from the old landing + docs blocks (which had
  * drifted); the landing's values win. PetroTins is amber-themed and intentionally
- * separate from Almstins.
+ * separate from SusuFinance.
  */
 
 :root {

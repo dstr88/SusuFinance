@@ -6,7 +6,7 @@ export const items: FaqItem[] = [
     id: "faq-project",
     q: "Conoce el proyecto",
     a: `<p>
-          Almstins existe porque los portafolios de cripto son genuinamente difíciles de entender. Las monedas se mueven entre wallets y exchanges, se intercambian, se hace staking, se regalan o se pierden — y la mayoría de la gente no tiene un único lugar que muestre el panorama completo con claridad.
+          SusuFinance existe porque los portafolios de cripto son genuinamente difíciles de entender. Las monedas se mueven entre wallets y exchanges, se intercambian, se hace staking, se regalan o se pierden — y la mayoría de la gente no tiene un único lugar que muestre el panorama completo con claridad.
         </p>
 
         <p>
@@ -42,7 +42,7 @@ export const items: FaqItem[] = [
     id: "faq-transactions",
     q: "Qué hay de las transacciones",
     a: `<p>
-          Cada moneda tiene una historia de vida. Fue comprada, intercambiada, sometida a staking, regalada o enviada a ti desde algún lugar — y eventualmente fue vendida, movida o sigue en un wallet. Almstins rastrea todo ese recorrido.
+          Cada moneda tiene una historia de vida. Fue comprada, intercambiada, sometida a staking, regalada o enviada a ti desde algún lugar — y eventualmente fue vendida, movida o sigue en un wallet. SusuFinance rastrea todo ese recorrido.
         </p>
 
         <p>
@@ -100,7 +100,7 @@ export const items: FaqItem[] = [
           la billetera, multi-firma). Pega una URL y la verifica contra 7 bases de
           datos independientes de phishing y malware — MetaMask, ScamSniffer,
           GoPlus, URLScan.io, OpenPhish, Google Safe Browsing y VirusTotal — y
-          devuelve rojo, amarillo o verde. Almstins nunca hace su propia
+          devuelve rojo, amarillo o verde. SusuFinance nunca hace su propia
           determinación; muestra lo que la comunidad de seguridad ya ha señalado.
         </p>
         <p>
@@ -109,7 +109,7 @@ export const items: FaqItem[] = [
           una huella unidireccional e irreversible de lo que ingresaste, y el
           contador de uso registra solo esa misma huella — por lo que no hay forma
           de retroceder hasta lo que consultaste. Esto mantiene la herramienta
-          coherente con la regla de que Almstins nunca vincula una dirección a una
+          coherente con la regla de que SusuFinance nunca vincula una dirección a una
           persona.
         </p>`,
   },
@@ -160,8 +160,8 @@ export const items: FaqItem[] = [
   },
   {
     id: "faq-defi",
-    q: "¿Qué posiciones DeFi admite Almstins?",
-    a: `<p>Almstins lee tus posiciones de préstamo y deuda de DeFi en vivo por dirección (solo lectura, sin conexión de wallet) y las integra en tu patrimonio, portafolio y costo base. Actualmente admite:</p>
+    q: "¿Qué posiciones DeFi admite SusuFinance?",
+    a: `<p>SusuFinance lee tus posiciones de préstamo y deuda de DeFi en vivo por dirección (solo lectura, sin conexión de wallet) y las integra en tu patrimonio, portafolio y costo base. Actualmente admite:</p>
         <p><strong>Aave V3 — préstamos y deuda</strong></p>
         <ul style="line-height: 1.8; margin: 0.5rem 0 1rem 1.25rem;">
           <li>Colateral aportado y posiciones de deuda variable (borrow)</li>
@@ -174,15 +174,15 @@ export const items: FaqItem[] = [
         <ul style="line-height: 1.8; margin: 0.5rem 0 1rem 1.25rem;">
           <li>Posiciones del protocolo Sovryn en la red Rootstock (RSK)</li>
         </ul>
-        <p>Cada posición de Aave enlaza directamente a su mercado en la app de Aave, para que llegues a ella en un clic. Las posiciones son de solo lectura y se rastrean solo por dirección: Almstins nunca conecta tu wallet ni solicita permiso de firma. Si una posición DeFi no aparece, lo más probable es que esté en un protocolo o red que todavía no figura aquí.</p>`,
+        <p>Cada posición de Aave enlaza directamente a su mercado en la app de Aave, para que llegues a ella en un clic. Las posiciones son de solo lectura y se rastrean solo por dirección: SusuFinance nunca conecta tu wallet ni solicita permiso de firma. Si una posición DeFi no aparece, lo más probable es que esté en un protocolo o red que todavía no figura aquí.</p>`,
   },
   {
     id: "faq-defi-untracked",
-    q: "¿Cómo registro cripto que presté o puse en staking en un protocolo que Almstins todavía no admite?",
-    a: `<p>Almstins lee directamente un conjunto creciente de protocolos DeFi (Aave, Sovryn). Si tu posición está en uno que aún no cubrimos (muchos mercados de préstamos de Solana, por ejemplo), las monedas suelen estar <em>dentro</em> del protocolo en lugar de en tu wallet, así que no aparecerán en el snapshot de tu wallet. Aun así puedes mantenerlas correctas en tus libros:</p>
+    q: "¿Cómo registro cripto que presté o puse en staking en un protocolo que SusuFinance todavía no admite?",
+    a: `<p>SusuFinance lee directamente un conjunto creciente de protocolos DeFi (Aave, Sovryn). Si tu posición está en uno que aún no cubrimos (muchos mercados de préstamos de Solana, por ejemplo), las monedas suelen estar <em>dentro</em> del protocolo en lugar de en tu wallet, así que no aparecerán en el snapshot de tu wallet. Aun así puedes mantenerlas correctas en tus libros:</p>
         <ol style="line-height: 1.8; margin: 0.5rem 0 1rem 1.25rem;">
           <li><strong>No vuelvas a ingresar la compra.</strong> Si compraste las monedas en un exchange, esa compra ya está importada desde tu CSV; agregarla de nuevo la contaría dos veces.</li>
-          <li><strong>Marca la transferencia como tu propia wallet.</strong> En la página de Research, encuentra el retiro que movió las monedas del exchange al protocolo y márcalo como <em>Mi propia wallet</em>. Esto le dice a Almstins que fue un movimiento entre tus propias cuentas, no una venta, así que las monedas quedan como posición retenida con tu costo base real en lugar de contarse como una disposición.</li>
+          <li><strong>Marca la transferencia como tu propia wallet.</strong> En la página de Research, encuentra el retiro que movió las monedas del exchange al protocolo y márcalo como <em>Mi propia wallet</em>. Esto le dice a SusuFinance que fue un movimiento entre tus propias cuentas, no una venta, así que las monedas quedan como posición retenida con tu costo base real en lugar de contarse como una disposición.</li>
           <li><strong>Agrega una nota para encontrarla luego.</strong> En esa transacción, agrega una nota con el enlace de la app del protocolo y la dirección de tu wallet, para saber dónde están realmente las monedas.</li>
           <li><strong>Etiqueta la dirección de destino como wallet propia.</strong> En la página de Research, etiqueta la wallet a la que moviste las monedas como una de las tuyas. Las transferencias futuras a ella se clasificarán automáticamente con Auto-classify.</li>
         </ol>
@@ -205,7 +205,7 @@ export const items: FaqItem[] = [
             <strong>Página de Research — anotación en lote.</strong> Actualmente anotas una transacción a la vez. El plan es permitir seleccionar varias transacciones y aplicar un tipo de disposición o nota a todas ellas en un solo paso.
           </li>
           <li>
-            <strong>Resumen anual de ganancias/pérdidas.</strong> El motor de contabilidad clasifica cada transacción usando coincidencia de lots FIFO y organiza tus ganancias realizadas a corto y largo plazo en un resumen anual claro para entregar a tu contador. Mayor cobertura y equivalentes internacionales están en camino. Almstins organiza tus registros — no es software para declarar impuestos.
+            <strong>Resumen anual de ganancias/pérdidas.</strong> El motor de contabilidad clasifica cada transacción usando coincidencia de lots FIFO y organiza tus ganancias realizadas a corto y largo plazo en un resumen anual claro para entregar a tu contador. Mayor cobertura y equivalentes internacionales están en camino. SusuFinance organiza tus registros — no es software para declarar impuestos.
           </li>
           <li>
             <strong>Soporte de cadenas adicionales.</strong> Los wallets de Solana y Sui ya están en vivo. Cardano es el siguiente en la lista. La sincronización del historial de transacciones de Solana (más allá del saldo) está en progreso.
@@ -219,7 +219,7 @@ export const items: FaqItem[] = [
     id: "faq-tax",
     q: "¿Es este software para presentar declaraciones?",
     a: `<p>
-          Almstins no es un servicio de preparación de impuestos y no presenta declaraciones en tu nombre. Lo que sí hace es organizar los datos subyacentes que tu contador o software de impuestos necesita — y para cripto, esos datos son genuinamente difíciles de reunir por cuenta propia.
+          SusuFinance no es un servicio de preparación de impuestos y no presenta declaraciones en tu nombre. Lo que sí hace es organizar los datos subyacentes que tu contador o software de impuestos necesita — y para cripto, esos datos son genuinamente difíciles de reunir por cuenta propia.
         </p>
 
         <p>
@@ -571,7 +571,7 @@ export const items: FaqItem[] = [
     id: "faq-account-identity",
     q: "¿Cómo está vinculada mi cuenta a mi dirección de correo electrónico?",
     a: `<p>
-          Tu cuenta de Almstins tiene una única identidad verdadera: un ID permanente y único que nunca cambia. Tu dirección de correo electrónico es la llave que la desbloquea. No importa cómo inicies sesión — correo y contraseña, Google o GitHub — mientras el método de inicio de sesión pueda confirmar la misma dirección de correo, aterrizas en la misma cuenta cada vez.
+          Tu cuenta de SusuFinance tiene una única identidad verdadera: un ID permanente y único que nunca cambia. Tu dirección de correo electrónico es la llave que la desbloquea. No importa cómo inicies sesión — correo y contraseña, Google o GitHub — mientras el método de inicio de sesión pueda confirmar la misma dirección de correo, aterrizas en la misma cuenta cada vez.
         </p>
 
         <p>
@@ -680,7 +680,7 @@ export const items: FaqItem[] = [
     id: "faq-cost-basis-history",
     q: "¿Por qué el cost basis solo llega un año hacia atrás?",
     a: `<p>
-          Para mostrarte cuánto valía una transacción en dólares estadounidenses el día en que ocurrió, Almstins busca el precio histórico de ese activo en CoinGecko — una de las fuentes de datos de precios más confiables de la industria. Esa búsqueda es lo que llena las cifras en dólares que ves junto a tus transacciones.
+          Para mostrarte cuánto valía una transacción en dólares estadounidenses el día en que ocurrió, SusuFinance busca el precio histórico de ese activo en CoinGecko — una de las fuentes de datos de precios más confiables de la industria. Esa búsqueda es lo que llena las cifras en dólares que ves junto a tus transacciones.
         </p>
 
         <p>
@@ -688,22 +688,22 @@ export const items: FaqItem[] = [
         </p>
 
         <p>
-          <strong>Qué significa esto en la práctica:</strong> si importaste transacciones de 2021 o 2022, Almstins aún puede rastrear los montos y movimientos correctamente — solo que puede no ser capaz de adjuntar un valor histórico en dólares a esas filas más antiguas automáticamente. Cualquier exchange que haya incluido un valor en USD en su exportación de CSV (Crypto.com y Coinbase ambos lo hacen) ya tendrá la cifra correcta almacenada sin importar la antigüedad.
+          <strong>Qué significa esto en la práctica:</strong> si importaste transacciones de 2021 o 2022, SusuFinance aún puede rastrear los montos y movimientos correctamente — solo que puede no ser capaz de adjuntar un valor histórico en dólares a esas filas más antiguas automáticamente. Cualquier exchange que haya incluido un valor en USD en su exportación de CSV (Crypto.com y Coinbase ambos lo hacen) ya tendrá la cifra correcta almacenada sin importar la antigüedad.
         </p>
 
         <p>
-          <strong>Cómo desbloquear el historial completo:</strong> actualizar a una API key de CoinGecko Pro elimina la restricción de 365 días por completo y permite que Almstins ponga precio a cada transacción hasta el inicio del historial de operaciones de cada activo. Si manejas un portafolio grande con actividad significativa anterior a 2024, este es el camino recomendado. Contacta al administrador de tu cuenta o agrega <code>COINGECKO_API_KEY</code> a tu entorno para habilitarlo.
+          <strong>Cómo desbloquear el historial completo:</strong> actualizar a una API key de CoinGecko Pro elimina la restricción de 365 días por completo y permite que SusuFinance ponga precio a cada transacción hasta el inicio del historial de operaciones de cada activo. Si manejas un portafolio grande con actividad significativa anterior a 2024, este es el camino recomendado. Contacta al administrador de tu cuenta o agrega <code>COINGECKO_API_KEY</code> a tu entorno para habilitarlo.
         </p>
 
         <p>
-          <strong>¿Qué hay de la lista Needs Attention?</strong> Para los depósitos que son más antiguos que 2024 y que vinieron de exchanges que desde entonces han abandonado el mercado de EE. UU. — como Binance.US o Bittrex — puede que no haya ninguna transacción de contraparte coincidente disponible. Para esos casos, Almstins te permite etiquetar la transacción manualmente para explicar su origen. Una vez etiquetada, se elimina de la lista Needs Attention automáticamente. El límite de 2024 es intencional: cubre el periodo en que ocurrió la mayoría de las salidas de exchanges impulsadas por la regulación, mientras mantiene visibles los depósitos recientes sin explicar para que nada pase desapercibido.
+          <strong>¿Qué hay de la lista Needs Attention?</strong> Para los depósitos que son más antiguos que 2024 y que vinieron de exchanges que desde entonces han abandonado el mercado de EE. UU. — como Binance.US o Bittrex — puede que no haya ninguna transacción de contraparte coincidente disponible. Para esos casos, SusuFinance te permite etiquetar la transacción manualmente para explicar su origen. Una vez etiquetada, se elimina de la lista Needs Attention automáticamente. El límite de 2024 es intencional: cubre el periodo en que ocurrió la mayoría de las salidas de exchanges impulsadas por la regulación, mientras mantiene visibles los depósitos recientes sin explicar para que nada pase desapercibido.
         </p>`,
   },
   {
     id: "faq-annotate",
     q: "¿Cómo etiqueto una disposición — regalo, venta o moneda perdida?",
     a: `<p>
-          No toda transacción saliente es una venta. La cripto puede salir de tu wallet como un regalo, una donación caritativa, un intercambio o una pérdida — y cada uno de esos se trata de manera diferente para fines fiscales. Almstins te permite etiquetar cualquier transacción con su tipo de disposición para que tus registros sean precisos y tu preparador de impuestos tenga todo lo que necesita.
+          No toda transacción saliente es una venta. La cripto puede salir de tu wallet como un regalo, una donación caritativa, un intercambio o una pérdida — y cada uno de esos se trata de manera diferente para fines fiscales. SusuFinance te permite etiquetar cualquier transacción con su tipo de disposición para que tus registros sean precisos y tu preparador de impuestos tenga todo lo que necesita.
         </p>
 
         <p><strong>Cómo anotar una transacción:</strong></p>
@@ -729,7 +729,7 @@ export const items: FaqItem[] = [
         </ul>
 
         <p style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); border-radius: 10px; padding: 0.9rem 1rem; margin-top: 1rem;">
-          <strong>⚠️ Esto no es asesoría fiscal.</strong> Almstins te ayuda a organizar y etiquetar tu historial de transacciones — no presenta declaraciones ni proporciona orientación legal o fiscal. El tratamiento fiscal de las cripto varía según la jurisdicción y las circunstancias individuales. Siempre consulta a un profesional de impuestos calificado antes de tomar decisiones con base en estos datos.
+          <strong>⚠️ Esto no es asesoría fiscal.</strong> SusuFinance te ayuda a organizar y etiquetar tu historial de transacciones — no presenta declaraciones ni proporciona orientación legal o fiscal. El tratamiento fiscal de las cripto varía según la jurisdicción y las circunstancias individuales. Siempre consulta a un profesional de impuestos calificado antes de tomar decisiones con base en estos datos.
         </p>`,
   },
   {
@@ -780,7 +780,7 @@ export const items: FaqItem[] = [
         <h2 style="font-size: 1rem; margin: 1.25rem 0 0.5rem;">Cómo se conecta con las transacciones misteriosas</h2>
 
         <p>
-          Cada transacción en tu historial tiene una <strong>dirección de origen</strong> y una <strong>dirección de destino</strong>. Cuando una de esas direcciones está en tu Address Book, Almstins muestra el nombre en lugar del hex en bruto — en el cajón de la transacción, en el panel Needs Attention y en cualquier lugar donde aparezcan direcciones en tu historial.
+          Cada transacción en tu historial tiene una <strong>dirección de origen</strong> y una <strong>dirección de destino</strong>. Cuando una de esas direcciones está en tu Address Book, SusuFinance muestra el nombre en lugar del hex en bruto — en el cajón de la transacción, en el panel Needs Attention y en cualquier lugar donde aparezcan direcciones en tu historial.
         </p>
 
         <p>
@@ -804,7 +804,7 @@ export const items: FaqItem[] = [
     id: "faq-recognized-tokens",
     q: "¿Qué tokens reciben precio y se reconocen automáticamente?",
     a: `<p>
-          Almstins mantiene una lista de tokens conocidos y verificados. Los tokens en esta lista obtienen un precio en vivo, aparecen correctamente en tus páginas de Vault y Bookkeeping, y nunca se marcan como posible spam — sin importar en qué wallet aparezcan.
+          SusuFinance mantiene una lista de tokens conocidos y verificados. Los tokens en esta lista obtienen un precio en vivo, aparecen correctamente en tus páginas de Vault y Bookkeeping, y nunca se marcan como posible spam — sin importar en qué wallet aparezcan.
         </p>
 
         <p><strong>Tokens reconocidos actualmente:</strong></p>
@@ -851,7 +851,7 @@ export const items: FaqItem[] = [
         </p>
 
         <p>
-          Almstins revisa tu health factor cada 30 minutos y te envía un correo en el momento en que cruza un umbral que tú estableces. Tú eliges:
+          SusuFinance revisa tu health factor cada 30 minutos y te envía un correo en el momento en que cruza un umbral que tú estableces. Tú eliges:
         </p>
 
         <ul style="line-height: 1.9; margin: 0.75rem 0 0.75rem 1.25rem;">
@@ -917,33 +917,33 @@ export const items: FaqItem[] = [
   },
   {
     id: "faq-api-public",
-    q: "¿Puedo llamar a las verificaciones de seguridad de Almstins desde mi propio script o agente?",
+    q: "¿Puedo llamar a las verificaciones de seguridad de SusuFinance desde mi propio script o agente?",
     a: `<p>
           Sí. Tres endpoints están abiertos al público sin necesidad de iniciar sesión:
         </p>
         <ul>
           <li><strong>GET /api/wallet-check?address=</strong> — verifica una dirección cripto contra listas negras, sanciones, vínculos con la dark web, tokens honeypot, antigüedad de la cartera y más. También acepta POST con cuerpo JSON.</li>
           <li><strong>GET /api/dapp-check?url=</strong> — comprueba una URL o dominio de dApp contra MetaMask, ScamSniffer, GoPlus, URLScan y otras bases de datos de phishing.</li>
-          <li><strong>GET /api/verify/lookup?address=</strong> — indica si una dirección tiene un publicador verificado en Almstins Verify y qué dominio la publicó.</li>
+          <li><strong>GET /api/verify/lookup?address=</strong> — indica si una dirección tiene un publicador verificado en SusuFinance Verify y qué dominio la publicó.</li>
         </ul>
         <p>
           Los tres devuelven JSON e incluyen cabeceras CORS, por lo que pueden llamarse desde un navegador, un script o un agente de IA. Las llamadas sin autenticación están limitadas a 10 solicitudes por minuto por IP. Para aumentarlo a 60 por minuto, genera una clave de API desde la sección <strong>Claves de API</strong> al final del <a href="/dashboard/verify">panel de Verify</a> y pásala en la cabecera <code>X-Api-Key</code>.
         </p>
         <p>
-          La documentación completa de solicitudes/respuestas, definiciones de campos y códigos de error está en <a href="/api-docs">almstins.com/api-docs</a>.
+          La documentación completa de solicitudes/respuestas, definiciones de campos y códigos de error está en <a href="/api-docs">susufinance.com/api-docs</a>.
         </p>`,
   },
   {
     id: "faq-verify-self-send",
-    q: "¿Cómo demuestro que soy dueño de una dirección en Almstins Verify?",
+    q: "¿Cómo demuestro que soy dueño de una dirección en SusuFinance Verify?",
     a: `<p>
-          El método de auto-envío funciona sin un sitio web ni conexión de wallet. En el panel de Verify, registra tu dirección y luego envía cualquier transacción saliente desde ella — incluso una cantidad mínima a ti mismo. Almstins observa la cadena pública y marca la dirección como Verificada una vez que detecta actividad después de emitir el desafío.
+          El método de auto-envío funciona sin un sitio web ni conexión de wallet. En el panel de Verify, registra tu dirección y luego envía cualquier transacción saliente desde ella — incluso una cantidad mínima a ti mismo. SusuFinance observa la cadena pública y marca la dirección como Verificada una vez que detecta actividad después de emitir el desafío.
         </p>
         <p>
-          Nada se conecta a Almstins y nada se firma para nosotros. La única prueba que cuenta es enviar <em>desde</em> la dirección, lo cual solo puede hacer quien tenga la clave privada. Una vez verificada, cada dirección obtiene un código QR descargable que puedes imprimir, agregar a una factura o poner en una página de pago para que los clientes confirmen que la dirección es tuya antes de pagar.
+          Nada se conecta a SusuFinance y nada se firma para nosotros. La única prueba que cuenta es enviar <em>desde</em> la dirección, lo cual solo puede hacer quien tenga la clave privada. Una vez verificada, cada dirección obtiene un código QR descargable que puedes imprimir, agregar a una factura o poner en una página de pago para que los clientes confirmen que la dirección es tuya antes de pagar.
         </p>
         <p>
-          Una dirección solo puede ser reclamada por una cuenta. Si intentas reclamar una dirección que ya está verificada por otra cuenta, la verificación falla. El escáner público en <a href="/verify/scan">almstins.com/verify/scan</a> muestra si una dirección está verificada y por quién antes de que se muevan los fondos.
+          Una dirección solo puede ser reclamada por una cuenta. Si intentas reclamar una dirección que ya está verificada por otra cuenta, la verificación falla. El escáner público en <a href="/verify/scan">susufinance.com/verify/scan</a> muestra si una dirección está verificada y por quién antes de que se muevan los fondos.
         </p>
         <p>
           La prueba de auto-envío está disponible para direcciones de Ethereum, Polygon, Avalanche, Bitcoin, Litecoin y Solana.
@@ -953,7 +953,7 @@ export const items: FaqItem[] = [
     id: "faq-verify-domain",
     q: "Tengo un sitio web. ¿Puedo verificar mis direcciones usando mi dominio en lugar de enviar una transacción?",
     a: `<p>
-          Sí. En el panel de Verify, abre el panel Prove para cualquier destino de dirección y cambia a la pestaña Dominio. Ingresa tu dominio y Almstins genera un pequeño archivo JSON con un token de desafío único. Súbelo a tu servidor web en <code>/.well-known/almstins-verify.json</code> y haz clic en Verificar. Almstins obtiene el archivo, verifica que el desafío coincida y adjunta tu dominio como el publicador verificado de esa dirección.
+          Sí. En el panel de Verify, abre el panel Prove para cualquier destino de dirección y cambia a la pestaña Dominio. Ingresa tu dominio y SusuFinance genera un pequeño archivo JSON con un token de desafío único. Súbelo a tu servidor web en <code>/.well-known/almstins-verify.json</code> y haz clic en Verificar. SusuFinance obtiene el archivo, verifica que el desafío coincida y adjunta tu dominio como el publicador verificado de esa dirección.
         </p>
         <p>
           Si prefieres DNS en lugar de un archivo, también puedes agregar un registro TXT a tu dominio. El panel muestra ambas opciones una al lado de la otra — usa la que sea más fácil con tu configuración de hosting.
@@ -969,17 +969,17 @@ export const items: FaqItem[] = [
           Sí, a través de la ruta de Entidad Verificada en el panel de Verify. Funciona en dos pasos:
         </p>
         <ol>
-          <li><strong>Verifica tu dominio.</strong> Sube el archivo de desafío de Almstins a <code>/.well-known/almstins-verify.json</code> en tu dominio (o agrega el registro TXT DNS). Almstins lo obtiene y confirma que controlas el dominio.</li>
-          <li><strong>Conecta un endpoint de dirección en vivo.</strong> Una vez verificado tu dominio, pega un endpoint HTTPS en ese mismo dominio y una API key de solo lectura. Almstins llama al endpoint periódicamente, lee tu lista actual de direcciones y las refleja como "verificadas por tudominio.com" en el escáner público.</li>
+          <li><strong>Verifica tu dominio.</strong> Sube el archivo de desafío de SusuFinance a <code>/.well-known/almstins-verify.json</code> en tu dominio (o agrega el registro TXT DNS). SusuFinance lo obtiene y confirma que controlas el dominio.</li>
+          <li><strong>Conecta un endpoint de dirección en vivo.</strong> Una vez verificado tu dominio, pega un endpoint HTTPS en ese mismo dominio y una API key de solo lectura. SusuFinance llama al endpoint periódicamente, lee tu lista actual de direcciones y las refleja como "verificadas por tudominio.com" en el escáner público.</li>
         </ol>
         <p>
-          Tu endpoint solo necesita devolver un array JSON de objetos de dirección — Almstins se encarga del polling y la replicación. El endpoint debe estar en el mismo dominio (o subdominio) que verificaste, para que la raíz de confianza sea tu dominio, no una afirmación tomada como verdad.
+          Tu endpoint solo necesita devolver un array JSON de objetos de dirección — SusuFinance se encarga del polling y la replicación. El endpoint debe estar en el mismo dominio (o subdominio) que verificaste, para que la raíz de confianza sea tu dominio, no una afirmación tomada como verdad.
         </p>
         <p>
           Los exchanges no pueden usar el método de auto-envío porque las direcciones de depósito son controladas por la plataforma — el exchange mismo tiene las claves privadas, no el usuario. La ruta de dominio más endpoint existe específicamente para este caso: una institución que avala sus propias direcciones publicándolas desde infraestructura que demuestra controlar.
         </p>
         <p>
-          La API key se almacena cifrada y solo se usa para obtener la lista de direcciones. Almstins nunca almacena ni transmite valor en tu nombre. Esta es una integración de solo lectura, consistente con la arquitectura sin custodia.
+          La API key se almacena cifrada y solo se usa para obtener la lista de direcciones. SusuFinance nunca almacena ni transmite valor en tu nombre. Esta es una integración de solo lectura, consistente con la arquitectura sin custodia.
         </p>`,
   },
   {
@@ -1033,7 +1033,7 @@ export const items: FaqItem[] = [
 
         <p>
           <strong>Si el error sigue volviendo:</strong><br />
-          Ya se ha enviado una alerta automáticamente — no necesitas reportarlo manualmente. Si quieres dar seguimiento, escribe a <a href="mailto:hello@almstins.com">hello@almstins.com</a> e incluye el ref code. Ese código es la forma más rápida de rastrear exactamente qué falló.
+          Ya se ha enviado una alerta automáticamente — no necesitas reportarlo manualmente. Si quieres dar seguimiento, escribe a <a href="mailto:hello@susufinance.com">hello@susufinance.com</a> e incluye el ref code. Ese código es la forma más rápida de rastrear exactamente qué falló.
         </p>
 
         <p style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 0.9rem 1rem; margin-top: 1rem;">
@@ -1072,7 +1072,7 @@ export const items: FaqItem[] = [
         </p>
 
         <p>
-          <strong>Privacidad:</strong> Cada pregunta envía un resumen de tu historial de transacciones y tenencias actuales a Anthropic (Claude Haiku) para generar la respuesta. El resumen está limitado únicamente a tu cuenta — los datos de ningún otro usuario son incluidos. Anthropic no conserva las entradas de la API más allá de la solicitud inmediata. Las preguntas no son almacenadas ni revisadas por Almstins.
+          <strong>Privacidad:</strong> Cada pregunta envía un resumen de tu historial de transacciones y tenencias actuales a Anthropic (Claude Haiku) para generar la respuesta. El resumen está limitado únicamente a tu cuenta — los datos de ningún otro usuario son incluidos. Anthropic no conserva las entradas de la API más allá de la solicitud inmediata. Las preguntas no son almacenadas ni revisadas por SusuFinance.
         </p>`,
   },
 ];

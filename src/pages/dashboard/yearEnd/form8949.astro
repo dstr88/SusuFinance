@@ -584,7 +584,7 @@ interface F8I18n {
 const I18N: F8I18n = (window as unknown as { __f8i18n?: F8I18n }).__f8i18n ?? {
 	errLoadFailed: 'Failed to load form data.', errNetwork: 'Network error — please try again.',
 	ctxNoImports: 'No transactions were found for {year}. Import transactions for your wallets or exchanges first, then re-run the pipeline.',
-	ctxPipelineNotRun: "AlmsTins found transactions for {year} but the classification pipeline hasn't run yet. Run the pipeline from the Tax Center to match buys and sells into taxable lots.",
+	ctxPipelineNotRun: "SusuFinance found transactions for {year} but the classification pipeline hasn't run yet. Run the pipeline from the Tax Center to match buys and sells into taxable lots.",
 	ctxCoinSingular: ' coin', ctxCoinPlural: ' coins',
 	ctxHasSingular: 'has', ctxHavePlural: 'have',
 	ctxTxSingular: 'unresolved transaction', ctxTxPlural: 'unresolved transactions',
@@ -616,7 +616,7 @@ const I18N: F8I18n = (window as unknown as { __f8i18n?: F8I18n }).__f8i18n ?? {
 	irsHeaderDesc: 'Realized gains and losses, formatted to mirror IRS Form 8949 for reference',
 	irsHeaderDisclaimer: 'Not a tax filing or tax advice — confirm with your tax professional',
 	irsHeaderTaxYear: 'Tax Year:', irsHeaderMethod: 'Method:',
-	irsHeaderPreparedBy: 'Prepared by Almstins — not an IRS-issued form',
+	irsHeaderPreparedBy: 'Prepared by SusuFinance — not an IRS-issued form',
 	boxNoteTemplate: 'Note: Crypto transactions are reported in Box {box} ("all other") because exchanges were not required to issue 1099-B for these transactions.',
 	totalsPrefix: 'Totals (Box {box})',
 };

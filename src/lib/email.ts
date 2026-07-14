@@ -8,7 +8,7 @@
 import nodemailer from 'nodemailer';
 
 const EMAIL_SERVER = process.env.EMAIL_SERVER ?? '';
-const EMAIL_FROM   = process.env.EMAIL_FROM   ?? 'Almstins <no-reply@almstins.com>';
+const EMAIL_FROM   = process.env.EMAIL_FROM   ?? 'SusuFinance <no-reply@susufinance.com>';
 
 let _transport: ReturnType<typeof nodemailer.createTransport> | null = null;
 

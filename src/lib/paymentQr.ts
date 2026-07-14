@@ -1,5 +1,5 @@
 /**
- * Almstins Verify — non-URL payment-QR parsers (EMVCo/PIX + UPI).
+ * SusuFinance Verify — non-URL payment-QR parsers (EMVCo/PIX + UPI).
  *
  * Merchant-presented QRs across most of the world are NOT URLs:
  *  - EMVCo Merchant-Presented Mode (Brazil PIX, Thailand PromptPay, Singapore PayNow,
@@ -9,7 +9,7 @@
  *
  * These pure parsers extract a stable MERCHANT IDENTIFIER. The registry then HASHES it
  * (verifyRegistry.normalizeDestinationValue) — the raw identifier can be a CPF / phone /
- * email (PII), which Almstins never stores. No I/O; fully unit-testable.
+ * email (PII), which SusuFinance never stores. No I/O; fully unit-testable.
  */
 
 // ── EMVCo CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF), over UTF-8 BYTES ─────────

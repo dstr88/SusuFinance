@@ -1,10 +1,10 @@
 /**
- * Almstins Verify — self-send proof of control (read-only chain observation).
+ * SusuFinance Verify — self-send proof of control (read-only chain observation).
  *
  * Proof model: the merchant sends ANY outgoing transaction FROM the address they
  * registered, after we issue a challenge. Only the keyholder can originate a tx,
- * so a new outgoing tx proves they control the address. Almstins never sends,
- * holds, or signs — it only READS public chain data. A breach of Almstins still
+ * so a new outgoing tx proves they control the address. SusuFinance never sends,
+ * holds, or signs — it only READS public chain data. A breach of SusuFinance still
  * can't move a coin, because there is nothing to move.
  *
  * "Outgoing" per rail:

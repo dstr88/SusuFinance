@@ -22,7 +22,7 @@ export interface NetworthLocale {
 
 export const en: NetworthLocale = {
   lang: 'en',
-  pageTitle: 'Net Worth | Almstins',
+  pageTitle: 'Net Worth | SusuFinance',
   heroTitle: 'Net Worth',
   heroSubtitle: 'TradFi + DeFi at a glance',
   heading: 'Net worth',
@@ -31,7 +31,7 @@ export const en: NetworthLocale = {
 
 export const es: NetworthLocale = {
   lang: 'es',
-  pageTitle: 'Valor Neto | Almstins',
+  pageTitle: 'Valor Neto | SusuFinance',
   heroTitle: 'Valor Neto',
   heroSubtitle: 'TradFi + DeFi de un vistazo',
   heading: 'Valor neto',
@@ -40,7 +40,7 @@ export const es: NetworthLocale = {
 
 export const fr: NetworthLocale = {
   lang: 'fr',
-  pageTitle: 'Valeur Nette | Almstins',
+  pageTitle: 'Valeur Nette | SusuFinance',
   heroTitle: 'Valeur Nette',
   heroSubtitle: 'TradFi + DeFi en un coup d\'œil',
   heading: 'Valeur nette',

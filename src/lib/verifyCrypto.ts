@@ -1,5 +1,5 @@
 /**
- * Almstins Verify — symmetric encryption for third-party secrets we must REPLAY.
+ * SusuFinance Verify — symmetric encryption for third-party secrets we must REPLAY.
  *
  * A Verified Entity (exchange) gives us an API key that we send back to their own
  * endpoint on every pull. Unlike a password we only ever check, this key must be

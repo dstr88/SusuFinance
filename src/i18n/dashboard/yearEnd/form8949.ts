@@ -50,7 +50,7 @@ export interface Form8949Locale {
   // Client-script dynamic strings (injected via define:vars)
   /** "No transactions were found for {year}. Import transactions…" — built with year interpolated in JS */
   ctxNoImports: string;
-  /** "AlmsTins found transactions for {year} but the classification pipeline hasn't run yet…" */
+  /** "SusuFinance found transactions for {year} but the classification pipeline hasn't run yet…" */
   ctxPipelineNotRun: string;
   /** suffix for ctxAffected: " coin" (singular) */
   ctxCoinSingular: string;
@@ -119,7 +119,7 @@ export interface Form8949Locale {
 
 export const en: Form8949Locale = {
   lang: 'en',
-  pageTitle: 'Form 8949 | Almstins',
+  pageTitle: 'Form 8949 | SusuFinance',
   backLink: '← Tax Center',
   heroTitle: 'Capital Gains Summary',
   heroSubtitle: 'A US-style gain/loss summary, formatted to mirror IRS Form 8949 for your reference.',
@@ -130,7 +130,7 @@ export const en: Form8949Locale = {
   errLoadFailed: 'Failed to load form data.',
   errNetwork: 'Network error — please try again.',
   emptyTitle: 'No classified disposals found for this year',
-  emptyContext: 'AlmsTins found transactions for this year but none have been matched into taxable disposal lots yet.',
+  emptyContext: 'SusuFinance found transactions for this year but none have been matched into taxable disposal lots yet.',
   emptyWhatLabel: 'What this usually means',
   diagPipelineStrong: 'Pipeline not run',
   diagPipelineText: '— transactions need to be classified before lots can be matched',
@@ -147,7 +147,7 @@ export const en: Form8949Locale = {
   boWarningLinkText: 'Review Queue',
   boWarningTail: ' to resolve missing basis before you rely on these figures.',
   ctxNoImports: 'No transactions were found for {year}. Import transactions for your wallets or exchanges first, then re-run the pipeline.',
-  ctxPipelineNotRun: 'AlmsTins found transactions for {year} but the classification pipeline hasn\'t run yet. Run the pipeline from the Tax Center to match buys and sells into taxable lots.',
+  ctxPipelineNotRun: 'SusuFinance found transactions for {year} but the classification pipeline hasn\'t run yet. Run the pipeline from the Tax Center to match buys and sells into taxable lots.',
   ctxCoinSingular: ' coin',
   ctxCoinPlural: ' coins',
   ctxHasSingular: 'has',
@@ -185,14 +185,14 @@ export const en: Form8949Locale = {
   irsHeaderDisclaimer: 'Not a tax filing or tax advice — confirm with your tax professional',
   irsHeaderTaxYear: 'Tax Year:',
   irsHeaderMethod: 'Method:',
-  irsHeaderPreparedBy: 'Prepared by Almstins — not an IRS-issued form',
+  irsHeaderPreparedBy: 'Prepared by SusuFinance — not an IRS-issued form',
   boxNoteTemplate: 'Note: Crypto transactions are reported in Box {box} ("all other") because exchanges were not required to issue 1099-B for these transactions.',
   totalsPrefix: 'Totals (Box {box})',
 };
 
 export const es: Form8949Locale = {
   lang: 'es',
-  pageTitle: 'Resumen de ganancias de capital | Almstins',
+  pageTitle: 'Resumen de ganancias de capital | SusuFinance',
   backLink: '← Centro fiscal',
   heroTitle: 'Resumen de ganancias de capital',
   heroSubtitle: 'Resumen de ganancias y pérdidas al estilo estadounidense, con formato similar al Formulario 8949 del IRS para tu referencia.',
@@ -203,7 +203,7 @@ export const es: Form8949Locale = {
   errLoadFailed: 'No se pudieron cargar los datos del formulario.',
   errNetwork: 'Error de red — por favor, inténtalo de nuevo.',
   emptyTitle: 'No se encontraron disposiciones clasificadas para este año',
-  emptyContext: 'AlmsTins encontró transacciones para este año pero ninguna ha sido emparejada en lotes de disposición imponible todavía.',
+  emptyContext: 'SusuFinance encontró transacciones para este año pero ninguna ha sido emparejada en lotes de disposición imponible todavía.',
   emptyWhatLabel: 'Qué significa normalmente',
   diagPipelineStrong: 'Pipeline no ejecutado',
   diagPipelineText: '— las transacciones deben clasificarse antes de que los lotes puedan emparejarse',
@@ -220,7 +220,7 @@ export const es: Form8949Locale = {
   boWarningLinkText: 'cola de revisión',
   boWarningTail: ' para resolver la base faltante antes de confiar en estas cifras.',
   ctxNoImports: 'No se encontraron transacciones para {year}. Importa primero las transacciones de tus wallets o exchanges y luego vuelve a ejecutar el pipeline.',
-  ctxPipelineNotRun: 'AlmsTins encontró transacciones para {year} pero el pipeline de clasificación no se ha ejecutado aún. Ejecuta el pipeline desde el Centro fiscal para emparejar compras y ventas en lotes imponibles.',
+  ctxPipelineNotRun: 'SusuFinance encontró transacciones para {year} pero el pipeline de clasificación no se ha ejecutado aún. Ejecuta el pipeline desde el Centro fiscal para emparejar compras y ventas en lotes imponibles.',
   ctxCoinSingular: ' moneda',
   ctxCoinPlural: ' monedas',
   ctxHasSingular: 'tiene',
@@ -258,14 +258,14 @@ export const es: Form8949Locale = {
   irsHeaderDisclaimer: 'No es una declaración fiscal ni asesoramiento tributario — confirma con tu asesor fiscal',
   irsHeaderTaxYear: 'Año fiscal:',
   irsHeaderMethod: 'Método:',
-  irsHeaderPreparedBy: 'Preparado por Almstins — no es un formulario oficial del IRS',
+  irsHeaderPreparedBy: 'Preparado por SusuFinance — no es un formulario oficial del IRS',
   boxNoteTemplate: 'Nota: Las transacciones de cripto se reportan en el Casillero {box} ("todos los demás") porque los exchanges no estaban obligados a emitir 1099-B para estas transacciones.',
   totalsPrefix: 'Totales (Casillero {box})',
 };
 
 export const fr: Form8949Locale = {
   lang: 'fr',
-  pageTitle: "Résumé des plus-values | Almstins",
+  pageTitle: "Résumé des plus-values | SusuFinance",
   backLink: "← Centre fiscal",
   heroTitle: "Résumé des plus-values",
   heroSubtitle: "Résumé des gains et pertes au format américain, présenté en miroir du formulaire IRS Form 8949 pour votre référence.",
@@ -276,7 +276,7 @@ export const fr: Form8949Locale = {
   errLoadFailed: "Impossible de charger les données du formulaire.",
   errNetwork: "Erreur réseau — veuillez réessayer.",
   emptyTitle: "Aucune cession classifiée trouvée pour cette année",
-  emptyContext: "AlmsTins a trouvé des transactions pour cette année mais aucune n'a encore été regroupée dans des lots de cession imposables.",
+  emptyContext: "SusuFinance a trouvé des transactions pour cette année mais aucune n'a encore été regroupée dans des lots de cession imposables.",
   emptyWhatLabel: "Ce que cela signifie habituellement",
   diagPipelineStrong: "Pipeline non exécuté",
   diagPipelineText: "— les transactions doivent être classifiées avant que les lots puissent être appariés",
@@ -293,7 +293,7 @@ export const fr: Form8949Locale = {
   boWarningLinkText: "file de révision",
   boWarningTail: " pour résoudre la base manquante avant de vous fier à ces chiffres.",
   ctxNoImports: "Aucune transaction trouvée pour {year}. Importez d'abord les transactions de vos wallets ou exchanges, puis relancez le pipeline.",
-  ctxPipelineNotRun: "AlmsTins a trouvé des transactions pour {year} mais le pipeline de classification n'a pas encore été exécuté. Lancez le pipeline depuis le Centre fiscal pour apparier les achats et les ventes en lots imposables.",
+  ctxPipelineNotRun: "SusuFinance a trouvé des transactions pour {year} mais le pipeline de classification n'a pas encore été exécuté. Lancez le pipeline depuis le Centre fiscal pour apparier les achats et les ventes en lots imposables.",
   ctxCoinSingular: " crypto-actif",
   ctxCoinPlural: " crypto-actifs",
   ctxHasSingular: "a",
@@ -331,7 +331,7 @@ export const fr: Form8949Locale = {
   irsHeaderDisclaimer: "Pas une déclaration fiscale ni un conseil fiscal — confirmez avec votre conseiller fiscal",
   irsHeaderTaxYear: "Année fiscale :",
   irsHeaderMethod: "Méthode :",
-  irsHeaderPreparedBy: "Préparé par Almstins — pas un formulaire officiel de l'IRS",
+  irsHeaderPreparedBy: "Préparé par SusuFinance — pas un formulaire officiel de l'IRS",
   boxNoteTemplate: "Note : Les transactions crypto sont déclarées dans la Case {box} (\"toutes les autres\") car les exchanges n'étaient pas tenus d'émettre un 1099-B pour ces transactions.",
   totalsPrefix: "Totaux (Case {box})",
 };

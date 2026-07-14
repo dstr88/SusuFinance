@@ -73,8 +73,8 @@ async function sendWelcomeEmail(opts: {
 	const planLabel = PLAN_LABELS[opts.planId] ?? opts.planId;
 	const { subject, text, html } = getSubscriptionWelcome(opts.lang ?? 'en').render({
 		planLabel,
-		dashboardUrl: 'https://almstins.com/dashboard',
-		appUrl: 'https://almstins.com',
+		dashboardUrl: 'https://susufinance.com/dashboard',
+		appUrl: 'https://susufinance.com',
 	});
 
 	await mailer.transport.sendMail({

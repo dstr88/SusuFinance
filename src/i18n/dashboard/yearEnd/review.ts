@@ -57,7 +57,7 @@ export interface ReviewLocale {
 
 export const en: ReviewLocale = {
   lang: 'en',
-  pageTitle: 'Tax Review | Almstins',
+  pageTitle: 'Tax Review | SusuFinance',
   backLink: '← Tax Center',
   headingPrefix: 'Tax Review Queue —',
   subtitleEmpty: (year) => `No unresolved items for ${year}.`,
@@ -128,7 +128,7 @@ export const en: ReviewLocale = {
 
 export const es: ReviewLocale = {
   lang: 'es',
-  pageTitle: 'Revisión Fiscal | Almstins',
+  pageTitle: 'Revisión Fiscal | SusuFinance',
   backLink: '← Centro Fiscal',
   headingPrefix: 'Cola de Revisión Fiscal —',
   subtitleEmpty: (year) => `No hay elementos sin resolver para ${year}.`,
@@ -199,7 +199,7 @@ export const es: ReviewLocale = {
 
 export const fr: ReviewLocale = {
   lang: 'fr',
-  pageTitle: 'Révision Fiscale | Almstins',
+  pageTitle: 'Révision Fiscale | SusuFinance',
   backLink: '← Centre Fiscal',
   headingPrefix: 'File de Révision Fiscale —',
   subtitleEmpty: (year) => `Aucun élément non résolu pour ${year}.`,

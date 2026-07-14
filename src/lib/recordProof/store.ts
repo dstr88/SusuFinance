@@ -4,7 +4,7 @@
 //   • record_proofs          — one row per generated record (root, signature, counts)
 //   • record_proof_snapshot  — the FROZEN ordered leaves (full leaf_json + leaf_hash)
 //
-// We store the FULL leaves (so Almstins can reproduce the bundle + power authorized
+// We store the FULL leaves (so SusuFinance can reproduce the bundle + power authorized
 // selective disclosure) but verification surfaces display only leaf_hash. Tenant
 // isolation is app-enforced (every query WHERE tenant_id). DDL auto-routes to the
 // owner pool via isSchemaDDL in db.pg.ts.

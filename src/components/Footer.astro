@@ -3,7 +3,7 @@ import './Footer.css';
 import type { Lang } from "@/lib/i18n/locale";
 import { getFooter } from "@/i18n/footer";
 import DonnieSelfie from "../assets/DonnieSelfie.jpeg";
-import AlmstinsLogo from "../assets/logo.jpeg";
+import SusuFinanceLogo from "../assets/logo.jpeg";
 import Faq from "./faq.astro";
 import Welcome from "./Welcome.astro";
 import PrivacyPolicy from "./privacy-policy.astro";
@@ -29,19 +29,19 @@ const year = new Date().getFullYear();
         <div class="license-copy">
           <h3>{t.licenseHeading}</h3>
           <p>{t.licenseLine}</p>
-          <p>© {year} Almstins LLC</p>
+          <p>© {year} SusuFinance LLC</p>
         </div>
       </div>
       <a
-        href="https://almstins.com"
+        href="https://susufinance.com"
         target="_blank"
         rel="noreferrer"
         class="license-logo-link"
-        aria-label="Almstins"
+        aria-label="SusuFinance"
       >
         <img
-          src={AlmstinsLogo.src}
-          alt="Almstins"
+          src={SusuFinanceLogo.src}
+          alt="SusuFinance"
           class="license-logo"
           width="960"
           height="1104"

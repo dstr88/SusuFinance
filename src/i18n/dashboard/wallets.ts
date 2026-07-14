@@ -7,7 +7,7 @@
 // and are localized in separate passes.
 //
 // Crypto jargon stays English per design.claude.md: wallet, on-chain, exchange,
-// protocol, hash, plus names (Coinbase, Aave, AlmsTins, Needs Attention).
+// protocol, hash, plus names (Coinbase, Aave, SusuFinance, Needs Attention).
 // ES/FR are first-pass.
 
 import type { Lang } from '@/lib/i18n/locale';
@@ -31,12 +31,12 @@ export interface WalletsLocale {
 
 export const en: WalletsLocale = {
   lang: 'en',
-  pageTitle: 'Wallets | Almstins',
+  pageTitle: 'Wallets | SusuFinance',
   whyLabelTitle: 'Why label your addresses?',
   whyLabelBody1:
     'Every on-chain transaction links two addresses — a sender and a receiver. Giving those addresses a name',
   whyLabelBody2:
-    'lets that context travel through your entire transaction history. AlmsTins automatically labels hundreds of known exchange and protocol addresses; your custom labels fill in the rest.',
+    'lets that context travel through your entire transaction history. SusuFinance automatically labels hundreds of known exchange and protocol addresses; your custom labels fill in the rest.',
   bookkeepingLabel: 'Bookkeeping clarity',
   bookkeepingText: 'labeled counterparties replace cryptic hashes in your G/L and income sections.',
   fewerNeedsAttentionLabel: 'Fewer "Needs Attention" items',
@@ -52,12 +52,12 @@ export const en: WalletsLocale = {
 
 export const es: WalletsLocale = {
   lang: 'es',
-  pageTitle: 'Wallets | Almstins',
+  pageTitle: 'Wallets | SusuFinance',
   whyLabelTitle: '¿Por qué etiquetar tus direcciones?',
   whyLabelBody1:
     'Cada transacción on-chain enlaza dos direcciones — un emisor y un receptor. Darle un nombre a esas direcciones',
   whyLabelBody2:
-    'permite que ese contexto viaje por todo tu historial de transacciones. AlmsTins etiqueta automáticamente cientos de direcciones conocidas de exchanges y protocolos; tus etiquetas personalizadas completan el resto.',
+    'permite que ese contexto viaje por todo tu historial de transacciones. SusuFinance etiqueta automáticamente cientos de direcciones conocidas de exchanges y protocolos; tus etiquetas personalizadas completan el resto.',
   bookkeepingLabel: 'Claridad contable',
   bookkeepingText:
     'las contrapartes etiquetadas reemplazan los hashes crípticos en tu libro mayor y secciones de ingresos.',
@@ -74,12 +74,12 @@ export const es: WalletsLocale = {
 
 export const fr: WalletsLocale = {
   lang: 'fr',
-  pageTitle: 'Wallets | Almstins',
+  pageTitle: 'Wallets | SusuFinance',
   whyLabelTitle: 'Pourquoi étiqueter vos adresses ?',
   whyLabelBody1:
     'Chaque transaction on-chain relie deux adresses — un expéditeur et un destinataire. Donner un nom à ces adresses',
   whyLabelBody2:
-    "permet à ce contexte de circuler dans tout votre historique de transactions. AlmsTins étiquette automatiquement des centaines d'adresses connues d'exchanges et de protocoles ; vos étiquettes personnalisées complètent le reste.",
+    "permet à ce contexte de circuler dans tout votre historique de transactions. SusuFinance étiquette automatiquement des centaines d'adresses connues d'exchanges et de protocoles ; vos étiquettes personnalisées complètent le reste.",
   bookkeepingLabel: 'Clarté comptable',
   bookkeepingText:
     'les contreparties étiquetées remplacent les hashes cryptiques dans votre grand livre et vos sections de revenus.',

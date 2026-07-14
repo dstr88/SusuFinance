@@ -16,7 +16,7 @@ import { sendCampaignEmail, campaignEmailAvailable } from '@/lib/campaignEmail';
 
 export const prerender = false;
 
-const APP_BASE = process.env.APP_URL ?? 'https://almstins.com';
+const APP_BASE = process.env.APP_URL ?? 'https://susufinance.com';
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export const GET: APIRoute = async ({ request }) => {

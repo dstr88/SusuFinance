@@ -57,7 +57,7 @@ export function renderDrip(
     <hr style="border:none;border-top:1px solid #e6e8eb;margin:24px 0 14px;">
     <p style="font-size:12px;line-height:1.5;color:#9aa0a6;margin:0;">
       ${loc.contact}: <a href="${TELEGRAM_URL}" style="color:#2dd4a8;text-decoration:none;">${TELEGRAM_HANDLE}</a><br>
-      ${loc.brand} &middot; <a href="${appBase}" style="color:#9aa0a6;">almstins.com</a><br>
+      ${loc.brand} &middot; <a href="${appBase}" style="color:#9aa0a6;">susufinance.com</a><br>
       <a href="${unsubscribeUrl}" style="color:#9aa0a6;">${loc.unsubscribe}</a>
     </p>
   </div>

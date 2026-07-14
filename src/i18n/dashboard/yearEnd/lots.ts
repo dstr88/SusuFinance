@@ -54,7 +54,7 @@ export interface LotsLocale {
 
 export const en: LotsLocale = {
   lang: 'en',
-  pageTitle: 'Lot Manager | Almstins',
+  pageTitle: 'Lot Manager | SusuFinance',
   backLink: '← Back to Gains Summary',
   heading: 'Lot Manager',
   viewResults: 'View Results →',
@@ -91,7 +91,7 @@ export const en: LotsLocale = {
 
 export const es: LotsLocale = {
   lang: 'es',
-  pageTitle: 'Gestor de Lotes | Almstins',
+  pageTitle: 'Gestor de Lotes | SusuFinance',
   backLink: '← Volver al Resumen de Ganancias',
   heading: 'Gestor de Lotes',
   viewResults: 'Ver resultados →',
@@ -128,7 +128,7 @@ export const es: LotsLocale = {
 
 export const fr: LotsLocale = {
   lang: 'fr',
-  pageTitle: 'Gestionnaire de Lots | Almstins',
+  pageTitle: 'Gestionnaire de Lots | SusuFinance',
   backLink: '← Retour au Résumé des Plus-values',
   heading: 'Gestionnaire de Lots',
   viewResults: 'Voir les résultats →',

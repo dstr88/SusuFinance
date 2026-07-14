@@ -1,6 +1,6 @@
-// Ed25519 signing for record proofs. Almstins signs with ITS OWN key — it never
+// Ed25519 signing for record proofs. SusuFinance signs with ITS OWN key — it never
 // holds, requests, or manages a user's key. The private seed lives ONLY in the
-// env var ALMSTINS_SIGNING_KEY (the repo is public); fail-closed when unset, so
+// env var SUSUFINANCE_SIGNING_KEY (the repo is public); fail-closed when unset, so
 // an unconfigured deploy ships UNSIGNED exports rather than crashing.
 //
 // @noble/ed25519 v3 exposes a synchronous API once a SHA-512 implementation is
@@ -36,9 +36,9 @@ function decodeSeed(raw: string): Uint8Array | null {
   return null;
 }
 
-/** The active signing key, or null when ALMSTINS_SIGNING_KEY is unset/invalid. */
+/** The active signing key, or null when SUSUFINANCE_SIGNING_KEY is unset/invalid. */
 export function getSigningKey(): { keyId: string; secretKey: Uint8Array; publicKeyHex: string } | null {
-  const raw = readEnv('ALMSTINS_SIGNING_KEY');
+  const raw = readEnv('SUSUFINANCE_SIGNING_KEY');
   if (!raw) return null;
   const seed = decodeSeed(raw);
   if (!seed) return null;
@@ -47,12 +47,12 @@ export function getSigningKey(): { keyId: string; secretKey: Uint8Array; publicK
 }
 
 /**
- * Public key to publish. Prefers an explicit ALMSTINS_SIGNING_PUBKEY override
+ * Public key to publish. Prefers an explicit SUSUFINANCE_SIGNING_PUBKEY override
  * (lets a host publish/verify a key it cannot sign with — useful during rotation),
  * else derives it from the private seed. Null when nothing is configured.
  */
 export function getPublicKeyHex(): string | null {
-  const override = readEnv('ALMSTINS_SIGNING_PUBKEY');
+  const override = readEnv('SUSUFINANCE_SIGNING_PUBKEY');
   if (override && /^[0-9a-fA-F]{64}$/.test(override.trim())) return override.trim().toLowerCase();
   return getSigningKey()?.publicKeyHex ?? null;
 }

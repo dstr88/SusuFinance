@@ -6,7 +6,7 @@
 //
 // verifyBundle answers, from the bundle ALONE: is the Merkle root genuinely the
 // commitment over these leaves, and is the signed manifest authentic against a
-// published Almstins key? Structured verdicts/codes, never prose.
+// published SusuFinance key? Structured verdicts/codes, never prose.
 
 import * as ed from '@noble/ed25519';
 import { sha512 } from '@noble/hashes/sha2.js';

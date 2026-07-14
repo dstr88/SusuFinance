@@ -4,7 +4,7 @@
  *
  * Returns { matched, destination? }. Match = "still yours"; no match = a value we
  * never registered (a possible QR swap). Owner→self, tenant-scoped, no attribution
- * — no legal hold. This is the on-demand half of Almstins Verify; continuous
+ * — no legal hold. This is the on-demand half of SusuFinance Verify; continuous
  * monitoring + the safety overlay (checkWallet) layer on top later.
  */
 import type { APIRoute } from 'astro';

@@ -69,7 +69,7 @@ export interface AlertsLocale {
 
 export const en: AlertsLocale = {
   lang: 'en',
-  pageTitle: 'Price Alerts | Almstins',
+  pageTitle: 'Price Alerts | SusuFinance',
   heroTitle: 'Price Alerts',
   intro:
     'Get an email when any asset crosses a price threshold you set. Useful for harvesting decisions and entry/exit timing.',
@@ -114,7 +114,7 @@ export const en: AlertsLocale = {
 
 export const es: AlertsLocale = {
   lang: 'es',
-  pageTitle: 'Alertas de precio | Almstins',
+  pageTitle: 'Alertas de precio | SusuFinance',
   heroTitle: 'Alertas de precio',
   intro:
     'Recibe un correo cuando cualquier asset cruce un umbral de precio que definas. Útil para decisiones de harvesting y para sincronizar entradas y salidas.',
@@ -159,7 +159,7 @@ export const es: AlertsLocale = {
 
 export const fr: AlertsLocale = {
   lang: 'fr',
-  pageTitle: 'Alertes de prix | Almstins',
+  pageTitle: 'Alertes de prix | SusuFinance',
   heroTitle: 'Alertes de prix',
   intro:
     "Recevez un e-mail dès qu'un asset franchit un seuil de prix que vous définissez. Utile pour les décisions de harvesting et le timing des entrées/sorties.",

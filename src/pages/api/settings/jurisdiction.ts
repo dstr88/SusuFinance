@@ -4,7 +4,7 @@
  *                                  → { ok: true, jurisdiction }
  *
  * Persists the tenant's jurisdiction profile choice.
- * Almstins is an informational record-keeping tool — this setting controls
+ * SusuFinance is an informational record-keeping tool — this setting controls
  * how data is *displayed*, not how any regulatory filing is produced.
  */
 

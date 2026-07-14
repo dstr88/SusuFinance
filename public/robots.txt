@@ -16,4 +16,4 @@ Disallow: /success
 Disallow: /transition
 Disallow: /welcome
 
-Sitemap: https://almstins.com/sitemap-index.xml
+Sitemap: https://susufinance.com/sitemap-index.xml

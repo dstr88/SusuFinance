@@ -4,7 +4,7 @@
 // via getBilling(lang). These are the strings the PAGE owns — headings, status
 // labels, plan feature bullets, the interval toggle, badges, and the CTA buttons.
 //
-// What stays English per design.claude.md: product/company names (Almstins,
+// What stays English per design.claude.md: product/company names (SusuFinance,
 // Stripe), plan names (Starter, Pro, Unlimited), prices ($7/mo etc.). Plan
 // *feature* descriptions and surrounding UI chrome are translated. ES/FR are
 // first-pass; billing wording is accurate but pending review.
@@ -64,7 +64,7 @@ export interface BillingLocale {
 
 export const en: BillingLocale = {
   lang: 'en',
-  pageTitle: 'Billing | Almstins',
+  pageTitle: 'Billing | SusuFinance',
   heroTitle: 'Billing & Plan',
   successBanner: (plan) => `✓ Subscription activated — welcome to ${plan}!`,
   cancelledBanner: 'Checkout cancelled. Your plan was not changed.',
@@ -107,7 +107,7 @@ export const en: BillingLocale = {
 
 export const es: BillingLocale = {
   lang: 'es',
-  pageTitle: 'Facturación | Almstins',
+  pageTitle: 'Facturación | SusuFinance',
   heroTitle: 'Facturación y plan',
   successBanner: (plan) => `✓ Suscripción activada — ¡bienvenido a ${plan}!`,
   cancelledBanner: 'Pago cancelado. Tu plan no se modificó.',
@@ -150,7 +150,7 @@ export const es: BillingLocale = {
 
 export const fr: BillingLocale = {
   lang: 'fr',
-  pageTitle: 'Facturation | Almstins',
+  pageTitle: 'Facturation | SusuFinance',
   heroTitle: 'Facturation et forfait',
   successBanner: (plan) => `✓ Abonnement activé — bienvenue dans ${plan} !`,
   cancelledBanner: "Paiement annulé. Votre forfait n'a pas été modifié.",

@@ -85,7 +85,7 @@ export interface TransactionsLocale {
 
 export const en: TransactionsLocale = {
   lang: 'en',
-  pageTitle: 'Transactions | Almstins',
+  pageTitle: 'Transactions | SusuFinance',
   eyebrow: 'Ledger view',
   heroTitle: 'Transactions & annotations',
   lede: 'Review on-chain activity, classify each movement, and attach notes for taxes.',
@@ -151,7 +151,7 @@ export const en: TransactionsLocale = {
 
 export const es: TransactionsLocale = {
   lang: 'es',
-  pageTitle: 'Transacciones | Almstins',
+  pageTitle: 'Transacciones | SusuFinance',
   eyebrow: 'Vista del libro mayor',
   heroTitle: 'Transacciones y anotaciones',
   lede: 'Revisa la actividad on-chain, clasifica cada movimiento y adjunta notas para impuestos.',
@@ -217,7 +217,7 @@ export const es: TransactionsLocale = {
 
 export const fr: TransactionsLocale = {
   lang: 'fr',
-  pageTitle: 'Transactions | Almstins',
+  pageTitle: 'Transactions | SusuFinance',
   eyebrow: 'Vue du grand livre',
   heroTitle: 'Transactions & annotations',
   lede: "Examinez l'activité on-chain, classifiez chaque mouvement et ajoutez des notes pour les impôts.",

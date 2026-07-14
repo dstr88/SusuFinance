@@ -30,11 +30,11 @@ export const en: PromoExpiryEmailLocale = {
   render: ({ days, expiryDisplay, urgency, billingUrl, dashboardUrl }) => {
     const dayWord = days === 1 ? 'day' : 'days';
     return {
-      subject: `${urgency} Your Almstins free year expires in ${days} ${dayWord}`,
+      subject: `${urgency} Your SusuFinance free year expires in ${days} ${dayWord}`,
       text: `
 Hi there,
 
-Just a heads-up — your free year of Almstins Unlimited access expires on ${expiryDisplay} (${days} ${dayWord} from now).
+Just a heads-up — your free year of SusuFinance Unlimited access expires on ${expiryDisplay} (${days} ${dayWord} from now).
 
 After that date your account will revert to the Free plan, which includes:
   - Up to 3 wallets
@@ -47,7 +47,7 @@ View plans and upgrade: ${billingUrl}
 
 Your account and all your data will always be safe — upgrading just keeps your features intact.
 
-— The Almstins Team
+— The SusuFinance Team
 ${dashboardUrl}
       `.trim(),
       html: `
@@ -108,11 +108,11 @@ export const es: PromoExpiryEmailLocale = {
   render: ({ days, expiryDisplay, urgency, billingUrl, dashboardUrl }) => {
     const dayWord = days === 1 ? "día" : "días";
     return {
-      subject: `${urgency} Tu año gratuito de Almstins vence en ${days} ${dayWord}`,
+      subject: `${urgency} Tu año gratuito de SusuFinance vence en ${days} ${dayWord}`,
       text: `
 Hola,
 
-Solo un aviso — tu año gratuito de acceso Almstins Unlimited vence el ${expiryDisplay} (en ${days} ${dayWord}).
+Solo un aviso — tu año gratuito de acceso SusuFinance Unlimited vence el ${expiryDisplay} (en ${days} ${dayWord}).
 
 Después de esa fecha tu cuenta volverá al plan Gratuito, que incluye:
   - Hasta 3 wallets
@@ -125,7 +125,7 @@ Ver planes y actualizar: ${billingUrl}
 
 Tu cuenta y todos tus datos siempre estarán seguros — actualizar solo conserva tus funciones.
 
-— El equipo de Almstins
+— El equipo de SusuFinance
 ${dashboardUrl}
       `.trim(),
       html: `
@@ -186,11 +186,11 @@ export const fr: PromoExpiryEmailLocale = {
   render: ({ days, expiryDisplay, urgency, billingUrl, dashboardUrl }) => {
     const dayWord = days === 1 ? "jour" : "jours";
     return {
-      subject: `${urgency} Votre année gratuite Almstins expire dans ${days} ${dayWord}`,
+      subject: `${urgency} Votre année gratuite SusuFinance expire dans ${days} ${dayWord}`,
       text: `
 Bonjour,
 
-Petit rappel — votre année gratuite d'accès Almstins Unlimited expire le ${expiryDisplay} (dans ${days} ${dayWord}).
+Petit rappel — votre année gratuite d'accès SusuFinance Unlimited expire le ${expiryDisplay} (dans ${days} ${dayWord}).
 
 Après cette date, votre compte repassera au plan Gratuit, qui comprend :
   - Jusqu'à 3 wallets
@@ -203,7 +203,7 @@ Voir les plans et mettre à niveau : ${billingUrl}
 
 Votre compte et toutes vos données sont toujours en sécurité — la mise à niveau permet simplement de conserver vos fonctionnalités.
 
-— L'équipe Almstins
+— L'équipe SusuFinance
 ${dashboardUrl}
       `.trim(),
       html: `

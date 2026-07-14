@@ -135,7 +135,7 @@ export interface BookkeepingLocale {
 
 export const en: BookkeepingLocale = {
   lang: 'en',
-  pageTitle: 'Bookkeeping | Almstins',
+  pageTitle: 'Bookkeeping | SusuFinance',
   heroTitle: 'Bookkeeping',
   heroSubtitle: 'Annual breakdown',
 
@@ -225,7 +225,7 @@ export const en: BookkeepingLocale = {
 
 export const es: BookkeepingLocale = {
   lang: 'es',
-  pageTitle: 'Contabilidad | Almstins',
+  pageTitle: 'Contabilidad | SusuFinance',
   heroTitle: 'Contabilidad',
   heroSubtitle: 'Desglose anual',
 
@@ -315,7 +315,7 @@ export const es: BookkeepingLocale = {
 
 export const fr: BookkeepingLocale = {
   lang: 'fr',
-  pageTitle: 'Comptabilité | Almstins',
+  pageTitle: 'Comptabilité | SusuFinance',
   heroTitle: 'Comptabilité',
   heroSubtitle: 'Bilan annuel',
 

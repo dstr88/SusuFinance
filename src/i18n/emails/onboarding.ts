@@ -9,15 +9,15 @@ import type { DripLocale } from './dripTemplate';
 
 export const en: DripLocale = {
   lang: 'en',
-  brand: 'Almstins',
+  brand: 'SusuFinance',
   signoff: '— Donnie',
   unsubscribe: 'Unsubscribe from these emails',
   contact: 'Reply any time, or message me on Telegram',
   emails: [
     {
-      subject: 'Welcome to Almstins — check any address, free',
+      subject: 'Welcome to SusuFinance — check any address, free',
       paragraphs: [
-        'Thanks for signing up. Almstins does two things: it helps you see everything you own across wallets, exchanges, and DeFi — and it helps you not lose it to a scam.',
+        'Thanks for signing up. SusuFinance does two things: it helps you see everything you own across wallets, exchanges, and DeFi — and it helps you not lose it to a scam.',
         'Start with the second one. Paste any wallet address or website and we check it against the major scam, phishing, and sanctions databases before you send anything — free, no login, and no limit on how many you check, for as long as you need.',
         'No wallet connection, ever. We only ever read public data.',
       ],
@@ -28,7 +28,7 @@ export const en: DripLocale = {
       subject: 'See everything you own in one place',
       paragraphs: [
         'Most people don’t actually know what their crypto is worth — it’s scattered across exchanges, wallets, and chains.',
-        'Add one wallet address — read-only, no connection, no keys — and Almstins pulls your balances, prices them live, and works out your cost basis and gains automatically.',
+        'Add one wallet address — read-only, no connection, no keys — and SusuFinance pulls your balances, prices them live, and works out your cost basis and gains automatically.',
         'Start with one. It takes about thirty seconds.',
       ],
       ctaLabel: 'Add a wallet',
@@ -38,16 +38,16 @@ export const en: DripLocale = {
       subject: 'Your crypto taxes, mostly done already',
       paragraphs: [
         'The hardest part of crypto isn’t the volatility — it’s tax season, reconstructing a year of trades from a dozen different sources.',
-        'Almstins keeps the books as you go: every buy, sell, and transfer reconciled, with realized gains broken down by asset and by year. When it’s time to file — or hand it to an accountant — it’s already organized.',
+        'SusuFinance keeps the books as you go: every buy, sell, and transfer reconciled, with realized gains broken down by asset and by year. When it’s time to file — or hand it to an accountant — it’s already organized.',
       ],
       ctaLabel: 'See your tax breakdown',
       ctaPath: '/dashboard/bookkeeping',
     },
     {
-      subject: 'Two last things Almstins can do for you',
+      subject: 'Two last things SusuFinance can do for you',
       paragraphs: [
         'By now you’ve hopefully checked an address and started tracking what you own. Two last things worth knowing.',
-        'If you take crypto for a business, Almstins Verify watches the addresses you publish — so a swapped QR or address never reaches your customers. It’s free while it’s in early access.',
+        'If you take crypto for a business, SusuFinance Verify watches the addresses you publish — so a swapped QR or address never reaches your customers. It’s free while it’s in early access.',
         'And if you’ve outgrown the free three wallets, the paid plans add more capacity plus the done-for-you tools: AI triage, receipt validation, and a year-end tax PDF for your accountant.',
         'Either way — thank you for being here this early. It means a lot.',
       ],
@@ -59,15 +59,15 @@ export const en: DripLocale = {
 
 export const es: DripLocale = {
   lang: 'es',
-  brand: 'Almstins',
+  brand: 'SusuFinance',
   signoff: '— Donnie',
   unsubscribe: 'Darse de baja de estos correos',
   contact: 'Responde cuando quieras, o escríbeme por Telegram',
   emails: [
     {
-      subject: 'Bienvenido a Almstins — verifica cualquier dirección, gratis',
+      subject: 'Bienvenido a SusuFinance — verifica cualquier dirección, gratis',
       paragraphs: [
-        'Gracias por registrarte. Almstins hace dos cosas: te ayuda a ver todo lo que tienes en billeteras, exchanges y DeFi — y te ayuda a no perderlo por una estafa.',
+        'Gracias por registrarte. SusuFinance hace dos cosas: te ayuda a ver todo lo que tienes en billeteras, exchanges y DeFi — y te ayuda a no perderlo por una estafa.',
         'Empieza por lo segundo. Pega cualquier dirección de billetera o sitio web y lo verificamos contra las principales bases de datos de estafas, phishing y sanciones antes de que envíes nada — gratis, sin iniciar sesión y sin límite de cuántas verificas, durante el tiempo que necesites.',
         'Sin conectar la billetera, nunca. Solo leemos datos públicos.',
       ],
@@ -78,7 +78,7 @@ export const es: DripLocale = {
       subject: 'Ve todo lo que tienes en un solo lugar',
       paragraphs: [
         'La mayoría no sabe realmente cuánto vale su cripto — está repartida entre exchanges, billeteras y cadenas.',
-        'Agrega una dirección de billetera — solo lectura, sin conexión, sin claves — y Almstins obtiene tus saldos, los valora en vivo y calcula tu costo base y tus ganancias automáticamente.',
+        'Agrega una dirección de billetera — solo lectura, sin conexión, sin claves — y SusuFinance obtiene tus saldos, los valora en vivo y calcula tu costo base y tus ganancias automáticamente.',
         'Empieza con una. Toma unos treinta segundos.',
       ],
       ctaLabel: 'Agregar una billetera',
@@ -88,16 +88,16 @@ export const es: DripLocale = {
       subject: 'Tus impuestos de cripto, casi listos',
       paragraphs: [
         'Lo más difícil de la cripto no es la volatilidad — es la temporada de impuestos, reconstruir un año de operaciones desde una docena de fuentes distintas.',
-        'Almstins lleva la contabilidad sobre la marcha: cada compra, venta y transferencia reconciliada, con las ganancias realizadas desglosadas por activo y por año. Cuando llega el momento de declarar — o de dárselo a tu contador — ya está organizado.',
+        'SusuFinance lleva la contabilidad sobre la marcha: cada compra, venta y transferencia reconciliada, con las ganancias realizadas desglosadas por activo y por año. Cuando llega el momento de declarar — o de dárselo a tu contador — ya está organizado.',
       ],
       ctaLabel: 'Ver tu desglose fiscal',
       ctaPath: '/dashboard/bookkeeping',
     },
     {
-      subject: 'Dos últimas cosas que Almstins puede hacer por ti',
+      subject: 'Dos últimas cosas que SusuFinance puede hacer por ti',
       paragraphs: [
         'A estas alturas ya habrás verificado una dirección y empezado a controlar lo que tienes. Dos últimas cosas que vale la pena saber.',
-        'Si aceptas cripto en un negocio, Almstins Verify vigila las direcciones que publicas — para que una dirección o un QR sustituido nunca llegue a tus clientes. Es gratis durante el acceso anticipado.',
+        'Si aceptas cripto en un negocio, SusuFinance Verify vigila las direcciones que publicas — para que una dirección o un QR sustituido nunca llegue a tus clientes. Es gratis durante el acceso anticipado.',
         'Y si te has quedado corto con las tres billeteras gratis, los planes de pago añaden más capacidad y las herramientas listas para ti: AI triage, validación de recibos y un PDF de resumen anual para tu contador.',
         'En cualquier caso — gracias por estar aquí tan pronto. Significa mucho.',
       ],
@@ -109,15 +109,15 @@ export const es: DripLocale = {
 
 export const fr: DripLocale = {
   lang: 'fr',
-  brand: 'Almstins',
+  brand: 'SusuFinance',
   signoff: '— Donnie',
   unsubscribe: 'Se désabonner de ces e-mails',
   contact: 'Répondez quand vous voulez, ou écrivez-moi sur Telegram',
   emails: [
     {
-      subject: 'Bienvenue sur Almstins — vérifiez n’importe quelle adresse, gratuitement',
+      subject: 'Bienvenue sur SusuFinance — vérifiez n’importe quelle adresse, gratuitement',
       paragraphs: [
-        'Merci de votre inscription. Almstins fait deux choses : il vous aide à voir tout ce que vous possédez sur vos portefeuilles, exchanges et DeFi — et il vous aide à ne pas le perdre à cause d’une arnaque.',
+        'Merci de votre inscription. SusuFinance fait deux choses : il vous aide à voir tout ce que vous possédez sur vos portefeuilles, exchanges et DeFi — et il vous aide à ne pas le perdre à cause d’une arnaque.',
         'Commencez par la seconde. Collez n’importe quelle adresse de portefeuille ou site web et nous la vérifions contre les principales bases de données d’arnaques, d’hameçonnage et de sanctions avant que vous n’envoyiez quoi que ce soit — gratuitement, sans connexion et sans limite du nombre de vérifications, aussi longtemps que vous en avez besoin.',
         'Sans connexion de portefeuille, jamais. Nous ne lisons que des données publiques.',
       ],
@@ -128,7 +128,7 @@ export const fr: DripLocale = {
       subject: 'Voyez tout ce que vous possédez au même endroit',
       paragraphs: [
         'La plupart des gens ne savent pas vraiment ce que vaut leur crypto — elle est éparpillée entre exchanges, portefeuilles et chaînes.',
-        'Ajoutez une adresse de portefeuille — en lecture seule, sans connexion, sans clés — et Almstins récupère vos soldes, les valorise en direct et calcule votre coût de base et vos gains automatiquement.',
+        'Ajoutez une adresse de portefeuille — en lecture seule, sans connexion, sans clés — et SusuFinance récupère vos soldes, les valorise en direct et calcule votre coût de base et vos gains automatiquement.',
         'Commencez par une seule. Cela prend une trentaine de secondes.',
       ],
       ctaLabel: 'Ajouter un portefeuille',
@@ -138,16 +138,16 @@ export const fr: DripLocale = {
       subject: 'Vos impôts crypto, déjà presque faits',
       paragraphs: [
         'Le plus dur avec la crypto, ce n’est pas la volatilité — c’est la période des impôts, reconstituer une année de transactions à partir d’une dizaine de sources différentes.',
-        'Almstins tient les comptes au fur et à mesure : chaque achat, vente et transfert réconcilié, avec les gains réalisés détaillés par actif et par année. Au moment de déclarer — ou de confier le tout à votre comptable — c’est déjà organisé.',
+        'SusuFinance tient les comptes au fur et à mesure : chaque achat, vente et transfert réconcilié, avec les gains réalisés détaillés par actif et par année. Au moment de déclarer — ou de confier le tout à votre comptable — c’est déjà organisé.',
       ],
       ctaLabel: 'Voir votre récapitulatif fiscal',
       ctaPath: '/dashboard/bookkeeping',
     },
     {
-      subject: 'Deux dernières choses qu’Almstins peut faire pour vous',
+      subject: 'Deux dernières choses qu’SusuFinance peut faire pour vous',
       paragraphs: [
         'À ce stade, vous avez sans doute vérifié une adresse et commencé à suivre ce que vous possédez. Deux dernières choses qui valent la peine d’être connues.',
-        'Si vous acceptez la crypto pour une activité, Almstins Verify surveille les adresses que vous publiez — pour qu’une adresse ou un QR remplacé n’atteigne jamais vos clients. C’est gratuit pendant l’accès anticipé.',
+        'Si vous acceptez la crypto pour une activité, SusuFinance Verify surveille les adresses que vous publiez — pour qu’une adresse ou un QR remplacé n’atteigne jamais vos clients. C’est gratuit pendant l’accès anticipé.',
         'Et si les trois portefeuilles gratuits ne vous suffisent plus, les forfaits payants ajoutent plus de capacité et les outils clé en main : AI triage, validation de reçus et un PDF de récapitulatif annuel pour votre comptable.',
         'Dans tous les cas — merci d’être là aussi tôt. Cela compte beaucoup.',
       ],

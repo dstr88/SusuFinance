@@ -4,7 +4,7 @@
  * Self-send proof of control (no website needed). Issues (or returns the existing)
  * challenge for an address destination and hands back the instruction data: from
  * the wallet that holds this address, send any tiny amount; we'll watch the chain.
- * Read-only — Almstins never sends, holds, or signs.
+ * Read-only — SusuFinance never sends, holds, or signs.
  *
  * Returns { ok, rail, address, issuedAt } or { ok:false, error }.
  */

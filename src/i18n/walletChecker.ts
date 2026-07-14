@@ -170,7 +170,7 @@ export const en: WalletCheckerLocale = {
   },
   jsonld: {
     appName: 'Crypto Wallet Scam Checker',
-    appUrl: 'https://almstins.com/wallet-checker',
+    appUrl: 'https://susufinance.com/wallet-checker',
     appDescription: 'Free tool to check any crypto wallet address for known scams, phishing, honeypots, dark web activity, and mixer use. Supports Ethereum, Solana, and Sui.',
     featureList: [
       'Known scam address detection',
@@ -184,8 +184,8 @@ export const en: WalletCheckerLocale = {
     ],
   },
   nav: {
-    ariaLabel: 'Almstins site navigation',
-    brandAriaLabel: 'Almstins home',
+    ariaLabel: 'SusuFinance site navigation',
+    brandAriaLabel: 'SusuFinance home',
     tagline: 'Crypto portfolio tracker & bookkeeping tool',
     langLabel: '🇪🇸 En Español',
     langHref: '/wallet-checker/es',
@@ -258,9 +258,9 @@ export const en: WalletCheckerLocale = {
     loading: 'Checking security databases…',
   },
   cta: {
-    ariaLabel: 'About Almstins',
+    ariaLabel: 'About SusuFinance',
     headline: 'Want to track everything you own?',
-    sub: 'Almstins connects your wallets, DeFi positions, and exchange accounts in one place — and automatically tracks your capital gains, holdings, and realized gains.',
+    sub: 'SusuFinance connects your wallets, DeFi positions, and exchange accounts in one place — and automatically tracks your capital gains, holdings, and realized gains.',
     button: 'Get started free →',
   },
   signals: {
@@ -312,7 +312,7 @@ export const en: WalletCheckerLocale = {
     title: 'Common questions & scam patterns',
     items: [
       { q: 'What is the dApp / Website checker?', a: 'It\'s a free tool that takes any URL or domain and checks it against 7 independent security databases — MetaMask\'s own phishing blocklist, ScamSniffer, GoPlus, URLScan.io, OpenPhish, Google Safe Browsing, and VirusTotal. It returns a red, yellow, or green result based on what those databases report. We do not make our own determination — we surface what the security community has already flagged.' },
-      { q: 'Do you store the wallet addresses or websites I check?', a: 'No — not in readable form. The checker needs no account and no wallet connection. To keep it fast, a repeated check of the same address or URL is served from a short-lived cache, but that cache is keyed to an irreversible one-way fingerprint of what you entered, not the address or URL itself. The usage counter records only that same fingerprint. There is no way to work backward from what we store to what you checked — consistent with our rule that Almstins never links an address to a person.' },
+      { q: 'Do you store the wallet addresses or websites I check?', a: 'No — not in readable form. The checker needs no account and no wallet connection. To keep it fast, a repeated check of the same address or URL is served from a short-lived cache, but that cache is keyed to an irreversible one-way fingerprint of what you entered, not the address or URL itself. The usage counter records only that same fingerprint. There is no way to work backward from what we store to what you checked — consistent with our rule that SusuFinance never links an address to a person.' },
       { q: 'What does a red result mean for a website?', a: 'It means one or more of the security databases we query has reported that domain. It does not mean we are calling it a scam — that determination comes from the third-party database. You should treat a red result as a serious warning, do your own additional research, and not connect your wallet until you are certain the site is legitimate.' },
       { q: 'What does a yellow result mean?', a: 'Yellow means the site is not in any blocklist, but it also has little or no security scan history — so there\'s not enough data to give a clean bill of health. New sites, obscure domains, or recently registered addresses often show yellow. Proceed with caution and verify the site through official channels before connecting.' },
       { q: 'Can I trust a site just because it shows green?', a: 'No. A green result means the site hasn\'t been reported to any of the databases we check — not that it\'s definitively safe. Brand-new phishing sites get a few hours before they\'re added to blocklists. Always double-check the exact URL in your browser bar, look for the official social media accounts, and never connect a wallet from a link sent in a DM or email.' },
@@ -328,8 +328,8 @@ export const en: WalletCheckerLocale = {
     ],
   },
   disclaimer: {
-    text: 'Wallet check results are sourced from public databases including GoPlus Security, Etherscan, Alchemy, and honeypot.is. dApp / website results are sourced from MetaMask eth-phishing-detect, ScamSniffer, GoPlus Security, URLScan.io, and OpenPhish. All findings are reported from third-party databases and are not independently verified by Almstins. This tool does not constitute financial or legal advice. Always do your own research.',
-    link: 'A free tool by Almstins — crypto portfolio tracker & bookkeeping tool.',
+    text: 'Wallet check results are sourced from public databases including GoPlus Security, Etherscan, Alchemy, and honeypot.is. dApp / website results are sourced from MetaMask eth-phishing-detect, ScamSniffer, GoPlus Security, URLScan.io, and OpenPhish. All findings are reported from third-party databases and are not independently verified by SusuFinance. This tool does not constitute financial or legal advice. Always do your own research.',
+    link: 'A free tool by SusuFinance — crypto portfolio tracker & bookkeeping tool.',
   },
   js: {
     warmupHint: 'The server is waking up after a period of inactivity. Hang tight — results are on their way…',
@@ -447,7 +447,7 @@ export const en: WalletCheckerLocale = {
     multisigEvmOnly: 'Multi-sig detection only available for EVM addresses.',
     verifiedTitle: 'Verified publisher',
     verifiedBody: '{domain} proved control of its domain and lists this as one of its own receiving addresses.',
-    verifiedMerchant: 'A verified Almstins member registered this address as “{name}”.',
+    verifiedMerchant: 'A verified SusuFinance member registered this address as “{name}”.',
     verifiedVia: ' · verified via {domain}',
     verifiedSub: 'This confirms who published the address — not that any payment is safe. Still confirm the amount and that you meant to pay this business.',
   },
@@ -461,7 +461,7 @@ export const es: WalletCheckerLocale = {
   },
   jsonld: {
     appName: 'Verificador de Estafas de Cripto',
-    appUrl: 'https://almstins.com/wallet-checker/es',
+    appUrl: 'https://susufinance.com/wallet-checker/es',
     appDescription: 'Herramienta gratuita para verificar cualquier dirección de billetera cripto en busca de estafas conocidas, phishing, honeypots, actividad en la dark web y uso de mixers. Compatible con Ethereum, Solana y Sui.',
     featureList: [
       'Detección de direcciones de estafa conocidas',
@@ -475,8 +475,8 @@ export const es: WalletCheckerLocale = {
     ],
   },
   nav: {
-    ariaLabel: 'Navegación del sitio Almstins',
-    brandAriaLabel: 'Inicio de Almstins',
+    ariaLabel: 'Navegación del sitio SusuFinance',
+    brandAriaLabel: 'Inicio de SusuFinance',
     tagline: 'Rastreador de portafolio cripto y herramienta de contabilidad',
     langLabel: '🇺🇸 In English',
     langHref: '/wallet-checker',
@@ -549,9 +549,9 @@ export const es: WalletCheckerLocale = {
     loading: 'Consultando 7 bases de datos de seguridad…',
   },
   cta: {
-    ariaLabel: 'Acerca de Almstins',
+    ariaLabel: 'Acerca de SusuFinance',
     headline: '¿Quieres rastrear todo lo que tienes?',
-    sub: 'Almstins conecta tus billeteras, posiciones DeFi y cuentas de exchanges en un solo lugar — y rastrea automáticamente tus ganancias de capital, tenencias y ganancias realizadas.',
+    sub: 'SusuFinance conecta tus billeteras, posiciones DeFi y cuentas de exchanges en un solo lugar — y rastrea automáticamente tus ganancias de capital, tenencias y ganancias realizadas.',
     button: 'Comenzar gratis →',
   },
   signals: {
@@ -603,7 +603,7 @@ export const es: WalletCheckerLocale = {
     title: 'Preguntas frecuentes y patrones de estafa',
     items: [
       { q: '¿Qué es el verificador de dApp / sitio web?', a: 'Es una herramienta gratuita que toma cualquier URL o dominio y lo verifica contra 7 bases de datos de seguridad independientes — la propia lista de bloqueo de phishing de MetaMask, ScamSniffer, GoPlus, URLScan.io, OpenPhish, Google Safe Browsing y VirusTotal. Devuelve un resultado rojo, amarillo o verde según lo que reportan esas bases de datos. No hacemos nuestra propia determinación — mostramos lo que la comunidad de seguridad ya ha señalado.' },
-      { q: '¿Almacenan las direcciones de billetera o los sitios web que verifico?', a: 'No — no en forma legible. El verificador no requiere cuenta ni conexión de billetera. Para mantenerlo rápido, una verificación repetida de la misma dirección o URL se sirve desde una caché de corta duración, pero esa caché se indexa mediante una huella unidireccional e irreversible de lo que ingresaste, no la dirección o URL en sí. El contador de uso registra solo esa misma huella. No hay forma de retroceder desde lo que almacenamos hasta lo que verificaste — coherente con nuestra regla de que Almstins nunca vincula una dirección a una persona.' },
+      { q: '¿Almacenan las direcciones de billetera o los sitios web que verifico?', a: 'No — no en forma legible. El verificador no requiere cuenta ni conexión de billetera. Para mantenerlo rápido, una verificación repetida de la misma dirección o URL se sirve desde una caché de corta duración, pero esa caché se indexa mediante una huella unidireccional e irreversible de lo que ingresaste, no la dirección o URL en sí. El contador de uso registra solo esa misma huella. No hay forma de retroceder desde lo que almacenamos hasta lo que verificaste — coherente con nuestra regla de que SusuFinance nunca vincula una dirección a una persona.' },
       { q: '¿Qué significa un resultado rojo para un sitio web?', a: 'Significa que una o más de las bases de datos de seguridad que consultamos ha reportado ese dominio. No significa que nosotros lo estemos llamando una estafa — esa determinación proviene de la base de datos de terceros. Debes tratar un resultado rojo como una advertencia seria, hacer tu propia investigación adicional y no conectar tu billetera hasta estar seguro de que el sitio es legítimo.' },
       { q: '¿Qué significa un resultado amarillo?', a: 'Amarillo significa que el sitio no está en ninguna lista de bloqueo, pero tampoco tiene poco o ningún historial de escaneos de seguridad — por lo que no hay suficientes datos para dar un certificado de salud limpio. Los sitios nuevos, dominios oscuros o direcciones registradas recientemente a menudo muestran amarillo. Procede con precaución y verifica el sitio a través de canales oficiales antes de conectarte.' },
       { q: '¿Puedo confiar en un sitio solo porque muestra verde?', a: 'No. Un resultado verde significa que el sitio no ha sido reportado a ninguna de las bases de datos que verificamos — no que sea definitivamente seguro. Los sitios de phishing nuevos tienen unas pocas horas antes de ser añadidos a las listas de bloqueo. Siempre verifica la URL exacta en la barra de tu navegador, busca las cuentas oficiales de redes sociales y nunca conectes una billetera desde un enlace enviado en un mensaje directo o correo electrónico.' },
@@ -619,8 +619,8 @@ export const es: WalletCheckerLocale = {
     ],
   },
   disclaimer: {
-    text: 'Los resultados de verificación de billeteras provienen de bases de datos públicas incluyendo GoPlus Security, Etherscan, Alchemy y honeypot.is. Los resultados de dApp / sitio web provienen de MetaMask eth-phishing-detect, ScamSniffer, GoPlus Security, URLScan.io y OpenPhish. Todos los hallazgos se reportan desde bases de datos de terceros y no son verificados independientemente por Almstins. Esta herramienta no constituye asesoramiento financiero ni legal. Haz siempre tu propia investigación.',
-    link: 'Una herramienta gratuita de Almstins — rastreador de portafolio cripto y herramienta de contabilidad.',
+    text: 'Los resultados de verificación de billeteras provienen de bases de datos públicas incluyendo GoPlus Security, Etherscan, Alchemy y honeypot.is. Los resultados de dApp / sitio web provienen de MetaMask eth-phishing-detect, ScamSniffer, GoPlus Security, URLScan.io y OpenPhish. Todos los hallazgos se reportan desde bases de datos de terceros y no son verificados independientemente por SusuFinance. Esta herramienta no constituye asesoramiento financiero ni legal. Haz siempre tu propia investigación.',
+    link: 'Una herramienta gratuita de SusuFinance — rastreador de portafolio cripto y herramienta de contabilidad.',
   },
   js: {
     warmupHint: 'El servidor se está iniciando tras un período de inactividad. Espera un momento — los resultados están en camino…',
@@ -738,7 +738,7 @@ export const es: WalletCheckerLocale = {
     multisigEvmOnly: 'La detección de multi-firma solo está disponible para direcciones EVM.',
     verifiedTitle: 'Comercio verificado',
     verifiedBody: '{domain} demostró el control de su dominio y figura esta como una de sus propias direcciones de cobro.',
-    verifiedMerchant: 'Un miembro verificado de Almstins registró esta dirección como «{name}».',
+    verifiedMerchant: 'Un miembro verificado de SusuFinance registró esta dirección como «{name}».',
     verifiedVia: ' · verificado vía {domain}',
     verifiedSub: 'Esto confirma quién publicó la dirección — no que un pago sea seguro. Confirma igualmente el importe y que querías pagar a este negocio.',
   },
@@ -752,7 +752,7 @@ export const fr: WalletCheckerLocale = {
   },
   jsonld: {
     appName: 'Vérificateur d’arnaques de portefeuille crypto',
-    appUrl: 'https://almstins.com/wallet-checker/fr',
+    appUrl: 'https://susufinance.com/wallet-checker/fr',
     appDescription: 'Outil gratuit pour vérifier toute adresse de portefeuille crypto : arnaques connues, phishing, honeypots, activité du dark web et usage de mixers. Prend en charge Ethereum, Solana et Sui.',
     featureList: [
       'Détection d’adresses d’arnaque connues',
@@ -766,8 +766,8 @@ export const fr: WalletCheckerLocale = {
     ],
   },
   nav: {
-    ariaLabel: 'Navigation du site Almstins',
-    brandAriaLabel: 'Accueil Almstins',
+    ariaLabel: 'Navigation du site SusuFinance',
+    brandAriaLabel: 'Accueil SusuFinance',
     tagline: 'Suivi de portefeuille crypto et outil de comptabilité',
     langLabel: '🇬🇧 In English',
     langHref: '/wallet-checker',
@@ -840,9 +840,9 @@ export const fr: WalletCheckerLocale = {
     loading: 'Vérification des bases de données de sécurité…',
   },
   cta: {
-    ariaLabel: 'À propos d’Almstins',
+    ariaLabel: 'À propos d’SusuFinance',
     headline: 'Vous voulez suivre tout ce que vous possédez ?',
-    sub: 'Almstins réunit vos portefeuilles, positions DeFi et comptes d’échange au même endroit — et suit automatiquement vos plus-values, vos avoirs et vos gains réalisés.',
+    sub: 'SusuFinance réunit vos portefeuilles, positions DeFi et comptes d’échange au même endroit — et suit automatiquement vos plus-values, vos avoirs et vos gains réalisés.',
     button: 'Commencer gratuitement →',
   },
   signals: {
@@ -894,7 +894,7 @@ export const fr: WalletCheckerLocale = {
     title: 'Questions fréquentes et schémas d’arnaque',
     items: [
       { q: 'Qu’est-ce que le vérificateur de dApp / site web ?', a: 'C’est un outil gratuit qui prend n’importe quelle URL ou domaine et le vérifie auprès de 7 bases de données de sécurité indépendantes — la liste de blocage anti-phishing de MetaMask, ScamSniffer, GoPlus, URLScan.io, OpenPhish, Google Safe Browsing et VirusTotal. Il renvoie un résultat rouge, jaune ou vert selon ce que rapportent ces bases. Nous ne portons pas notre propre jugement — nous faisons remonter ce que la communauté de la sécurité a déjà signalé.' },
-      { q: 'Conservez-vous les adresses de portefeuille ou les sites web que je vérifie ?', a: 'Non — pas sous une forme lisible. Le vérificateur ne demande aucun compte ni connexion de portefeuille. Pour rester rapide, une vérification répétée de la même adresse ou URL est servie depuis un cache de courte durée, mais ce cache est indexé par une empreinte unidirectionnelle et irréversible de ce que vous avez saisi, et non l’adresse ou l’URL elle-même. Le compteur d’utilisation n’enregistre que cette même empreinte. Il n’existe aucun moyen de remonter de ce que nous stockons vers ce que vous avez vérifié — conforme à notre règle selon laquelle Almstins ne relie jamais une adresse à une personne.' },
+      { q: 'Conservez-vous les adresses de portefeuille ou les sites web que je vérifie ?', a: 'Non — pas sous une forme lisible. Le vérificateur ne demande aucun compte ni connexion de portefeuille. Pour rester rapide, une vérification répétée de la même adresse ou URL est servie depuis un cache de courte durée, mais ce cache est indexé par une empreinte unidirectionnelle et irréversible de ce que vous avez saisi, et non l’adresse ou l’URL elle-même. Le compteur d’utilisation n’enregistre que cette même empreinte. Il n’existe aucun moyen de remonter de ce que nous stockons vers ce que vous avez vérifié — conforme à notre règle selon laquelle SusuFinance ne relie jamais une adresse à une personne.' },
       { q: 'Que signifie un résultat rouge pour un site web ?', a: 'Cela signifie qu’une ou plusieurs des bases de données que nous interrogeons ont signalé ce domaine. Cela ne veut pas dire que nous le qualifions d’arnaque — ce jugement vient de la base de données tierce. Traitez un résultat rouge comme un avertissement sérieux, faites vos propres recherches supplémentaires et ne connectez pas votre portefeuille tant que vous n’êtes pas certain que le site est légitime.' },
       { q: 'Que signifie un résultat jaune ?', a: 'Le jaune signifie que le site n’est dans aucune liste de blocage, mais qu’il a peu ou pas d’historique d’analyse de sécurité — il n’y a donc pas assez de données pour lui donner un feu vert. Les sites récents, les domaines obscurs ou les adresses récemment enregistrées affichent souvent du jaune. Procédez avec prudence et vérifiez le site par des canaux officiels avant de vous connecter.' },
       { q: 'Puis-je faire confiance à un site juste parce qu’il est vert ?', a: 'Non. Un résultat vert signifie que le site n’a été signalé à aucune des bases que nous vérifions — pas qu’il est définitivement sûr. Les sites de phishing tout neufs disposent de quelques heures avant d’être ajoutés aux listes de blocage. Vérifiez toujours l’URL exacte dans la barre de votre navigateur, cherchez les comptes officiels sur les réseaux sociaux, et ne connectez jamais un portefeuille à partir d’un lien envoyé en DM ou par e-mail.' },
@@ -910,8 +910,8 @@ export const fr: WalletCheckerLocale = {
     ],
   },
   disclaimer: {
-    text: "Les résultats de vérification de portefeuille proviennent de bases de données publiques dont GoPlus Security, Etherscan, Alchemy et honeypot.is. Les résultats dApp / site web proviennent de MetaMask eth-phishing-detect, ScamSniffer, GoPlus Security, URLScan.io et OpenPhish. Tous les constats sont rapportés depuis des bases de données tierces et ne sont pas vérifiés indépendamment par Almstins. Cet outil ne constitue pas un conseil financier ou juridique. Faites toujours vos propres recherches.",
-    link: "Un outil gratuit d’Almstins — suivi de portefeuille crypto et outil de comptabilité.",
+    text: "Les résultats de vérification de portefeuille proviennent de bases de données publiques dont GoPlus Security, Etherscan, Alchemy et honeypot.is. Les résultats dApp / site web proviennent de MetaMask eth-phishing-detect, ScamSniffer, GoPlus Security, URLScan.io et OpenPhish. Tous les constats sont rapportés depuis des bases de données tierces et ne sont pas vérifiés indépendamment par SusuFinance. Cet outil ne constitue pas un conseil financier ou juridique. Faites toujours vos propres recherches.",
+    link: "Un outil gratuit d’SusuFinance — suivi de portefeuille crypto et outil de comptabilité.",
   },
   js: {
     warmupHint: "Le serveur se réveille après une période d’inactivité. Patientez — les résultats arrivent…",
@@ -1029,7 +1029,7 @@ export const fr: WalletCheckerLocale = {
     multisigEvmOnly: "La détection multi-signature n’est disponible que pour les adresses EVM.",
     verifiedTitle: "Émetteur vérifié",
     verifiedBody: "{domain} a prouvé le contrôle de son domaine et inscrit celle-ci comme l’une de ses propres adresses de réception.",
-    verifiedMerchant: "Un membre vérifié d’Almstins a enregistré cette adresse sous « {name} ».",
+    verifiedMerchant: "Un membre vérifié d’SusuFinance a enregistré cette adresse sous « {name} ».",
     verifiedVia: " · vérifié via {domain}",
     verifiedSub: "Cela confirme qui a publié l’adresse — pas qu’un paiement soit sûr. Vérifiez tout de même le montant et que vous vouliez bien payer cette entreprise.",
   },

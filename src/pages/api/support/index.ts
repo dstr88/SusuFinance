@@ -90,7 +90,7 @@ export const POST: APIRoute = async ({ request }) => {
       to: ADMIN_NOTIFY_EMAIL,
       subject: `💬 New support message from ${userEmail}`,
       text: [
-        `A user has sent a support message on Almstins.`,
+        `A user has sent a support message on SusuFinance.`,
         ``,
         `From   : ${userEmail}`,
         `User ID: ${session.user.id}`,
@@ -98,7 +98,7 @@ export const POST: APIRoute = async ({ request }) => {
         ``,
         text,
         ``,
-        `Reply at: ${process.env.AUTH_URL ?? 'https://almstins.com'}/admin/support`,
+        `Reply at: ${process.env.AUTH_URL ?? 'https://susufinance.com'}/admin/support`,
       ].join('\n'),
     }).catch((err) => console.warn('[support] admin notify failed', err));
   }

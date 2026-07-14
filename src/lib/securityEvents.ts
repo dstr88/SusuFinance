@@ -98,7 +98,7 @@ export async function auditChatQuestion(
     `This question was still processed. Review security_events table for full history.`,
   ].join('\n');
 
-  void sendAlert(`[Almstins Security] Injection attempt detected`, body);
+  void sendAlert(`[SusuFinance Security] Injection attempt detected`, body);
 
   // Log to server output as well for Render log tailing
   console.warn('[security] injection_attempt', { tenantId, patterns: matched, questionLength: question.length });

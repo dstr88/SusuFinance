@@ -36,7 +36,7 @@ try {
 const DEMO_CHECK_ADDR = mirrorAddrs[0]?.address ?? '0xce000000000000000000000000000000000000ce';
 ---
 
-<LoginLayout title="Almstins Verify — Demo" description="See how Almstins Verify works for vendors, exchanges, and investors. No login required.">
+<LoginLayout title="SusuFinance Verify — Demo" description="See how SusuFinance Verify works for vendors, exchanges, and investors. No login required.">
   <style>
     .vd-demo {
       max-width: 860px;
@@ -393,11 +393,11 @@ const DEMO_CHECK_ADDR = mirrorAddrs[0]?.address ?? '0xce000000000000000000000000
 
   <div class="vd-demo">
     <div class="vd-demo__hero">
-      <h1>Almstins Verify — Live Demo</h1>
+      <h1>SusuFinance Verify — Live Demo</h1>
       <p>Two ways to register. One way to check. No account required.</p>
       <div class="vd-demo__hero-actions">
         <a class="vd-demo__load-btn" href="/api/demo/start?next=/verify/demo">Load demo data &rarr;</a>
-        <a href="/verify">Learn more about Almstins Verify</a>
+        <a href="/verify">Learn more about SusuFinance Verify</a>
       </div>
     </div>
 
@@ -438,16 +438,16 @@ const DEMO_CHECK_ADDR = mirrorAddrs[0]?.address ?? '0xce000000000000000000000000
     <!-- Panel 2: Institution / API key path -->
     <div class="vd-panel">
       <div class="vd-panel__label">Option 2 — Institution or Exchange</div>
-      <div class="vd-panel__title">Host your own address list. Almstins pulls and verifies it.</div>
+      <div class="vd-panel__title">Host your own address list. SusuFinance pulls and verifies it.</div>
       <p class="vd-panel__desc">
         Large institutions — exchanges, payment processors, licensed VASPs — often manage hundreds
         of receiving addresses across multiple chains. Instead of registering them one by one,
-        they host a canonical list at an endpoint on their own domain and provide Almstins
-        a read-only API key. Almstins uses that key to pull the list, hashes and verifies
+        they host a canonical list at an endpoint on their own domain and provide SusuFinance
+        a read-only API key. SusuFinance uses that key to pull the list, hashes and verifies
         each address, and mirrors them in the public registry under the institution's domain name.
-        The key is stored encrypted and is never exposed. Every six hours Almstins re-pulls,
+        The key is stored encrypted and is never exposed. Every six hours SusuFinance re-pulls,
         re-hashes, and compares. If any address appears, disappears, or changes without notice,
-        Almstins alerts the institution and the affected badges lapse within twenty-four hours.
+        SusuFinance alerts the institution and the affected badges lapse within twenty-four hours.
       </p>
       <div class="vd-steps">
         <div class="vd-step">
@@ -456,15 +456,15 @@ const DEMO_CHECK_ADDR = mirrorAddrs[0]?.address ?? '0xce000000000000000000000000
         </div>
         <div class="vd-step">
           <div class="vd-step__num">2</div>
-          <div class="vd-step__text">Institution hosts their address list at an endpoint on that domain and provides Almstins a read-only API key</div>
+          <div class="vd-step__text">Institution hosts their address list at an endpoint on that domain and provides SusuFinance a read-only API key</div>
         </div>
         <div class="vd-step">
           <div class="vd-step__num">3</div>
-          <div class="vd-step__text">Almstins pulls the list, hashes each address, and mirrors them as "published by &lt;domain&gt;"</div>
+          <div class="vd-step__text">SusuFinance pulls the list, hashes each address, and mirrors them as "published by &lt;domain&gt;"</div>
         </div>
         <div class="vd-step">
           <div class="vd-step__num">4</div>
-          <div class="vd-step__text">Every 6 hours Almstins re-pulls, re-verifies, and alerts on any unexpected change</div>
+          <div class="vd-step__text">Every 6 hours SusuFinance re-pulls, re-verifies, and alerts on any unexpected change</div>
         </div>
       </div>
 
@@ -484,13 +484,13 @@ const DEMO_CHECK_ADDR = mirrorAddrs[0]?.address ?? '0xce000000000000000000000000
 
 // Option C — bare array
 ["0xce000…", "bc1qdem…"]`}</pre>
-        <p class="vd-tech-block__note">Almstins sends: <code>Authorization: Bearer &lt;your-key&gt;</code> &nbsp;·&nbsp; Accepts: <code>application/json</code> &nbsp;·&nbsp; 8s timeout &nbsp;·&nbsp; 64KB max response</p>
+        <p class="vd-tech-block__note">SusuFinance sends: <code>Authorization: Bearer &lt;your-key&gt;</code> &nbsp;·&nbsp; Accepts: <code>application/json</code> &nbsp;·&nbsp; 8s timeout &nbsp;·&nbsp; 64KB max response</p>
       </div>
     </div>
 
-    <!-- Panel 3: What Almstins mirrors -->
+    <!-- Panel 3: What SusuFinance mirrors -->
     <div class="vd-panel">
-      <div class="vd-panel__label">Result — What Almstins mirrors for demo-exchange.io</div>
+      <div class="vd-panel__label">Result — What SusuFinance mirrors for demo-exchange.io</div>
       <div class="vd-panel__title">Live addresses synced from the exchange's own endpoint</div>
       <p class="vd-panel__desc">
         These addresses were pulled from demo-exchange.io's hosted list, hashed, verified,
@@ -574,7 +574,7 @@ const DEMO_CHECK_ADDR = mirrorAddrs[0]?.address ?? '0xce000000000000000000000000
         if (isVerified) {
           result.innerHTML = `<div class="vd-result--verified">
             ✓ <strong>Verified publisher</strong> — this address was published by <strong>${escHtml(domain)}</strong>.
-            The domain proved control of this address through Almstins Verify.
+            The domain proved control of this address through SusuFinance Verify.
           </div>`;
         } else if (isFlagged) {
           const reasons = [

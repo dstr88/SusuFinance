@@ -21,7 +21,7 @@ export interface HealthAlertEmailLocale {
     hfFormatted: string;  // e.g. "1.43"
     direction: string;    // 'below' | 'above'
     threshold: number;    // numeric threshold from alert_preferences
-    appBase: string;      // e.g. "https://almstins.com"
+    appBase: string;      // e.g. "https://susufinance.com"
   }) => RenderedEmail;
 }
 
@@ -41,7 +41,7 @@ export const en: HealthAlertEmailLocale = {
         `Log in to review your positions and add collateral or repay debt if needed:`,
         `${appBase}/dashboard/vault`,
         ``,
-        `— Almstins`,
+        `— SusuFinance`,
         ``,
         `To change or disable this alert, visit Account → Alert email in the app.`,
       ].join('\n'),
@@ -66,7 +66,7 @@ export const es: HealthAlertEmailLocale = {
         `Inicia sesión para revisar tus posiciones y añadir colateral o pagar deuda si es necesario:`,
         `${appBase}/dashboard/vault`,
         ``,
-        `— Almstins`,
+        `— SusuFinance`,
         ``,
         `Para cambiar o desactivar esta alerta, visita Cuenta → Correo de alertas en la app.`,
       ].join('\n'),
@@ -91,7 +91,7 @@ export const fr: HealthAlertEmailLocale = {
         `Connectez-vous pour consulter vos positions et ajouter des garanties ou rembourser une dette si nécessaire :`,
         `${appBase}/dashboard/vault`,
         ``,
-        `— Almstins`,
+        `— SusuFinance`,
         ``,
         `Pour modifier ou désactiver cette alerte, rendez-vous dans Compte → E-mail d'alerte dans l'app.`,
       ].join('\n'),

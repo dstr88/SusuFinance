@@ -20,27 +20,27 @@ export interface ChangelogLocale {
 
 export const en: ChangelogLocale = {
   lang: 'en',
-  pageTitle: 'Changelog | Almstins',
-  description: "What's new, what changed, and why — updates from the Almstins team.",
-  backLink: '← Back to Almstins',
+  pageTitle: 'Changelog | SusuFinance',
+  description: "What's new, what changed, and why — updates from the SusuFinance team.",
+  backLink: '← Back to SusuFinance',
   heading: 'Changelog',
   sub: "What's new, what changed, and why.",
 };
 
 export const es: ChangelogLocale = {
   lang: 'es',
-  pageTitle: 'Registro de cambios | Almstins',
-  description: 'Qué hay de nuevo, qué cambió y por qué — novedades del equipo de Almstins.',
-  backLink: '← Volver a Almstins',
+  pageTitle: 'Registro de cambios | SusuFinance',
+  description: 'Qué hay de nuevo, qué cambió y por qué — novedades del equipo de SusuFinance.',
+  backLink: '← Volver a SusuFinance',
   heading: 'Registro de cambios',
   sub: 'Qué hay de nuevo, qué cambió y por qué.',
 };
 
 export const fr: ChangelogLocale = {
   lang: 'fr',
-  pageTitle: 'Journal des modifications | Almstins',
-  description: "Quoi de neuf, ce qui a changé et pourquoi — les nouveautés de l'équipe Almstins.",
-  backLink: '← Retour à Almstins',
+  pageTitle: 'Journal des modifications | SusuFinance',
+  description: "Quoi de neuf, ce qui a changé et pourquoi — les nouveautés de l'équipe SusuFinance.",
+  backLink: '← Retour à SusuFinance',
   heading: 'Journal des modifications',
   sub: 'Quoi de neuf, ce qui a changé et pourquoi.',
 };

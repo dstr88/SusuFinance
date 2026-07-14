@@ -102,7 +102,7 @@ export const en: LoginPageLocale = {
     sub: 'Check an address before you send, account for everything you own, and verify the QR codes your business publishes — all in one place. Read-only, no wallet connection.',
     heroFree: 'Scanning for security is free for everyone. No account, no sign-in needed.',
     heroCta: 'Start with the free checker',
-    doorsAria: 'Almstins tools',
+    doorsAria: 'SusuFinance tools',
     trustAria: 'Our trust guarantees',
     trust1: 'Your keys never touch our server',
     trust2: 'No wallet connection, ever',
@@ -113,7 +113,7 @@ export const en: LoginPageLocale = {
     plansHref: '/prices',
   },
   meta: {
-    title: 'Almstins — Check, track, and verify your crypto',
+    title: 'SusuFinance — Check, track, and verify your crypto',
     description: 'Check any wallet or site for scams, track your portfolio and taxes, and verify the QR codes your business publishes — read-only, no wallet connection.',
   },
   signin: {
@@ -135,7 +135,7 @@ export const en: LoginPageLocale = {
     sendMagicLink: 'Send magic link',
   },
   hero: {
-    wordmarkAriaLabel: 'Almstins home',
+    wordmarkAriaLabel: 'SusuFinance home',
     headline: 'Finally Understand<br/>What Happened<br/>in Your Wallet.',
     subheadline: 'Missing transactions, unexplained gaps, tax surprises — trace every move in your crypto history so you know exactly what happened and why.',
     demoCta: 'Try the Demo — No Signup Needed →',
@@ -168,7 +168,7 @@ export const en: LoginPageLocale = {
     {
       icon: '🔐',
       title: 'Your keys never touch our server. Ever.',
-      desc: "Almstins reads balances by address — no wallet connection, no signing permissions, no private keys. A breach of our servers can't move a single coin. <a href=\"/login#faq-private-account\" class=\"fc-anon-link\" onclick=\"event.preventDefault();document.getElementById('faq-private-account')?.click()\">Learn how to stay anonymous on our platform →</a>",
+      desc: "SusuFinance reads balances by address — no wallet connection, no signing permissions, no private keys. A breach of our servers can't move a single coin. <a href=\"/login#faq-private-account\" class=\"fc-anon-link\" onclick=\"event.preventDefault();document.getElementById('faq-private-account')?.click()\">Learn how to stay anonymous on our platform →</a>",
     },
     {
       icon: '🔍',
@@ -213,7 +213,7 @@ export const es: LoginPageLocale = {
     sub: 'Comprueba una dirección antes de enviar, contabiliza todo lo que tienes y verifica los códigos QR que publica tu negocio — todo en un solo lugar. Solo lectura, sin conectar la billetera.',
     heroFree: 'Escanear por seguridad es gratis para todos. Sin cuenta, sin iniciar sesión.',
     heroCta: 'Empieza con el verificador gratis',
-    doorsAria: 'Herramientas de Almstins',
+    doorsAria: 'Herramientas de SusuFinance',
     trustAria: 'Nuestras garantías de confianza',
     trust1: 'Tus llaves nunca tocan nuestro servidor',
     trust2: 'Sin conectar la billetera, nunca',
@@ -224,7 +224,7 @@ export const es: LoginPageLocale = {
     plansHref: '/prices/es',
   },
   meta: {
-    title: 'Almstins — Comprueba, rastrea y verifica tu cripto',
+    title: 'SusuFinance — Comprueba, rastrea y verifica tu cripto',
     description: 'Comprueba cualquier billetera o sitio por estafas, rastrea tu portafolio e impuestos, y verifica los códigos QR que publica tu negocio — solo lectura, sin conectar la billetera.',
   },
   signin: {
@@ -246,7 +246,7 @@ export const es: LoginPageLocale = {
     sendMagicLink: 'Enviar enlace mágico',
   },
   hero: {
-    wordmarkAriaLabel: 'Almstins inicio',
+    wordmarkAriaLabel: 'SusuFinance inicio',
     headline: 'Por fin entiende<br/>qué pasó en<br/>tu billetera.',
     subheadline: 'Transacciones perdidas, brechas inexplicables, sorpresas fiscales — rastrea cada movimiento en tu historial crypto para saber exactamente qué pasó y por qué.',
     demoCta: 'Prueba el Demo — Sin Registro →',
@@ -324,7 +324,7 @@ export const fr: LoginPageLocale = {
     sub: 'Vérifiez une adresse avant d\'envoyer, comptabilisez tout ce que vous possédez et vérifiez les QR codes que votre entreprise publie — le tout au même endroit. Lecture seule, aucune connexion de portefeuille.',
     heroFree: 'L\'analyse de sécurité est gratuite pour tous. Aucun compte, aucune connexion requise.',
     heroCta: 'Commencez avec le vérificateur gratuit',
-    doorsAria: 'Outils Almstins',
+    doorsAria: 'Outils SusuFinance',
     trustAria: 'Nos garanties de confiance',
     trust1: 'Vos clés ne touchent jamais notre serveur',
     trust2: 'Aucune connexion de portefeuille, jamais',
@@ -335,7 +335,7 @@ export const fr: LoginPageLocale = {
     plansHref: '/prices/fr',
   },
   meta: {
-    title: 'Almstins — Contrôlez, suivez et vérifiez votre crypto',
+    title: 'SusuFinance — Contrôlez, suivez et vérifiez votre crypto',
     description: 'Vérifiez une adresse ou un site contre les arnaques, suivez votre portefeuille et vos impôts, et protégez vos QR codes de paiement — lecture seule, sans connexion de portefeuille.',
   },
   signin: {
@@ -357,7 +357,7 @@ export const fr: LoginPageLocale = {
     sendMagicLink: 'Envoyer un lien magique',
   },
   hero: {
-    wordmarkAriaLabel: 'Accueil Almstins',
+    wordmarkAriaLabel: 'Accueil SusuFinance',
     headline: 'Comprendre enfin<br/>ce qui s\'est passé<br/>dans votre portefeuille.',
     subheadline: 'Transactions manquantes, lacunes inexplicables, surprises fiscales — tracez chaque mouvement de votre historique crypto pour savoir exactement ce qui s\'est passé et pourquoi.',
     demoCta: 'Essayer la démo — Aucune inscription requise →',
@@ -390,7 +390,7 @@ export const fr: LoginPageLocale = {
     {
       icon: '🔐',
       title: 'Vos clés ne touchent jamais notre serveur. Jamais.',
-      desc: 'Almstins lit les soldes par adresse — pas de connexion de portefeuille, pas de permissions de signature, pas de clés privées. Une violation de nos serveurs ne peut pas déplacer une seule pièce. <a href="/login#faq-private-account" class="fc-anon-link" onclick="event.preventDefault();document.getElementById(\'faq-private-account\')?.click()">Découvrez comment rester anonyme sur notre plateforme →</a>',
+      desc: 'SusuFinance lit les soldes par adresse — pas de connexion de portefeuille, pas de permissions de signature, pas de clés privées. Une violation de nos serveurs ne peut pas déplacer une seule pièce. <a href="/login#faq-private-account" class="fc-anon-link" onclick="event.preventDefault();document.getElementById(\'faq-private-account\')?.click()">Découvrez comment rester anonyme sur notre plateforme →</a>',
     },
     {
       icon: '🔍',

@@ -75,7 +75,7 @@ async function handleCheck(address: string, ip: string, apiKeyHeader: string | n
     : 'unknown';
 
   const logCheck = (cacheHit: boolean) =>
-    recordCheck({ kind: 'wallet', subject: address, request: req ?? new Request('https://almstins.com'), fallbackIp: ip, chain, cacheHit });
+    recordCheck({ kind: 'wallet', subject: address, request: req ?? new Request('https://susufinance.com'), fallbackIp: ip, chain, cacheHit });
 
   // Cache hit
   const cached = getCached(address);

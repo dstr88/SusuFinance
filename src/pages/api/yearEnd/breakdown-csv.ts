@@ -95,7 +95,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     if (plan.id === 'free') {
       return new Response(
         JSON.stringify({
-          error: 'The Gain/Loss CSV is available on any paid plan. Upgrade at almstins.com/dashboard/billing.',
+          error: 'The Gain/Loss CSV is available on any paid plan. Upgrade at susufinance.com/dashboard/billing.',
           planRequired: 'paid',
           currentPlan: plan.id,
         }),

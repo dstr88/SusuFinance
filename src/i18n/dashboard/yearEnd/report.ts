@@ -93,7 +93,7 @@ export interface ReportLocale {
 
 export const en: ReportLocale = {
   lang: 'en',
-  pageTitle: 'Year Summary | Almstins',
+  pageTitle: 'Year Summary | SusuFinance',
   backLink: '← Tax Center',
   pageHeading: (year) => `Year Summary — ${year}`,
   pageSubtitle: (year) =>
@@ -171,7 +171,7 @@ export const en: ReportLocale = {
 
 export const es: ReportLocale = {
   lang: 'es',
-  pageTitle: 'Resumen Anual | Almstins',
+  pageTitle: 'Resumen Anual | SusuFinance',
   backLink: '← Centro Fiscal',
   pageHeading: (year) => `Resumen Anual — ${year}`,
   pageSubtitle: (year) =>
@@ -249,7 +249,7 @@ export const es: ReportLocale = {
 
 export const fr: ReportLocale = {
   lang: 'fr',
-  pageTitle: 'Récapitulatif Annuel | Almstins',
+  pageTitle: 'Récapitulatif Annuel | SusuFinance',
   backLink: '← Centre Fiscal',
   pageHeading: (year) => `Récapitulatif Annuel — ${year}`,
   pageSubtitle: (year) =>
