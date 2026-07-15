@@ -29,6 +29,7 @@ export function isPublicPath(pathname: string): boolean {
 		pathname === '/es' ||
 		pathname === '/fr' ||
 		// Trust & discovery pages — must be reachable without a session
+		pathname === '/howTo' ||
 		pathname === '/about' ||
 		pathname === '/about/es' ||
 		pathname === '/about/fr' ||
