@@ -16,8 +16,10 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "db:migrate": "node src/scripts/dbMigrate.mjs",
-    "seed:addresses": "node src/scripts/seedKnownAddresses.mjs"
+    "db:migrate": "node --env-file-if-exists=.env src/scripts/pgMigrate.mjs",
+    "db:migrate:turso": "node src/scripts/dbMigrate.mjs",
+    "seed:addresses": "node src/scripts/seedKnownAddresses.mjs",
+    "seed:circle": "node --env-file-if-exists=.env src/scripts/seedDemoCircle.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
