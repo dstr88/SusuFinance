@@ -1,0 +1,59 @@
+---
+// /dashboard/circles — the operator vault.
+//
+// A vault of contract tins: each card one contract, a rotating circle or a
+// targeted savings group. Drill-in (the member table) is the next slice.
+//
+// A new route rather than a refit of vault.astro: the Almstins surfaces are dead
+// scaffolding awaiting the feature strip, and building the circle layer clean lets
+// them be removed together instead of being untangled from live code.
+//
+// All stats within-tenant. No cross-tenant benchmarks, ever.
+import Layout from '../../layouts/Layout.astro';
+import ContractTinsGrid from '../../components/circles/ContractTinsGrid';
+import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getCirclesLocale } from '@/i18n/dashboard/circles';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const session = await requireTenantSession(Astro.request);
+if (!session) return Astro.redirect('/login?next=/dashboard/circles');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+const t = getCirclesLocale(lang);
+---
+
+<Layout title={`${t.page.title} | SusuFinance`} noindex={true}>
+  <section class="ct-page">
+    <header class="ct-page__head">
+      <h1 class="ct-page__title">{t.page.title}</h1>
+      <p class="ct-page__sub">{t.page.subtitle}</p>
+    </header>
+
+    {/* `lang`, not `t`: Astro serializes island props to JSON and would drop the
+        locale's interpolation functions. The component resolves its own locale. */}
+    <ContractTinsGrid client:load lang={lang} />
+  </section>
+</Layout>
+
+<style>
+  .ct-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 4rem;
+  }
+  .ct-page__head { margin-bottom: 1.75rem; }
+  .ct-page__title {
+    margin: 0 0 0.3rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .ct-page__sub {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  @media (min-width: 768px) {
+    .ct-page { padding: 2.5rem 2rem 5rem; }
+  }
+</style>

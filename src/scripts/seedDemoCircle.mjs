@@ -336,21 +336,33 @@ async function main() {
 	}
 
 	// ── 8. target-group contributions ────────────────────────────────────────
-	// Three monthly periods, 40 USDC each. m04 withdrew early in the middle month —
-	// her right, exercised. Nothing about that row is flagged or penalised.
-	const PERIODS = [-3, -2, -1].map((k) => ({
+	// Four monthly periods, 40 USDC each — three closed and the current one still
+	// open, so the operator card has a live "this period" to show rather than a
+	// dead one. m04 withdrew early in one of them: her right, exercised. Nothing
+	// about that row is flagged, ranked, or penalised.
+	const PERIODS = [-3, -2, -1, 0].map((k) => ({
 		period: new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth() + k, 1)),
 		offsetMonths: k,
 	}));
+	// Paid already in the current, still-open period. The rest are simply not due
+	// yet — pending, which is not a verdict about anyone.
+	const PAID_THIS_PERIOD = ['demo-mem-02', 'demo-mem-06', 'demo-mem-08'];
 
 	for (const { period, offsetMonths } of PERIODS) {
 		const periodKey = period.toISOString().slice(0, 7);
 		const dueOffset = offsetMonths * 30 + 5;
 
 		for (const memberId of TARGET_MEMBERS) {
-			// m09 skipped the most recent month; everyone else paid.
-			const skipped = memberId === 'demo-mem-09' && offsetMonths === -1;
-			const offset = skipped ? null : (memberId === 'demo-mem-04' ? 1 : -1);
+			let offset;
+			if (offsetMonths === 0) {
+				// Due in 5 days. Payers sent 2 days ago (offset −7 from a +5 due date),
+				// so nothing is observed in the future.
+				offset = PAID_THIS_PERIOD.includes(memberId) ? -7 : null;
+			} else {
+				// m09 skipped the most recent closed month; everyone else paid.
+				const skipped = memberId === 'demo-mem-09' && offsetMonths === -1;
+				offset = skipped ? null : memberId === 'demo-mem-04' ? 1 : -1;
+			}
 			txSeed += 1;
 
 			await client.query(
@@ -365,9 +377,11 @@ async function main() {
 					memberId,
 					'40',
 					day(at(dueOffset)),
-					skipped ? null : txh(txSeed),
-					skipped ? null : '40',
-					skipped ? null : iso(at(dueOffset + offset, 10)),
+					// offset === null is the one meaning of "no transfer observed",
+					// whether she skipped a closed month or simply isn't due yet.
+					offset === null ? null : txh(txSeed),
+					offset === null ? null : '40',
+					offset === null ? null : iso(at(dueOffset + offset, 10)),
 					statusFor(offset, dueOffset, 5),
 					iso(at(dueOffset - 30)),
 				],
