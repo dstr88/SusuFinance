@@ -1,0 +1,49 @@
+---
+// /dashboard/circles/stats — the programme, in aggregate.
+//
+// Aggregates only, no member rows — the rule for the whole admin surface, not just
+// the exported report. The endpoint aggregates in SQL, so no member id reaches this
+// page to be rendered even by accident.
+//
+// All stats within-tenant. No cross-tenant benchmarks, ever.
+import Layout from '../../../layouts/Layout.astro';
+import ProgrammeStats from '../../../components/circles/ProgrammeStats';
+import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getCirclesLocale } from '@/i18n/dashboard/circles';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const session = await requireTenantSession(Astro.request);
+if (!session) return Astro.redirect('/login?next=/dashboard/circles/stats');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+const t = getCirclesLocale(lang);
+---
+
+<Layout title={`${t.stats.title} | SusuFinance`} noindex={true}>
+  <section class="ps-page">
+    <a class="ps-back" href="/dashboard/circles">← {t.drill.back}</a>
+
+    <header class="ps-page__head">
+      <h1 class="ps-page__title">{t.stats.title}</h1>
+      <p class="ps-page__sub">{t.stats.subtitle}</p>
+    </header>
+
+    <ProgrammeStats client:load lang={lang} />
+  </section>
+</Layout>
+
+<style>
+  .ps-page { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .ps-back {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .ps-back:hover { color: var(--accent); }
+  .ps-page__head { margin-bottom: 1.75rem; }
+  .ps-page__title { margin: 0 0 0.3rem; font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
+  .ps-page__sub { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+  @media (min-width: 768px) { .ps-page { padding: 2.5rem 2rem 5rem; } }
+</style>

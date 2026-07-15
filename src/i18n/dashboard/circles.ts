@@ -69,6 +69,47 @@ export interface CirclesLocale {
 		none: string;
 	};
 	footnote: string;
+	/** The programme, in aggregate. No member ever appears here. */
+	stats: {
+		title: string;
+		subtitle: string;
+		loading: string;
+		error: string;
+		people: string;
+		/** Count-aware: FR inflects, and "1 parties" is visibly wrong. */
+		peopleActive: (n: number) => string;
+		peopleDeparted: (n: number) => string;
+		peopleTotal: string;
+		activeOf: (a: number, t: number) => string;
+		circles: string;
+		circlesActive: string;
+		completion: string;
+		completionNone: string;
+		discipline: string;
+		disciplineHint: string;
+		judgedOf: (n: number) => string;
+		trend: string;
+		trendHint: string;
+		roundN: (n: number) => string;
+		flow: string;
+		flowIn: string;
+		flowPayouts: string;
+		unitsNote: string;
+		withdrawals: string;
+		withdrawalsHint: string;
+		withdrawalsPeople: (n: number) => string;
+		withdrawalsUnits: string;
+		withdrawalsNone: string;
+		safety: string;
+		safetyVerified: string;
+		safetyRisk: string;
+		safetyRiskNone: string;
+		ops: string;
+		opsNotBuilt: string;
+		export: string;
+		exportHint: string;
+		noData: string;
+	};
 	/** The tin, opened: the cards inside it. */
 	drill: {
 		back: string;
@@ -174,6 +215,47 @@ const EN: CirclesLocale = {
 			early_withdrawal: 'Early withdrawal',
 		},
 	},
+	stats: {
+		title: 'Programme',
+		subtitle: 'How the programme is doing — never how any one member is doing',
+		loading: 'Loading…',
+		error: 'Could not load the programme figures',
+		people: 'People',
+		peopleActive: () => 'active',
+		peopleDeparted: () => 'departed',
+		peopleTotal: 'total',
+		activeOf: (a, t) => `${a} of ${t} active`,
+		circles: 'Circles & groups',
+		circlesActive: 'running now',
+		completion: 'Completion',
+		completionNone: 'No cycle has finished yet — there is no completion record to report.',
+		discipline: 'Contribution discipline',
+		disciplineHint:
+			'Across every contribution the programme expected. Contributions still inside their grace window are not counted — nobody is anything until the window the group agreed has closed.',
+		judgedOf: (n) => `${n} contributions counted`,
+		trend: 'Discipline by round',
+		trendHint: 'Does discipline hold late in a rotation? The oldest question about savings circles, answered for this programme.',
+		roundN: (n) => `Round ${n}`,
+		flow: 'Money observed',
+		flowIn: 'contributed',
+		flowPayouts: 'payouts observed',
+		unitsNote: 'Token units — never a valuation.',
+		withdrawals: 'Early withdrawals',
+		withdrawalsHint:
+			'Her right, exercised. A high rate means emergencies or a product that does not fit — something to learn from, never to sanction. No member is named here, by design.',
+		withdrawalsPeople: (n) => (n === 1 ? '1 member' : `${n} members`),
+		withdrawalsUnits: 'withdrawn',
+		withdrawalsNone: 'None yet.',
+		safety: 'Safety',
+		safetyVerified: 'payout addresses verified',
+		safetyRisk: 'open rounds whose recipient is not verified',
+		safetyRiskNone: 'Every open round has a verified recipient.',
+		ops: 'Reminders',
+		opsNotBuilt: 'Notifications are not built yet — nothing has been sent.',
+		export: 'Export programme report',
+		exportHint: 'Aggregates only. No member rows leave this programme.',
+		noData: '—',
+	},
 };
 
 const FR: CirclesLocale = {
@@ -255,6 +337,47 @@ const FR: CirclesLocale = {
 			member_replaced: 'Membre remplacée',
 			early_withdrawal: 'Retrait anticipé',
 		},
+	},
+	stats: {
+		title: 'Programme',
+		subtitle: 'Comment va le programme — jamais comment va une membre en particulier',
+		loading: 'Chargement…',
+		error: 'Impossible de charger les chiffres du programme',
+		people: 'Personnes',
+		peopleActive: (n) => (n > 1 ? 'actives' : 'active'),
+		peopleDeparted: (n) => (n > 1 ? 'parties' : 'partie'),
+		peopleTotal: 'au total',
+		activeOf: (a, t) => `${a} ${a > 1 ? 'actives' : 'active'} sur ${t}`,
+		circles: 'Cercles et groupes',
+		circlesActive: 'en cours',
+		completion: 'Cycles terminés',
+		completionNone: 'Aucun cycle n’est encore terminé — il n’y a rien à rapporter.',
+		discipline: 'Discipline des versements',
+		disciplineHint:
+			'Sur tous les versements attendus par le programme. Les versements encore dans leur délai de grâce ne sont pas comptés — personne n’est rien tant que le délai convenu par le groupe n’est pas écoulé.',
+		judgedOf: (n) => `${n} versements comptés`,
+		trend: 'Discipline par tour',
+		trendHint: 'La discipline tient-elle en fin de rotation ? La plus vieille question sur les cercles d’épargne, répondue pour ce programme.',
+		roundN: (n) => `Tour ${n}`,
+		flow: 'Argent observé',
+		flowIn: 'versés',
+		flowPayouts: 'versements observés',
+		unitsNote: 'Unités de jetons — jamais une valorisation.',
+		withdrawals: 'Retraits anticipés',
+		withdrawalsHint:
+			'Son droit, exercé. Un taux élevé signale des urgences ou un produit inadapté — quelque chose à comprendre, jamais à sanctionner. Aucune membre n’est nommée ici, par conception.',
+		withdrawalsPeople: (n) => (n === 1 ? '1 membre' : `${n} membres`),
+		withdrawalsUnits: 'retirés',
+		withdrawalsNone: 'Aucun pour l’instant.',
+		safety: 'Sécurité',
+		safetyVerified: 'adresses de versement vérifiées',
+		safetyRisk: 'tours ouverts dont la bénéficiaire n’est pas vérifiée',
+		safetyRiskNone: 'Chaque tour ouvert a une bénéficiaire vérifiée.',
+		ops: 'Rappels',
+		opsNotBuilt: 'Les notifications ne sont pas encore construites — rien n’a été envoyé.',
+		export: 'Exporter le rapport du programme',
+		exportHint: 'Agrégats uniquement. Aucune ligne de membre ne quitte ce programme.',
+		noData: '—',
 	},
 };
 

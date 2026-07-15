@@ -25,8 +25,13 @@ const t = getCirclesLocale(lang);
 <Layout title={`${t.page.title} | SusuFinance`} noindex={true}>
   <section class="ct-page">
     <header class="ct-page__head">
-      <h1 class="ct-page__title">{t.page.title}</h1>
-      <p class="ct-page__sub">{t.page.subtitle}</p>
+      <div class="ct-page__headrow">
+        <div>
+          <h1 class="ct-page__title">{t.page.title}</h1>
+          <p class="ct-page__sub">{t.page.subtitle}</p>
+        </div>
+        <a class="ct-page__statslink" href="/dashboard/circles/stats">{t.stats.title} →</a>
+      </div>
     </header>
 
     {/* `lang`, not `t`: Astro serializes island props to JSON and would drop the
@@ -42,6 +47,22 @@ const t = getCirclesLocale(lang);
     padding: 1.5rem 1rem 4rem;
   }
   .ct-page__head { margin-bottom: 1.75rem; }
+  .ct-page__headrow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .ct-page__statslink {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    padding-top: 0.35rem;
+  }
+  .ct-page__statslink:hover { color: var(--accent); }
   .ct-page__title {
     margin: 0 0 0.3rem;
     font-size: 1.6rem;

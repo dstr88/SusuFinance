@@ -1,0 +1,138 @@
+/* ProgrammeStats — the programme in aggregate.
+ *
+ * Design tokens only; no hex, no rgb(), no rgba().
+ * Mobile-first: one column, widening up.
+ *
+ * Colour as vocabulary, same rule as every other surface here: red (--loss) appears
+ * for exactly ONE thing — an open round whose recipient is not verified, which is a
+ * safety fact about an ADDRESS and something §3 says should not have happened.
+ * Nothing about members is red. Not "behind", not early withdrawals, not a low
+ * completion rate. Those are facts the operator reads and thinks about; the page
+ * does not do his thinking, and it never does his judging.
+ */
+
+.ps-wrap { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.ps-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 620px)  { .ps-row { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .ps-row { grid-template-columns: repeat(4, 1fr); } }
+
+.ps-card, .ps-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.1rem 1.15rem;
+}
+.ps-panel { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.ps-card__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ps-big {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.ps-big__of { font-size: 1rem; font-weight: 600; color: var(--text-muted); }
+.ps-sub  { margin: 0.2rem 0 0; font-size: 0.75rem; color: var(--text-secondary); }
+.ps-note { margin: 0.45rem 0 0; font-size: 0.7rem; color: var(--text-muted); }
+.ps-note--quiet { opacity: 0.75; }
+.ps-empty { margin: 0; font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+.ps-hint { margin: 0; font-size: 0.72rem; color: var(--text-secondary); line-height: 1.55; max-width: 68ch; }
+.ps-hint--tight { margin-top: 0.6rem; font-size: 0.68rem; color: var(--text-muted); }
+
+/* The page's one alarm — an ADDRESS fact, not a person fact. */
+.ps-alarm {
+  margin: 0.45rem 0 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--loss);
+}
+
+/* ── discipline bar ──────────────────────────────────────────────────────── */
+/* Accent family = she paid (fullest for early, softening through repaid). Only
+   `behind` — she owes, now — leaves the family, and it leaves for muted, not red. */
+
+.ps-bar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.2rem;
+}
+.ps-bar__seg { display: block; border-radius: 4px; }
+.ps-bar__seg--early   { background: var(--accent); }
+.ps-bar__seg--on_time { background: var(--accent-dim); }
+.ps-bar__seg--late    { background: var(--accent-soft); }
+.ps-bar__seg--repaid  { background: var(--accent-glow); }
+.ps-bar__seg--behind  { background: var(--border-bright); }
+
+.ps-legend { list-style: none; margin: 0.25rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; }
+.ps-legend__item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; color: var(--text-muted); }
+.ps-legend__item b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.ps-dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+.ps-dot--early   { background: var(--accent); }
+.ps-dot--on_time { background: var(--accent-dim); }
+.ps-dot--late    { background: var(--accent-soft); }
+.ps-dot--repaid  { background: var(--accent-glow); }
+.ps-dot--behind  { background: var(--border-bright); }
+
+/* ── trend by round ──────────────────────────────────────────────────────── */
+
+.ps-trend {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 84px;
+}
+.ps-trend__item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; height: 100%; }
+.ps-trend__bar {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  background: var(--surface-card-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ps-trend__fill { width: 100%; background: var(--accent-dim); border-radius: 3px; }
+.ps-trend__label { font-size: 0.6rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* ── export ──────────────────────────────────────────────────────────────── */
+
+.ps-export {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.1rem 1.15rem;
+}
+.ps-export__btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--surface-bg);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.ps-export__btn:hover { background: var(--accent-dim); }
+
+.ps-msg { padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
