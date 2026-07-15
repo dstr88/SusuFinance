@@ -172,7 +172,7 @@ export const GET: APIRoute = async ({ request }) => {
 				periodDue = windowRows[0]?.due_date ?? null;
 			}
 
-			const states: Record<DisciplineState, number> = { early: 0, on_time: 0, late: 0, behind: 0, pending: 0 };
+			const states: Record<DisciplineState, number> = { early: 0, on_time: 0, late: 0, repaid: 0, behind: 0, pending: 0 };
 			let observedUnits = 0;
 			let expectedUnits = 0;
 			let paid = 0;

@@ -63,11 +63,37 @@ export interface CirclesLocale {
 		early: string;
 		on_time: string;
 		late: string;
+		repaid: string;
 		behind: string;
 		pending: string;
 		none: string;
 	};
 	footnote: string;
+	/** The tin, opened: the cards inside it. */
+	drill: {
+		back: string;
+		loading: string;
+		error: string;
+		membersHeading: string;
+		membersHint: string;
+		memberSince: string;
+		turnOf: (n: number, total: number) => string;
+		noTurn: string;
+		departed: string;
+		departedOn: (d: string) => string;
+		herTurnNow: string;
+		uuidOnly: string;
+		statusIn: string;
+		statusLeft: string;
+		actorOrganizer: string;
+		roundsHeading: string;
+		roundsHint: string;
+		payoutObserved: string;
+		payoutPending: string;
+		eventsHeading: string;
+		eventsHint: string;
+		action: Record<string, string>;
+	};
 }
 
 const EN: CirclesLocale = {
@@ -107,12 +133,47 @@ const EN: CirclesLocale = {
 		early: 'Early',
 		on_time: 'On time',
 		late: 'Late',
+		repaid: 'Repaid',
 		behind: 'Behind',
 		pending: 'Not yet due',
 		none: 'No record yet',
 	},
 	footnote:
 		'Contributions observed on the chain. This dashboard shows the relationship — never a member’s wallet balance.',
+	drill: {
+		back: 'All circles',
+		loading: 'Loading cards…',
+		error: 'Could not load this circle',
+		membersHeading: 'Cards',
+		membersHint:
+			'Who is in this circle, and where each turn sits. Payment records belong to the member and live on her own screen — the circle sees them, and the circle enforces.',
+		memberSince: 'Member since',
+		turnOf: (n, total) => `Turn ${n} of ${total}`,
+		noTurn: 'No turn — saves at her own pace',
+		departed: 'Left the circle',
+		departedOn: (d) => `Left ${d}`,
+		herTurnNow: 'Receiving this round',
+		uuidOnly: 'This member chose no display name.',
+		statusIn: 'In the group',
+		statusLeft: 'Left',
+		actorOrganizer: 'Organizer',
+		roundsHeading: 'Rotation',
+		roundsHint: 'Each round’s payout address is frozen when the round opens.',
+		payoutObserved: 'Payout observed',
+		payoutPending: 'Not yet paid out',
+		eventsHeading: 'Circle log',
+		eventsHint:
+			'Append-only. Members can read this too — it is how they check the organizer. Ballots never appear here.',
+		action: {
+			contract_created: 'Circle created',
+			turn_order_recorded: 'Turn order recorded',
+			round_opened: 'Round opened',
+			payout_observed: 'Payout observed',
+			member_departed: 'A member left',
+			member_replaced: 'Member replaced',
+			early_withdrawal: 'Early withdrawal',
+		},
+	},
 };
 
 const FR: CirclesLocale = {
@@ -154,12 +215,47 @@ const FR: CirclesLocale = {
 		early: 'En avance',
 		on_time: 'À temps',
 		late: 'En retard',
+		repaid: 'Régularisé',
 		behind: 'Versement en attente',
 		pending: 'Pas encore dû',
 		none: 'Pas encore d’historique',
 	},
 	footnote:
 		'Versements observés sur la chaîne. Ce tableau montre la relation — jamais le solde du portefeuille d’une membre.',
+	drill: {
+		back: 'Tous les cercles',
+		loading: 'Chargement des cartes…',
+		error: 'Impossible de charger ce cercle',
+		membersHeading: 'Cartes',
+		membersHint:
+			'Qui est dans ce cercle, et la place de chaque tour. L’historique des versements appartient à la membre et vit sur son propre écran — le cercle les voit, et le cercle fait respecter.',
+		memberSince: 'Membre depuis',
+		turnOf: (n, total) => `Tour ${n} sur ${total}`,
+		noTurn: 'Sans tour — épargne à son rythme',
+		departed: 'A quitté le cercle',
+		departedOn: (d) => `Partie le ${d}`,
+		herTurnNow: 'Reçoit ce tour-ci',
+		uuidOnly: 'Cette membre n’a pas choisi de nom affiché.',
+		statusIn: 'Dans le groupe',
+		statusLeft: 'Partie',
+		actorOrganizer: 'Organisateur',
+		roundsHeading: 'Rotation',
+		roundsHint: 'L’adresse de versement de chaque tour est figée à l’ouverture du tour.',
+		payoutObserved: 'Versement observé',
+		payoutPending: 'Pas encore versé',
+		eventsHeading: 'Journal du cercle',
+		eventsHint:
+			'Ajout seul. Les membres peuvent le lire aussi — c’est ainsi qu’elles vérifient l’organisateur. Les bulletins n’y figurent jamais.',
+		action: {
+			contract_created: 'Cercle créé',
+			turn_order_recorded: 'Ordre des tours enregistré',
+			round_opened: 'Tour ouvert',
+			payout_observed: 'Versement observé',
+			member_departed: 'Une membre est partie',
+			member_replaced: 'Membre remplacée',
+			early_withdrawal: 'Retrait anticipé',
+		},
+	},
 };
 
 const LOCALES: Record<string, CirclesLocale> = { en: EN, fr: FR, es: EN };

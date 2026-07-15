@@ -1,0 +1,154 @@
+/* MemberCards — the cards inside a tin.
+ *
+ * Design tokens only; no hex, no rgb(), no rgba().
+ * Mobile-first: one column, widening up.
+ *
+ * There are no stars here. Her payment record belongs to her and lives on her own
+ * screen — this is the operator's view, and §5a already put enforcement inside the
+ * circle ("full shared ledger — transparency IS the enforcement"). These cards say
+ * who she is, whether she is still in the group, whose turn it is, and whether her
+ * payout address is verified. Nothing else.
+ *
+ * Colour discipline: red is reserved for an unverified payout ADDRESS — a safety
+ * fact §3 says must be settled before a round opens. Nothing about a member is red.
+ * A departure is muted, never a scarlet letter.
+ */
+
+.mc-wrap { display: flex; flex-direction: column; gap: 2.5rem; }
+
+.mc-section__head { margin-bottom: 1rem; }
+.mc-section__title {
+  margin: 0 0 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.mc-section__hint { margin: 0; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; max-width: 62ch; }
+
+.mc-grid { display: grid; grid-template-columns: 1fr; gap: 0.9rem; }
+@media (min-width: 620px)  { .mc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .mc-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ── the card ─────────────────────────────────────────────────────────────── */
+
+.mc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem 1rem 0.85rem;
+}
+/* Receiving this round — the circle's centre of gravity, marked with the accent,
+   never with a rank. */
+.mc-card--receiving { border-color: var(--accent-soft); background: var(--surface-card-2); }
+/* A departure is recorded, not condemned: the card fades out of the present tense
+   and keeps its place in the group's book. */
+.mc-card--left { opacity: 0.62; }
+
+.mc-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+.mc-card__id { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.mc-card__name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+.mc-card__turn { font-size: 0.7rem; color: var(--text-muted); }
+
+.mc-card__since { font-size: 0.7rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.mc-card__left-pill {
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--surface-card-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.65rem;
+}
+.mc-card__receiving { margin: 0; font-size: 0.72rem; font-weight: 600; color: var(--accent); }
+
+/* ── membership status ────────────────────────────────────────────────────── */
+/* The operator's actual question, answered in one word. "Left" is recorded, not
+   condemned — muted, never red. A departure is a fact, and §5b keeps it in the
+   circle's book without a scarlet letter. */
+
+.mc-status {
+  flex: none;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-subtle);
+}
+.mc-status--in   { color: var(--accent); border-color: var(--accent-soft); background: var(--surface-card-2); }
+.mc-status--left { color: var(--text-muted); background: var(--surface-card-2); }
+
+/* ── verify ───────────────────────────────────────────────────────────────── */
+
+.mc-verify {
+  display: flex; align-items: center; gap: 0.45rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.mc-verify__dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.mc-verify--ok { color: var(--gain); }
+.mc-verify--ok .mc-verify__dot { background: var(--gain); }
+.mc-verify--pending { color: var(--loss); }
+.mc-verify--pending .mc-verify__dot { background: var(--loss); }
+
+/* ── rotation strip ───────────────────────────────────────────────────────── */
+
+.mc-rounds { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.mc-round {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr auto auto 1rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  font-size: 0.75rem;
+}
+.mc-round--open { border-color: var(--accent-soft); background: var(--surface-card-2); }
+.mc-round--completed { opacity: 0.72; }
+.mc-round__idx { font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.mc-round__who { color: var(--text-primary); font-weight: 600; overflow-wrap: anywhere; }
+.mc-round__due { color: var(--text-muted); white-space: nowrap; }
+.mc-round__state { color: var(--text-secondary); white-space: nowrap; }
+.mc-round__frozen { color: var(--accent-dim); text-align: center; }
+
+@media (max-width: 560px) {
+  .mc-round { grid-template-columns: 1.4rem 1fr auto; }
+  .mc-round__due, .mc-round__frozen { display: none; }
+}
+
+/* ── events ───────────────────────────────────────────────────────────────── */
+
+.mc-events { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.mc-event {
+  display: grid;
+  grid-template-columns: 7rem 1fr auto;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.75rem;
+}
+.mc-event:last-child { border-bottom: 0; }
+.mc-event__when { color: var(--text-muted); white-space: nowrap; }
+.mc-event__what { color: var(--text-secondary); }
+.mc-event__who { color: var(--text-muted); overflow-wrap: anywhere; }
+
+@media (max-width: 560px) {
+  .mc-event { grid-template-columns: 1fr; gap: 0.1rem; padding: 0.6rem 0; }
+}
+
+.mc-msg { padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }

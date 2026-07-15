@@ -1,0 +1,81 @@
+---
+// /dashboard/circles/:id — the tin, opened.
+//
+// A tin houses a circle or a savings group; the cards inside are the members'
+// records in that group. A card is a relationship, not a person — there is no
+// person page to navigate to from here, by design.
+//
+// The contract name is fetched server-side so the page has a title before the
+// island hydrates, and so a bad id 404s instead of flashing an empty tin.
+import Layout from '../../../layouts/Layout.astro';
+import MemberCards from '../../../components/circles/MemberCards';
+import { db } from '@/lib/db';
+import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getCirclesLocale } from '@/i18n/dashboard/circles';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const session = await requireTenantSession(Astro.request);
+if (!session) return Astro.redirect('/login?next=/dashboard/circles');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+const t = getCirclesLocale(lang);
+const id = Astro.params.id ?? '';
+
+// Tenant-scoped, always. An id from the URL is never trusted on its own.
+const res = await db.execute({
+  sql: `SELECT name, type, cadence, currency, status, expected_amount::float8 AS expected_amount
+          FROM contracts WHERE tenant_id = ? AND id = ?`,
+  args: [session.tenantId, id],
+});
+if (!res.rows.length) return new Response(null, { status: 404 });
+const c: any = res.rows[0];
+const kind = String(c.type) === 'circle' ? t.kind.circle : t.kind.targetGroup;
+---
+
+<Layout title={`${c.name} | SusuFinance`} noindex={true}>
+  <section class="mc-page">
+    <a class="mc-back" href="/dashboard/circles">← {t.drill.back}</a>
+
+    <header class="mc-page__head">
+      <span class="mc-page__kind">{kind}</span>
+      <h1 class="mc-page__title">{c.name}</h1>
+      <p class="mc-page__sub">
+        {t.cadence[c.cadence as 'weekly' | 'biweekly' | 'monthly']} · {c.expected_amount} {c.currency} · {t.status[c.status as 'forming' | 'active' | 'completed' | 'abandoned']}
+      </p>
+    </header>
+
+    <MemberCards client:load lang={lang} contractId={id} />
+
+    <p class="mc-page__foot">{t.footnote}</p>
+  </section>
+</Layout>
+
+<style>
+  .mc-page { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .mc-back {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .mc-back:hover { color: var(--accent); }
+  .mc-page__head { margin-bottom: 2rem; }
+  .mc-page__kind {
+    display: inline-block;
+    margin-bottom: 0.4rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--accent-soft);
+    background: var(--surface-card-2);
+    color: var(--accent);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .mc-page__title { margin: 0 0 0.25rem; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+  .mc-page__sub { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
+  .mc-page__foot { margin: 2.5rem 0 0; font-size: 0.7rem; color: var(--text-muted); line-height: 1.5; }
+  @media (min-width: 768px) { .mc-page { padding: 2.5rem 2rem 5rem; } }
+</style>

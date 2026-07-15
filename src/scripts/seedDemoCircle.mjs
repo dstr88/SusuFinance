@@ -120,7 +120,10 @@ const activeInRound = (memberId, n) => {
 const PAY_OFFSET = {
 	'demo-mem-01': [-3, -2, -3, -2, -3, -2],
 	'demo-mem-02': [0, 0, -1, 0, 0, 0],
-	'demo-mem-03': [-1, 0, 0, -1, 0, null],   // round 6 not yet paid (not due for 2 days)
+	// Round 2 paid SIX days late — past the 3-day grace. She went behind, then made
+	// it good: the "repaid" case, which nothing else here exercises and which the
+	// card must be able to tell apart from a week never paid at all.
+	'demo-mem-03': [-1, 6, 0, -1, 0, null],
 	'demo-mem-04': [2, 1, 0, 2, 1, null],     // habitually late, always within grace
 	'demo-mem-05': [-2, -2, -2, -2, -2, -2],
 	'demo-mem-06': [0, -1, 0, 0, 3, null],
@@ -409,8 +412,15 @@ async function main() {
 			{ round: 1, recipient: 'demo-mem-01', amount: '225' }, at(roundDueOffset(1), 18)],
 		[CIRCLE_ID, 'system', 'payout_observed',
 			{ round: 5, recipient: 'demo-mem-05', amount: '225' }, at(roundDueOffset(5), 18)],
+		// `before_receiving` is the group's settlement question (§5b: departure after
+		// receiving is a default on the group; before receiving, the group holds her
+		// money). Her TOTALS are not recorded here — an earlier cut put
+		// contributions_made/pot_received in this detail, which quietly made the
+		// accountability log a payment ledger about members. The log records the
+		// organizer's and the group's decisions so members can check HIM; it is not a
+		// side door onto her record.
 		[CIRCLE_ID, DEPARTED, 'member_departed',
-			{ member_id: DEPARTED, before_receiving: true, contributions_made: '125', pot_received: '0' },
+			{ member_id: DEPARTED, before_receiving: true },
 			at(roundDueOffset(LEFT_AT_ROUND) + 1)],
 		[CIRCLE_ID, 'organizer', 'member_replaced',
 			{ left: DEPARTED, joined: REPLACEMENT, turn_order: 7 }, at(roundDueOffset(LEFT_AT_ROUND) + 2)],

@@ -66,6 +66,13 @@
 }
 .ct-card__meta { font-size: 0.78rem; color: var(--text-muted); }
 
+/* The tin's name opens the tin. Stretched so the whole card is the hit target —
+   a phone deserves a thumb-sized door, not a text-sized one. */
+.ct-card__link { color: inherit; text-decoration: none; }
+.ct-card__link::after { content: ''; position: absolute; inset: 0; border-radius: 12px; }
+.ct-card__link:hover { color: var(--accent); }
+.ct-card__link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
 .ct-label {
   font-size: 0.62rem;
   font-weight: 600;
@@ -152,6 +159,9 @@
 .ct-bar__seg--early   { background: var(--accent); }
 .ct-bar__seg--on_time { background: var(--accent-dim); }
 .ct-bar__seg--late    { background: var(--accent-soft); }
+/* Repaid: she went past the window and made it good. Still the accent family —
+   she paid. Only `behind` (owing, now) leaves it. */
+.ct-bar__seg--repaid  { background: var(--accent-glow); }
 .ct-bar__seg--behind  { background: var(--border-bright); }
 .ct-bar__seg--pending { background: var(--surface-card-2); }
 

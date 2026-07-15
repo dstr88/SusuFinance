@@ -14,7 +14,7 @@ import { getCirclesLocale, type CirclesLocale } from '@/i18n/dashboard/circles';
 import type { Lang } from '@/lib/i18n/locale';
 import './ContractTinsGrid.css';
 
-type DisciplineState = 'early' | 'on_time' | 'late' | 'behind' | 'pending';
+type DisciplineState = 'early' | 'on_time' | 'late' | 'repaid' | 'behind' | 'pending';
 
 interface CircleCard {
 	id: string;
@@ -88,7 +88,7 @@ function DueBadge({ dateStr, t }: { dateStr: string; t: CirclesLocale }) {
 }
 
 function DisciplineBar({ states, t }: { states: Record<DisciplineState, number>; t: CirclesLocale }) {
-	const order: DisciplineState[] = ['early', 'on_time', 'late', 'behind', 'pending'];
+	const order: DisciplineState[] = ['early', 'on_time', 'late', 'repaid', 'behind', 'pending'];
 	const total = order.reduce((a, k) => a + states[k], 0);
 	if (!total) return null;
 	return (
@@ -109,7 +109,12 @@ function Card({ c, t }: { c: CircleCard; t: CirclesLocale }) {
 			<span className="ct-card__kind">{kind}</span>
 
 			<header className="ct-card__head">
-				<h3 className="ct-card__name">{c.name}</h3>
+				{/* The whole tin opens — a card is the handle for the group it houses. */}
+				<h3 className="ct-card__name">
+					<a className="ct-card__link" href={`/dashboard/circles/${encodeURIComponent(c.id)}`}>
+						{c.name}
+					</a>
+				</h3>
 				<span className="ct-card__meta">
 					{c.memberCount} {t.card.members} · {t.cadence[c.cadence]} · {units(c.expectedAmount, c.currency, t.lang)}
 				</span>
