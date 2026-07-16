@@ -34,6 +34,13 @@ const DEMO_ALLOWED_MUTATION_PATTERNS: RegExp[] = [
 	/^\/api\/wallets\/[^/]+\/token-basis$/,   // POST  — save manual cost basis / purchase date
 	/^\/api\/lifecycle\/rebuild$/,             // POST  — rebuild FIFO after sync
 	/^\/api\/demo\/cleanup$/,                  // POST  — wipe demo data on page leave
+	// Not to ALLOW the demo to rearrange tins — /api/circles/arrange refuses a demo
+	// session itself, and stays the place that decides. Listed here only so the
+	// refusal comes from the endpoint, which can say why in the visitor's own
+	// language, instead of this generic Almstins-era sentence about unlocking
+	// features. The demo tenant is shared; one visitor reshuffling a circle would
+	// hand the next visitor a scrambled one.
+	/^\/api\/circles\/arrange$/,               // POST  — refused downstream, deliberately
 ];
 
 function isEnvProbe(pathname: string) {

@@ -25,6 +25,16 @@ interface CircleCard {
 	status: 'forming' | 'active' | 'completed' | 'abandoned';
 	memberCount: number;
 	expectedAmount: number;
+	/**
+	 * The women in this tin — `forming` tins only; null for a live one.
+	 *
+	 * null vs [] is load-bearing: null means the API sent no roster because this
+	 * tin's cards are not arrangeable, [] means an empty tin with room. Rendering
+	 * them the same way would turn a live circle into an empty one on screen.
+	 */
+	roster:
+		| { memberId: string; displayName: string | null; turnOrder: number | null; payoutVerified: boolean }[]
+		| null;
 	round: {
 		index: number;
 		total: number;
@@ -100,12 +110,114 @@ function DisciplineBar({ states, t }: { states: Record<DisciplineState, number>;
 	);
 }
 
-function Card({ c, t }: { c: CircleCard; t: CirclesLocale }) {
+/** What a drag carries. `mode` is decided by WHERE he grabbed: the card body moves
+ *  her, the corner square copies her. */
+type DragPayload = { memberId: string; fromContractId: string; mode: 'move' | 'copy'; name: string };
+
+/** Her chosen identity, or a shortened id — which is a choice, not a missing name. */
+function rosterLabel(r: NonNullable<CircleCard['roster']>[number]) {
+	if (r.displayName) return r.displayName;
+	return r.memberId.length > 14 ? `${r.memberId.slice(0, 8)}…${r.memberId.slice(-4)}` : r.memberId;
+}
+
+/**
+ * One woman's card inside a forming tin.
+ *
+ * Nothing about her record is here, and nothing could be: a forming tin has run no
+ * rounds, so there is no record yet — and the API sends no roster at all for the
+ * live tins that do have one.
+ *
+ * The corner square is a drag handle, not a button. It is deliberately not a
+ * `<button>`: a button promises that clicking does something, and clicking this does
+ * nothing — a copy needs a destination, and the destination is where you drop it.
+ */
+function RosterCard({
+	r,
+	tinId,
+	t,
+	onGrab,
+}: {
+	r: NonNullable<CircleCard['roster']>[number];
+	tinId: string;
+	t: CirclesLocale;
+	onGrab: (e: React.DragEvent, p: DragPayload) => void;
+}) {
+	const name = rosterLabel(r);
+	return (
+		<div
+			className="ct-mini"
+			draggable
+			onDragStart={(e) => onGrab(e, { memberId: r.memberId, fromContractId: tinId, mode: 'move', name })}
+		>
+			<span className="ct-mini__turn">{r.turnOrder ? t.arrange.turn(r.turnOrder) : t.arrange.noTurn}</span>
+			<span className="ct-mini__name">{name}</span>
+			<span
+				className={`ct-mini__dot ${r.payoutVerified ? 'ct-mini__dot--ok' : 'ct-mini__dot--pending'}`}
+				title={r.payoutVerified ? t.card.payoutVerified : t.card.payoutUnverified}
+				aria-hidden="true"
+			/>
+			<span
+				className="ct-mini__copy"
+				draggable
+				role="img"
+				aria-label={t.arrange.copyLabel(name)}
+				title={t.arrange.copyHint}
+				onDragStart={(e) => {
+					// Stop the card's own dragstart from firing too — otherwise the parent
+					// would overwrite the payload and every copy would silently be a move.
+					e.stopPropagation();
+					onGrab(e, { memberId: r.memberId, fromContractId: tinId, mode: 'copy', name });
+				}}
+			>
+				⧉
+			</span>
+		</div>
+	);
+}
+
+function Card({
+	c,
+	t,
+	onGrab,
+	onDropCard,
+	dragging,
+}: {
+	c: CircleCard;
+	t: CirclesLocale;
+	onGrab: (e: React.DragEvent, p: DragPayload) => void;
+	onDropCard: (p: DragPayload, toContractId: string) => void;
+	dragging: DragPayload | null;
+}) {
 	const isCircle = c.type === 'circle';
 	const kind = isCircle ? t.kind.circle : t.kind.targetGroup;
+	const [over, setOver] = useState(false);
+
+	// roster === null means a live tin: its cards are not his to arrange, and its
+	// names were never sent. An empty array is a forming tin with room.
+	const forming = c.roster !== null;
+	// Dropping her back where she came from is a no-op, so it is not a drop target.
+	const canTake = forming && dragging !== null && dragging.fromContractId !== c.id;
 
 	return (
-		<article className={`ct-card ct-card--${c.type}`}>
+		<article
+			className={`ct-card ct-card--${c.type} ${forming ? 'ct-card--forming' : ''} ${over && canTake ? 'ct-card--over' : ''}`}
+			onDragOver={(e) => {
+				// preventDefault is what makes an element a drop target at all. Calling it
+				// only when canTake means a live tin refuses the drag visibly — the cursor
+				// says no before he lets go.
+				if (canTake) {
+					e.preventDefault();
+					setOver(true);
+				}
+			}}
+			onDragLeave={() => setOver(false)}
+			onDrop={(e) => {
+				setOver(false);
+				if (!canTake || !dragging) return;
+				e.preventDefault();
+				onDropCard(dragging, c.id);
+			}}
+		>
 			<span className="ct-card__kind">{kind}</span>
 
 			<header className="ct-card__head">
@@ -119,6 +231,25 @@ function Card({ c, t }: { c: CircleCard; t: CirclesLocale }) {
 					{c.memberCount} {t.card.members} · {t.cadence[c.cadence]} · {units(c.expectedAmount, c.currency, t.lang)}
 				</span>
 			</header>
+
+			{/* A forming tin shows its women instead of a rotation, because it has no
+			    rotation yet — no rounds, no dues, nothing to summarise. It is a list of
+			    names and an agreed order, and that is exactly what is arrangeable. */}
+			{forming && (
+				<div className="ct-roster">
+					<span className="ct-status ct-status--forming">{t.status.forming}</span>
+					<p className="ct-roster__hint">{t.arrange.hint}</p>
+					{c.roster!.length === 0 ? (
+						<p className="ct-roster__empty">{t.arrange.empty}</p>
+					) : (
+						<div className="ct-roster__cards">
+							{c.roster!.map((r) => (
+								<RosterCard key={r.memberId} r={r} tinId={c.id} t={t} onGrab={onGrab} />
+							))}
+						</div>
+					)}
+				</div>
+			)}
 
 			{/* Rotation position, or progress toward the members' target. */}
 			{isCircle && c.round && (
@@ -205,9 +336,14 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 	const t = getCirclesLocale(lang);
 	const [cards, setCards] = useState<CircleCard[]>([]);
 	const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+	/** What is in his hand right now — drives which tins light up as targets. */
+	const [dragging, setDragging] = useState<DragPayload | null>(null);
+	/** The outcome of the last drop, said in words. A card that silently jumps tins
+	 *  is a card he has to re-count to trust. */
+	const [note, setNote] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
-	const load = useCallback(async () => {
-		setState('loading');
+	const load = useCallback(async (quiet = false) => {
+		if (!quiet) setState('loading');
 		try {
 			const res = await fetch('/api/circles');
 			if (!res.ok) throw new Error(String(res.status));
@@ -220,6 +356,53 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 		}
 	}, []);
 
+	const onGrab = useCallback((e: React.DragEvent, p: DragPayload) => {
+		setDragging(p);
+		setNote(null);
+		e.dataTransfer.effectAllowed = p.mode === 'copy' ? 'copy' : 'move';
+		// The payload also rides on the event so a drop is never at the mercy of React
+		// state that may not have flushed yet.
+		e.dataTransfer.setData('application/json', JSON.stringify(p));
+	}, []);
+
+	const onDropCard = useCallback(
+		async (p: DragPayload, toContractId: string) => {
+			setDragging(null);
+			const toName = cards.find((c) => c.id === toContractId)?.name ?? '';
+			try {
+				const res = await fetch('/api/circles/arrange', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						memberId: p.memberId,
+						toContractId,
+						// Only a move has a source to leave. Sending one for a copy would
+						// invite the endpoint to interpret it.
+						fromContractId: p.mode === 'move' ? p.fromContractId : undefined,
+						mode: p.mode,
+					}),
+				});
+				const j = await res.json().catch(() => ({}));
+				if (!j?.ok) {
+					const key = String(j?.error ?? '') as keyof CirclesLocale['arrange']['err'];
+					setNote({ kind: 'err', text: t.arrange.err[key] ?? t.arrange.err.generic });
+					return;
+				}
+				setNote({
+					kind: 'ok',
+					text: p.mode === 'copy' ? t.arrange.copied(p.name, toName) : t.arrange.moved(p.name, toName),
+				});
+				// Re-read rather than patch local state: the turn slot she landed on was
+				// decided by the server, and guessing it here would show her a seat she
+				// might not be sitting in.
+				await load(true);
+			} catch {
+				setNote({ kind: 'err', text: t.arrange.err.generic });
+			}
+		},
+		[cards, load, t],
+	);
+
 	useEffect(() => {
 		load();
 	}, [load]);
@@ -229,7 +412,7 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 		return (
 			<div className="ct-msg">
 				<p>{t.page.error}</p>
-				<button type="button" className="ct-retry" onClick={load}>
+				<button type="button" className="ct-retry" onClick={() => load()}>
 					{t.page.retry}
 				</button>
 			</div>
@@ -244,14 +427,24 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 
 	const circles = cards.filter((c) => c.type === 'circle');
 	const groups = cards.filter((c) => c.type === 'target_group');
+	const props = { t, onGrab, onDropCard, dragging };
 
 	return (
-		<div className="ct-grid">
-			{circles.length > 0 && <section className="ct-section">{circles.map((c) => <Card key={c.id} c={c} t={t} />)}</section>}
+		<div className="ct-grid" onDragEnd={() => setDragging(null)}>
+			{/* aria-live: a drop is a mouse gesture with no text of its own, so the
+			    outcome has to be announced or it happens silently. */}
+			{note && (
+				<p className={`ct-note ct-note--${note.kind}`} role="status" aria-live="polite">
+					{note.text}
+				</p>
+			)}
+			{circles.length > 0 && (
+				<section className="ct-section">{circles.map((c) => <Card key={c.id} c={c} {...props} />)}</section>
+			)}
 			{groups.length > 0 && (
 				<>
 					<hr className="ct-divider" />
-					<section className="ct-section">{groups.map((c) => <Card key={c.id} c={c} t={t} />)}</section>
+					<section className="ct-section">{groups.map((c) => <Card key={c.id} c={c} {...props} />)}</section>
 				</>
 			)}
 			<p className="ct-footnote">{t.footnote}</p>

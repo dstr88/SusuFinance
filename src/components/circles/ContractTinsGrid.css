@@ -223,3 +223,142 @@
   color: var(--text-muted);
   line-height: 1.5;
 }
+
+/* ── Arranging a forming tin ──────────────────────────────────────────────────
+   A tin being assembled shows its women rather than a rotation it does not have
+   yet. Cards drag between tins to move; the corner square drags to copy.
+
+   Colours are tokens only — no hex, no rgba. The "can take this card" state reuses
+   --accent rather than inventing a highlight. */
+
+.ct-card--forming {
+	border-style: dashed;
+}
+
+/* The tin he is about to drop into. Only ever applied when the drop would really
+   be accepted, so the glow is a promise the endpoint keeps. */
+.ct-card--over {
+	border-color: var(--accent);
+	background: var(--accent-soft);
+	box-shadow: 0 0 0 1px var(--accent-glow);
+}
+
+.ct-roster {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+}
+.ct-status--forming {
+	align-self: flex-start;
+	padding: 0.1rem 0.5rem;
+	border: 1px solid var(--border-bright);
+	border-radius: 999px;
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-secondary);
+}
+.ct-roster__hint {
+	margin: 0;
+	font-size: 0.72rem;
+	line-height: 1.5;
+	color: var(--text-muted);
+}
+.ct-roster__empty {
+	margin: 0;
+	padding: 1.25rem 0.75rem;
+	border: 1px dashed var(--border-subtle);
+	border-radius: 8px;
+	text-align: center;
+	font-size: 0.78rem;
+	color: var(--text-muted);
+}
+.ct-roster__cards {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+/* One woman. Small on purpose: a dozen have to sit in a tin at once, and both tins
+   have to be on screen together or there is nothing to drag between. */
+.ct-mini {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.4rem 1.5rem 0.4rem 0.55rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: var(--surface-card-2);
+	cursor: grab;
+	user-select: none;
+}
+.ct-mini:hover {
+	background: var(--surface-hover);
+	border-color: var(--border-bright);
+}
+.ct-mini:active { cursor: grabbing; }
+.ct-mini__turn {
+	font-size: 0.6rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+.ct-mini__name {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	white-space: nowrap;
+}
+/* Her Verify state. A dot, not a sentence: the tin is a shelf, not a report. */
+.ct-mini__dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	flex: none;
+}
+.ct-mini__dot--ok { background: var(--gain); }
+.ct-mini__dot--pending { background: var(--text-muted); }
+
+/* The copy square. Top-right corner of her card. Drag it to put her in a second
+   tin without taking her out of this one. */
+.ct-mini__copy {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	display: grid;
+	place-items: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 4px;
+	font-size: 0.6rem;
+	line-height: 1;
+	color: var(--text-muted);
+	cursor: copy;
+}
+.ct-mini__copy:hover {
+	background: var(--accent-soft);
+	color: var(--accent);
+}
+
+/* The outcome of a drop, in words. */
+.ct-note {
+	margin: 0 0 0.75rem;
+	padding: 0.5rem 0.75rem;
+	border-radius: 8px;
+	font-size: 0.78rem;
+}
+.ct-note--ok {
+	border: 1px solid var(--gain-border);
+	background: var(--gain-bg);
+	color: var(--gain);
+}
+.ct-note--err {
+	border: 1px solid var(--loss-border);
+	background: var(--loss-bg);
+	color: var(--loss);
+}

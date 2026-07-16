@@ -38,6 +38,33 @@ export interface CirclesLocale {
 	};
 	cadence: Record<'weekly' | 'biweekly' | 'monthly', string>;
 	status: Record<'forming' | 'active' | 'completed' | 'abandoned', string>;
+	/** Arranging a forming tin: the cards, the drag, the copy square. */
+	arrange: {
+		/** Sits under a forming tin's heading — says what he may do, and until when. */
+		hint: string;
+		/** The empty tin. Not an error: a tin with room is the ordinary start. */
+		empty: string;
+		/** Tooltip on the corner square. */
+		copyHint: string;
+		/** Screen-reader name for the square. Takes her name because "copy" alone,
+		 *  read aloud out of context, names no one. */
+		copyLabel: (name: string) => string;
+		/** "Turn 3" — her slot in the order the group agreed. */
+		turn: (n: number) => string;
+		/** She is in the tin but has no slot yet. */
+		noTurn: string;
+		/** Flash after a successful drop. */
+		moved: (name: string, tin: string) => string;
+		copied: (name: string, tin: string) => string;
+		/** Why a drop was refused. Keyed by the API's error string. */
+		err: {
+			tin_started: string;
+			already_in_tin: string;
+			slot_taken: string;
+			demo_readonly: string;
+			generic: string;
+		};
+	};
 	card: {
 		members: string;
 		/** "Round 6 of 10" */
@@ -157,6 +184,23 @@ const EN: CirclesLocale = {
 	kind: { circle: 'Circle', targetGroup: 'Savings group' },
 	cadence: { weekly: 'Weekly', biweekly: 'Every two weeks', monthly: 'Monthly' },
 	status: { forming: 'Forming', active: 'Active', completed: 'Completed', abandoned: 'Ended early' },
+	arrange: {
+		hint: 'Drag a card to move her to another tin. Drag the corner square to copy her into a second one. Once round 1 opens, the tin is set.',
+		empty: 'Nobody yet. Drag a card in.',
+		copyHint: 'Drag this square to copy her into a second tin — she stays in this one',
+		copyLabel: (name) => `Copy ${name} into a second tin`,
+		turn: (n) => `Turn ${n}`,
+		noTurn: 'No turn yet',
+		moved: (name, tin) => `${name} moved to ${tin}.`,
+		copied: (name, tin) => `${name} copied into ${tin} — she is in both.`,
+		err: {
+			tin_started: 'That circle has already started. Its turn order is set.',
+			already_in_tin: 'She is already in that tin.',
+			slot_taken: 'That turn was just taken. Try again.',
+			demo_readonly: 'Sign up free to arrange your own circles.',
+			generic: 'That did not save. Try again.',
+		},
+	},
 	card: {
 		members: 'Members',
 		round: (i, t) => `Round ${i} of ${t}`,
@@ -284,6 +328,23 @@ const FR: CirclesLocale = {
 	kind: { circle: 'Cercle', targetGroup: 'Groupe d’épargne' },
 	cadence: { weekly: 'Chaque semaine', biweekly: 'Toutes les deux semaines', monthly: 'Chaque mois' },
 	status: { forming: 'En formation', active: 'En cours', completed: 'Terminé', abandoned: 'Arrêté' },
+	arrange: {
+		hint: 'Faites glisser une carte pour la déplacer vers une autre boîte. Faites glisser le carré du coin pour la copier dans une deuxième. Dès l’ouverture du tour 1, la boîte est fixée.',
+		empty: 'Personne pour l’instant. Faites glisser une carte ici.',
+		copyHint: 'Faites glisser ce carré pour la copier dans une deuxième boîte — elle reste dans celle-ci',
+		copyLabel: (name) => `Copier ${name} dans une deuxième boîte`,
+		turn: (n) => `Tour ${n}`,
+		noTurn: 'Pas encore de tour',
+		moved: (name, tin) => `${name} déplacée vers ${tin}.`,
+		copied: (name, tin) => `${name} copiée dans ${tin} — elle est dans les deux.`,
+		err: {
+			tin_started: 'Ce cercle a déjà commencé. Son ordre de passage est fixé.',
+			already_in_tin: 'Elle est déjà dans cette boîte.',
+			slot_taken: 'Ce tour vient d’être pris. Réessayez.',
+			demo_readonly: 'Inscrivez-vous gratuitement pour organiser vos propres cercles.',
+			generic: 'L’enregistrement a échoué. Réessayez.',
+		},
+	},
 	card: {
 		members: 'Membres',
 		round: (i, t) => `Tour ${i} sur ${t}`,
@@ -412,6 +473,23 @@ const ES: CirclesLocale = {
 	kind: { circle: 'Círculo', targetGroup: 'Grupo de ahorro' },
 	cadence: { weekly: 'Cada semana', biweekly: 'Cada dos semanas', monthly: 'Cada mes' },
 	status: { forming: 'En formación', completed: 'Terminado', active: 'En curso', abandoned: 'Detenido' },
+	arrange: {
+		hint: 'Arrastre una tarjeta para moverla a otra lata. Arrastre el cuadrado de la esquina para copiarla en una segunda. Cuando se abra la ronda 1, la lata queda fijada.',
+		empty: 'Todavía nadie. Arrastre una tarjeta aquí.',
+		copyHint: 'Arrastre este cuadrado para copiarla en una segunda lata — ella sigue en esta',
+		copyLabel: (name) => `Copiar a ${name} en una segunda lata`,
+		turn: (n) => `Turno ${n}`,
+		noTurn: 'Sin turno todavía',
+		moved: (name, tin) => `${name} pasó a ${tin}.`,
+		copied: (name, tin) => `${name} copiada en ${tin} — está en las dos.`,
+		err: {
+			tin_started: 'Ese círculo ya empezó. Su orden de turnos está fijado.',
+			already_in_tin: 'Ella ya está en esa lata.',
+			slot_taken: 'Ese turno acaba de ocuparse. Inténtelo de nuevo.',
+			demo_readonly: 'Regístrese gratis para organizar sus propios círculos.',
+			generic: 'No se guardó. Inténtelo de nuevo.',
+		},
+	},
 	card: {
 		members: 'Integrantes',
 		round: (i, t) => `Ronda ${i} de ${t}`,

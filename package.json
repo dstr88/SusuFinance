@@ -20,7 +20,8 @@
     "db:migrate:turso": "node src/scripts/dbMigrate.mjs",
     "seed:addresses": "node src/scripts/seedKnownAddresses.mjs",
     "seed:circle": "node --env-file-if-exists=.env src/scripts/seedDemoCircle.mjs",
-    "seed:beta": "node --env-file-if-exists=.env src/scripts/seedBetaCircle.mjs"
+    "seed:beta": "node --env-file-if-exists=.env src/scripts/seedBetaCircle.mjs",
+    "seed:forming": "node --env-file-if-exists=.env src/scripts/seedFormingTins.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.4",

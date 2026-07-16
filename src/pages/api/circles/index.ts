@@ -60,6 +60,25 @@ export interface CircleCard {
 		fraction: number;
 		targetDate: string | null;
 	} | null;
+	/**
+	 * The women in this tin, in the order the group agreed — `forming` tins only.
+	 *
+	 * A live tin gets `null`, not an empty array: its roster is not draggable, so the
+	 * cards are not rendered in it, so the names are not sent. Shipping a roster the
+	 * UI would only refuse to render is a wider surface than the feature needs, and
+	 * "fetched and dropped" is not a boundary — not fetching is.
+	 *
+	 * There is nothing about her record here, in any tin. A card is her standing in
+	 * this group, and in a forming tin she has no standing yet: no rounds have run.
+	 */
+	roster:
+		| {
+				memberId: string;
+				displayName: string | null;
+				turnOrder: number | null;
+				payoutVerified: boolean;
+		  }[]
+		| null;
 	/** The current open round (circles) or current period (savings groups). */
 	period: {
 		label: string | null;
@@ -141,6 +160,28 @@ export const GET: APIRoute = async ({ request }) => {
 				 WHERE ct.tenant_id = ? AND ct.contract_id IN (${placeholders})`,
 			args: [tenantId, ...contractIds],
 		});
+
+		// The roster of every FORMING tin, in agreed turn order. Scoped to forming in
+		// the SQL rather than filtered in JS: a live tin's names never leave the
+		// database, so no future refactor of the mapping code can leak them onto a card
+		// that is not meant to carry them.
+		const formingIds = contractsRes.rows
+			.filter((c: any) => String(c.status) === 'forming')
+			.map((c: any) => String(c.id));
+		const rosterRes = formingIds.length
+			? await db.execute({
+					sql: `
+						SELECT cm.contract_id, cm.member_id, cm.turn_order,
+						       m.display_name, m.address_verified_at
+						  FROM contract_members cm
+						  LEFT JOIN members m ON m.id = cm.member_id AND m.tenant_id = cm.tenant_id
+						 WHERE cm.tenant_id = ?
+						   AND cm.contract_id IN (${formingIds.map(() => '?').join(',')})
+						   AND cm.left_at IS NULL
+						 ORDER BY cm.contract_id, cm.turn_order NULLS LAST`,
+					args: [tenantId, ...formingIds],
+				})
+			: { rows: [] as any[] };
 
 		const now = new Date();
 		const rows = contribRes.rows as any[];
@@ -227,9 +268,25 @@ export const GET: APIRoute = async ({ request }) => {
 						}
 					: null;
 
+			// null for a live tin, and an array — possibly empty — for a forming one.
+			// The distinction is load-bearing: null means "this tin's cards are not
+			// yours to arrange", [] means "an empty tin, waiting for someone".
+			const roster =
+				String(c.status) === 'forming'
+					? (rosterRes.rows as any[])
+							.filter((r) => String(r.contract_id) === id)
+							.map((r) => ({
+								memberId: String(r.member_id),
+								displayName: r.display_name ? String(r.display_name) : null,
+								turnOrder: r.turn_order === null ? null : Number(r.turn_order),
+								payoutVerified: Boolean(r.address_verified_at),
+							}))
+					: null;
+
 			return {
 				id,
 				type,
+				roster,
 				name: String(c.name),
 				currency: String(c.currency),
 				cadence: String(c.cadence) as CircleCard['cadence'],
