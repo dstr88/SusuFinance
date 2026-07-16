@@ -280,25 +280,51 @@ ON CONFLICT DO NOTHING`,
 	// Google would silently become the owner of her own empty programme instead of a
 	// member of Makola Traders, and the operator would never see her.
 	//
-	// So exactly one person may ever be given a programme this way: the FIRST human,
-	// when no one anywhere holds a membership. That is the operator, and the
-	// programme is his. Everyone after him arrives through an invite, which creates
-	// the membership that the code above will find.
+	// So only the FOUNDERS may be given a programme this way — the first
+	// BOOTSTRAP_OWNERS humans, counted by memberships. Everyone after them arrives
+	// through an invite, which creates the membership the code above will find.
 	//
-	// The signal is tenant_memberships being empty, not tenants being empty — the
-	// demo programme exists as seed data and has no members, so it must not count as
-	// someone having arrived.
-	const anyMembership = await db.execute({
-		sql: 'SELECT 1 FROM tenant_memberships LIMIT 1',
+	// TWO, not one: the builder and the operator both need in, and requiring one of
+	// them to invite the other means whoever signs in second is locked out until the
+	// first happens to be at a screen. They are founding this together.
+	//
+	// The second founder JOINS the first's programme as a co-owner — she does not get
+	// a programme of her own. Two owners of one programme is the ask; two owners of
+	// two empty programmes is what "just raise the limit to 2" would silently have
+	// built, and they would never have seen each other's circles.
+	//
+	// The signal is tenant_memberships, not tenants — the demo programme exists as
+	// seed data and has no members, so it must not count as someone having arrived.
+	const BOOTSTRAP_OWNERS = 2;
+	const founders = await db.execute({
+		sql: 'SELECT tenant_id FROM tenant_memberships ORDER BY created_at ASC',
 		args: [],
 	});
-	if (anyMembership.rows.length > 0) {
+
+	if (founders.rows.length >= BOOTSTRAP_OWNERS) {
 		// Signed in, but in no programme. Not an error — it is the invitee between
 		// sign-in and redemption, and the honest answer is "you are nobody here yet".
 		const err = new Error('No programme for this user — an invite is required');
 		(err as any).status = 403;
 		(err as any).code = 'no_programme';
 		throw err;
+	}
+
+	if (founders.rows.length > 0) {
+		// ── The second founder: join the first's programme as co-owner ────────────
+		// The oldest membership names the programme. There is exactly one at this
+		// point (the gate above rejects at two), so "the first tenant" is unambiguous.
+		const existingTenantId = String((founders.rows[0] as any).tenant_id);
+		await db.execute({
+			sql: `INSERT INTO tenant_memberships (id, tenant_id, user_id, role, created_at)
+			      VALUES (?, ?, ?, 'owner', now())
+			      ON CONFLICT DO NOTHING`,
+			args: [crypto.randomUUID(), existingTenantId, userId],
+		});
+		if (await tryCasActiveTenant(existingTenantId)) return existingTenantId;
+		const settled = await readActiveTenantWithRetry();
+		if (settled) return settled;
+		throw new Error('Failed to attach active tenant');
 	}
 
 	const tenantId: string = crypto.randomUUID();
