@@ -25,6 +25,13 @@ export function getPostLoginRedirect(nextValue: FormDataEntryValue | string | nu
 		return normalized;
 	}
 
-	// /dashboard checks the user's role and redirects to /admin or /dashboard/vault
-	return '/dashboard';
+	// Everyone lands in the lobby and chooses their own door — admin, or the
+	// member's way in. Almstins sent people to /dashboard, which role-checked and
+	// decided FOR them (/admin or /dashboard/vault). That is the opposite shape:
+	// there, one kind of user had one destination. Here the lobby is the fork, and
+	// picking your door is the point.
+	//
+	// A `next` path still wins (above), so a deep link someone was sent to survives
+	// the login round-trip.
+	return '/dashboard/lobby';
 }
