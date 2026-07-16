@@ -289,8 +289,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		//
 		// Almstins stopped anyone whose `is_onboarded` was false and made them name
 		// their vault first. There is nothing to ask here: the programme is created at
-		// sign-in, and the lobby is the door — "when the operator logs in, he will enter
-		// the lobby like everyone else, then he will click admin."
+		// sign-in, and the lobby is the door — the operator enters it like everyone
+		// else, and picks admin himself.
 		//
 		// The wall did not just inconvenience him, it broke the invite flow whole: an
 		// invitee redeems a link, gets a membership, lands on /dashboard/lobby — and

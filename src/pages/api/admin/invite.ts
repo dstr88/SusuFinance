@@ -6,8 +6,8 @@
  *
  * The OWNER of the programme, checked against tenant_memberships.role — not the
  * ADMIN_EMAILS / ADMIN_TENANT_IDS env allowlist in Layout.astro. That allowlist is
- * Almstins' platform superadmin (Donnie); it has nothing to do with who runs a
- * susu programme. the operator is not in it and should not be. He is an owner because
+ * the platform superadmin; it has nothing to do with who runs a susu programme. The
+ * operator is not in it and should not be. He is an owner because
  * ensureTenantForUser made him one when he signed in.
  *
  * ── The token is a bearer credential ─────────────────────────────────────────
