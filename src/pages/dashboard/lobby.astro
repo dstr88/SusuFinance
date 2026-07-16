@@ -28,10 +28,12 @@
 import LoginLayout from '../../layouts/LoginLayout.astro';
 import { getImage } from 'astro:assets';
 import bankLobby from '../../assets/bank-lobby.png';
+import MemberAccount from '../../components/circles/MemberAccount';
 import { getAuthSession } from '@/lib/authSession';
 import { isDemoRequest } from '@/lib/demo';
 import { db } from '@/lib/db';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
+import { getMemberAccount } from '@/lib/circles/memberAccount';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
 // "Are you signed in?" — NOT "which programme are you in?". The lobby is a door-
@@ -63,28 +65,13 @@ if (userId) {
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);
 
-// Does this member have anyone waiting on her vouch? If so, surface it here — the
-// lobby is where she lands, and there is no member dashboard yet to notify her.
-let vouchCount = 0;
-if (userId) {
-  const meRes = await db.execute({
-    sql: `SELECT id, tenant_id FROM members WHERE user_id = ? LIMIT 1`,
-    args: [userId],
-  });
-  if (meRes.rows.length) {
-    const mid = String((meRes.rows[0] as any).id);
-    const tid = String((meRes.rows[0] as any).tenant_id);
-    const cntRes = await db.execute({
-      sql: `SELECT COUNT(*) AS n FROM circle_votes
-             WHERE tenant_id = ? AND invited_by = ? AND kind = 'admission' AND status = 'open'`,
-      args: [tid, mid],
-    });
-    vouchCount = Number((cntRes.rows[0] as any)?.n ?? 0);
-  }
-}
-const vouchLabel = lang === 'fr' ? 'Quelqu’un attend votre parrainage →'
-  : lang === 'es' ? 'Alguien espera su aval →'
-  : 'Someone is waiting for your vouch →';
+// Her account modal is server-seeded here — her circles and every vote open in them
+// (vouches, proposals, expulsions) — so it paints without a spinner on a slow bundle.
+// null = this login is not a member (an operator would have been redirected above; a
+// signed-in non-member has not joined yet), and the modal renders nothing for them.
+// This replaces the old standalone "someone is waiting for your vouch" link: vouching
+// now lives inside the modal alongside everything else the group is deciding.
+const memberAccount = userId ? await getMemberAccount(userId).catch(() => null) : null;
 
 // Two widths: phones get a 900px webp, desktops 1800. Same picture, a quarter of
 // the bytes on the device most likely to be paying per megabyte.
@@ -104,16 +91,23 @@ const [bgSmall, bgLarge] = await Promise.all([
          token rule — no rgba() anywhere. -->
     <div class="lobby__scrim" aria-hidden="true"></div>
 
+    {/* Her account modal — top-left. Only mounts for a member; the island itself
+        returns nothing when `member` is null, so an operator/non-member sees no pill.
+        `lang`, not `t`: island props are JSON, and the locale's functions would drop. */}
+    {memberAccount && (
+      <MemberAccount
+        client:load
+        lang={lang}
+        initial={{ member: { displayName: memberAccount.displayName }, circles: memberAccount.circles }}
+      />
+    )}
+
     <nav class="lobby__doors" aria-label="Your way in">
       {/* The "admin" door was deleted Jul 16 — admins land straight in their panel.
           "Invited by" is the member's way in: the self-serve join form, where she
           names her group and sponsor. (A seeded member instead gets a claim link.) */}
       <a class="lobby__door lobby__door--right" href="/join">{t.lobby.invitedBy}</a>
     </nav>
-
-    {vouchCount > 0 && (
-      <a class="lobby__vouch" href="/vouch">{vouchLabel}</a>
-    )}
 
     <h1 class="lobby__welcome">{t.lobby.welcome}</h1>
   </section>
@@ -186,24 +180,6 @@ const [bgSmall, bgLarge] = await Promise.all([
     background: var(--surface-card-2);
   }
   .lobby__door:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-  .lobby__vouch {
-    position: relative;
-    z-index: 1;
-    align-self: center;
-    margin: 0 1.25rem clamp(1rem, 3vh, 1.75rem);
-    padding: 0.6rem 1.1rem;
-    border-radius: 999px;
-    border: 1px solid var(--accent-soft);
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    text-align: center;
-  }
-  .lobby__vouch:hover { background: var(--accent-glow); }
-  .lobby__vouch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
   .lobby__welcome {
     position: relative;

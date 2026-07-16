@@ -112,6 +112,41 @@ export interface CirclesLocale {
 		admin: string;
 		invitedBy: string;
 	};
+	/** Her account modal — the member's own home: her circles and the votes open in
+	 *  them. The counterpart to the operator's account dropdown. */
+	me: {
+		/** The trigger pill she taps to open the modal. */
+		trigger: string;
+		heading: string;
+		/** She is signed in but not in any circle yet. */
+		none: string;
+		joinCta: string;
+		circlesHeading: string;
+		votesHeading: string;
+		noVotes: string;
+		/** "closes in 3 days" — count-aware. */
+		closesIn: (days: number) => string;
+		closesToday: string;
+		voted: string;
+		awaiting: string;
+		yes: string;
+		no: string;
+		/** How each kind of vote reads on her screen. */
+		voteLabel: {
+			admission: (name: string) => string;
+			expulsion: (name: string) => string;
+			someone: string;
+		};
+		propose: {
+			label: string;
+			placeholder: string;
+			submit: string;
+			sending: string;
+			done: string;
+		};
+		err: string;
+		logout: string;
+	};
 	/** The programme, in aggregate. No member ever appears here. */
 	stats: {
 		title: string;
@@ -289,6 +324,35 @@ const EN: CirclesLocale = {
 		admin: 'admin',
 		invitedBy: 'Invited by',
 	},
+	me: {
+		trigger: 'My circles',
+		heading: 'My circles',
+		none: 'You are not in a circle yet.',
+		joinCta: 'Join a circle →',
+		circlesHeading: 'My circles',
+		votesHeading: 'Open votes',
+		noVotes: 'Nothing to vote on right now.',
+		closesIn: (d) => (d === 1 ? 'closes in 1 day' : `closes in ${d} days`),
+		closesToday: 'closes today',
+		voted: 'You voted ✓',
+		awaiting: 'Open — awaiting the group',
+		yes: 'Yes',
+		no: 'No',
+		voteLabel: {
+			admission: (name) => `${name} asks to join`,
+			expulsion: (name) => `Remove ${name}?`,
+			someone: 'a new member',
+		},
+		propose: {
+			label: 'Ask the circle to vote',
+			placeholder: 'Put a question to the group…',
+			submit: 'Propose',
+			sending: 'Sending…',
+			done: 'Sent to the group ✓',
+		},
+		err: 'That did not go through. Try again.',
+		logout: 'Log out',
+	},
 	stats: {
 		title: 'Programme',
 		subtitle: 'How the programme is doing — never how any one member is doing',
@@ -442,6 +506,35 @@ const FR: CirclesLocale = {
 		admin: 'admin',
 		invitedBy: 'Invité par',
 	},
+	me: {
+		trigger: 'Mes cercles',
+		heading: 'Mes cercles',
+		none: 'Vous n’êtes encore dans aucun cercle.',
+		joinCta: 'Rejoindre un cercle →',
+		circlesHeading: 'Mes cercles',
+		votesHeading: 'Votes ouverts',
+		noVotes: 'Rien à voter pour l’instant.',
+		closesIn: (d) => (d === 1 ? 'clôture dans 1 jour' : `clôture dans ${d} jours`),
+		closesToday: 'clôture aujourd’hui',
+		voted: 'Vous avez voté ✓',
+		awaiting: 'Ouvert — en attente du groupe',
+		yes: 'Oui',
+		no: 'Non',
+		voteLabel: {
+			admission: (name) => `${name} demande à rejoindre`,
+			expulsion: (name) => `Exclure ${name} ?`,
+			someone: 'une nouvelle membre',
+		},
+		propose: {
+			label: 'Demander un vote au cercle',
+			placeholder: 'Posez une question au groupe…',
+			submit: 'Proposer',
+			sending: 'Envoi…',
+			done: 'Envoyé au groupe ✓',
+		},
+		err: 'Cela n’a pas abouti. Réessayez.',
+		logout: 'Se déconnecter',
+	},
 	stats: {
 		title: 'Programme',
 		subtitle: 'Comment va le programme — jamais comment va une membre en particulier',
@@ -562,6 +655,35 @@ const ES: CirclesLocale = {
 		welcome: 'Bienvenida a SusuFinance',
 		admin: 'admin',
 		invitedBy: 'Invitada por',
+	},
+	me: {
+		trigger: 'Mis círculos',
+		heading: 'Mis círculos',
+		none: 'Todavía no estás en ningún círculo.',
+		joinCta: 'Unirse a un círculo →',
+		circlesHeading: 'Mis círculos',
+		votesHeading: 'Votos abiertos',
+		noVotes: 'Nada que votar por ahora.',
+		closesIn: (d) => (d === 1 ? 'cierra en 1 día' : `cierra en ${d} días`),
+		closesToday: 'cierra hoy',
+		voted: 'Ya votaste ✓',
+		awaiting: 'Abierto — esperando al grupo',
+		yes: 'Sí',
+		no: 'No',
+		voteLabel: {
+			admission: (name) => `${name} pide unirse`,
+			expulsion: (name) => `¿Quitar a ${name}?`,
+			someone: 'una nueva integrante',
+		},
+		propose: {
+			label: 'Pedir una votación al círculo',
+			placeholder: 'Plantea una pregunta al grupo…',
+			submit: 'Proponer',
+			sending: 'Enviando…',
+			done: 'Enviado al grupo ✓',
+		},
+		err: 'No se pudo completar. Inténtalo de nuevo.',
+		logout: 'Cerrar sesión',
 	},
 	drill: {
 		back: 'Todos los círculos',
