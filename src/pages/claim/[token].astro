@@ -1,0 +1,148 @@
+---
+// /claim/:token — a seeded member binds her login to her existing member row.
+//
+// The organizer added her to a circle while it was forming (a members row with
+// user_id NULL) and handed her this link. She opens it, signs in, and her login is
+// bound to that row — she arrives as herself, with her seeded turn and history, not
+// as a duplicate stranger.
+//
+// Same shape as /invite/:token (admin), pointed at a member row instead of an admin
+// membership. The token is a bearer credential, so redemption is a single guarded
+// UPDATE — two people opening the same link must not both bind to her.
+//
+// NOTE (known prerequisite): a brand-new login currently cannot complete sign-in at
+// all — the two-founder gate throws no_programme for a 3rd+ human. Until that gate
+// is changed to let members in (the next slice), this page is reachable only by a
+// login that already resolves to a tenant. The binding logic here is correct and
+// waits for that gate.
+import LoginLayout from '../../layouts/LoginLayout.astro';
+import { db } from '@/lib/db';
+import { getAuthSession } from '@/lib/authSession';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const token = Astro.params.token ?? '';
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const userId = auth?.user?.id ? String(auth.user.id) : '';
+if (!userId) {
+  return Astro.redirect(`/login?next=${encodeURIComponent(`/claim/${token}`)}`);
+}
+
+type Outcome = 'claimed' | 'already' | 'invalid' | 'error';
+let outcome: Outcome = 'invalid';
+let memberName = '';
+
+if (token) {
+  try {
+    // Consume the token in ONE guarded write — the WHERE clause is the lock.
+    const claim = await db.execute({
+      sql: `UPDATE member_claims
+               SET redeemed_at = now(), redeemed_by = ?
+             WHERE token = ?
+               AND redeemed_at IS NULL
+               AND expires_at > now()
+             RETURNING tenant_id, member_id`,
+      args: [userId, token],
+    });
+
+    if (!claim.rows.length) {
+      // Spent, expired, or never existed — one outcome, so a real token cannot be probed for.
+      outcome = 'invalid';
+    } else {
+      const tenantId = String((claim.rows[0] as any).tenant_id);
+      const memberId = String((claim.rows[0] as any).member_id);
+
+      // Already a member of this programme under another row? Then she cannot also
+      // become this seeded one. The token is spent (correct — a clicked link should
+      // not still work), and she stays who she already is.
+      const mine = await db.execute({
+        sql: `SELECT id FROM members WHERE tenant_id = ? AND user_id = ? LIMIT 1`,
+        args: [tenantId, userId],
+      });
+
+      if (mine.rows.length) {
+        outcome = 'already';
+      } else {
+        // Bind, but only if the row is still unclaimed — a guarded UPDATE, so two
+        // links to the same member cannot both attach a login.
+        const bound = await db.execute({
+          sql: `UPDATE members SET user_id = ?, updated_at = now()
+                 WHERE id = ? AND tenant_id = ? AND user_id IS NULL
+                 RETURNING display_name`,
+          args: [userId, memberId, tenantId],
+        });
+        if (bound.rows.length) {
+          memberName = String((bound.rows[0] as any).display_name ?? '');
+          // Point her at the programme she just joined as a member.
+          await db.execute({
+            sql: `UPDATE auth_users SET active_tenant_id = ? WHERE id = ?`,
+            args: [tenantId, userId],
+          });
+          outcome = 'claimed';
+        } else {
+          // The row was claimed by someone else between mint and redeem.
+          outcome = 'invalid';
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[claim] redeem failed', err);
+    outcome = 'error';
+  }
+}
+
+const COPY: Record<string, Record<Outcome, { title: string; body: string }>> = {
+  en: {
+    claimed: { title: 'You are in', body: 'Your account is now linked to your place in the group. Welcome.' },
+    already: { title: 'You were already in', body: 'You already have a place in this programme. The link has been used up.' },
+    invalid: { title: 'This link no longer works', body: 'A claim link can be used once, and lasts seven days. Ask for a new one.' },
+    error:   { title: 'Something went wrong', body: 'The link could not be completed. Try again, or ask for a new one.' },
+  },
+  fr: {
+    claimed: { title: 'Vous y êtes', body: 'Votre compte est maintenant lié à votre place dans le groupe. Bienvenue.' },
+    already: { title: 'Vous y étiez déjà', body: 'Vous avez déjà une place dans ce programme. Le lien est désormais utilisé.' },
+    invalid: { title: 'Ce lien ne fonctionne plus', body: 'Un lien s’utilise une fois et dure sept jours. Demandez-en un nouveau.' },
+    error:   { title: 'Une erreur est survenue', body: 'Le lien n’a pas pu aboutir. Réessayez, ou demandez-en un nouveau.' },
+  },
+  es: {
+    claimed: { title: 'Ya está dentro', body: 'Su cuenta ya está vinculada a su lugar en el grupo. Bienvenida.' },
+    already: { title: 'Ya estaba dentro', body: 'Ya tiene un lugar en este programa. El enlace ya se ha usado.' },
+    invalid: { title: 'Este enlace ya no funciona', body: 'Un enlace se usa una vez y dura siete días. Pida uno nuevo.' },
+    error:   { title: 'Algo salió mal', body: 'No se pudo completar el enlace. Intente de nuevo, o pida uno nuevo.' },
+  },
+};
+const GO: Record<string, { on: string; off: string }> = {
+  en: { on: 'Go to the lobby', off: 'Back to the lobby' },
+  fr: { on: 'Aller au hall', off: 'Retour au hall' },
+  es: { on: 'Ir al vestíbulo', off: 'Volver al vestíbulo' },
+};
+const t = (COPY[lang] ?? COPY.en)[outcome];
+const go = GO[lang] ?? GO.en;
+const ok = outcome === 'claimed' || outcome === 'already';
+---
+
+<LoginLayout title={t.title} noindex={true} lang={lang}>
+  <section class="cl">
+    <div class={`cl-card ${ok ? 'cl-card--ok' : 'cl-card--no'}`}>
+      <h1 class="cl-title">{t.title}</h1>
+      {ok && memberName && <p class="cl-name">{memberName}</p>}
+      <p class="cl-body">{t.body}</p>
+      {ok
+        ? <a class="cl-btn" href="/dashboard/lobby">{go.on}</a>
+        : <a class="cl-link" href="/dashboard/lobby">{go.off}</a>}
+    </div>
+  </section>
+</LoginLayout>
+
+<style>
+  .cl { min-height: 70svh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.25rem; }
+  .cl-card { max-width: 30rem; width: 100%; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem 1.75rem; text-align: center; }
+  .cl-card--ok { border-color: var(--accent-soft); }
+  .cl-title { margin: 0 0 0.5rem; font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+  .cl-name { margin: 0 0 0.75rem; font-size: 0.95rem; font-weight: 600; color: var(--accent); }
+  .cl-body { margin: 0 0 1.5rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+  .cl-btn { display: inline-block; padding: 0.6rem 1.4rem; border-radius: 8px; background: var(--accent); color: var(--surface-bg); font-weight: 700; font-size: 0.85rem; text-decoration: none; }
+  .cl-link { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; }
+  .cl-link:hover { color: var(--accent); }
+</style>
