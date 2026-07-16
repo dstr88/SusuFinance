@@ -68,7 +68,8 @@ export const GET: APIRoute = async ({ params, request }) => {
 		const mRes = await db.execute({
 			sql: `SELECT cm.member_id, cm.turn_order, cm.joined_at::text AS joined_at,
 			             cm.left_at::text AS left_at,
-			             m.display_name, m.address_verified_at::text AS address_verified_at
+			             m.display_name, m.address_verified_at::text AS address_verified_at,
+			             (m.user_id IS NOT NULL) AS claimed
 			        FROM contract_members cm
 			        JOIN members m ON m.id = cm.member_id AND m.tenant_id = cm.tenant_id
 			       WHERE cm.tenant_id = ? AND cm.contract_id = ?
@@ -134,6 +135,9 @@ export const GET: APIRoute = async ({ params, request }) => {
 			// fact the operator must be able to act on.
 			payoutVerified: Boolean(m.address_verified_at),
 			isRecipientOfOpenRound: Boolean(openRound && String(openRound.recipient_member_id) === String(m.member_id)),
+			// Has she a login? A seeded member (claimed=false) can be handed a claim
+			// link; one who has already bound her account (claimed=true) cannot.
+			claimed: Boolean(m.claimed),
 			// TODO(§8, circle_votes): `vote` — kind (admission | mid_entry | expulsion),
 			// opened_at, closes_at, status. The other half of what the operator needs.
 			// Ballots never appear here; only that a vote is open, and its outcome.

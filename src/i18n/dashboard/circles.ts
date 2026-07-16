@@ -65,6 +65,16 @@ export interface CirclesLocale {
 			generic: string;
 		};
 	};
+	/** The organizer's per-member claim link (operator view, unclaimed members). */
+	claim: {
+		get: string;
+		minting: string;
+		retry: string;
+		copy: string;
+		copied: string;
+		/** aria-label for the link field — takes her name so a screen reader says whose. */
+		linkLabel: (name: string) => string;
+	};
 	card: {
 		members: string;
 		/** "Round 6 of 10" */
@@ -200,6 +210,14 @@ const EN: CirclesLocale = {
 			demo_readonly: 'Sign up free to arrange your own circles.',
 			generic: 'That did not save. Try again.',
 		},
+	},
+	claim: {
+		get: 'Get claim link',
+		minting: 'Making link…',
+		retry: 'Try again',
+		copy: 'Copy',
+		copied: 'Copied ✓',
+		linkLabel: (name) => `Claim link for ${name}`,
 	},
 	card: {
 		members: 'Members',
@@ -345,6 +363,14 @@ const FR: CirclesLocale = {
 			generic: 'L’enregistrement a échoué. Réessayez.',
 		},
 	},
+	claim: {
+		get: 'Obtenir le lien',
+		minting: 'Création du lien…',
+		retry: 'Réessayer',
+		copy: 'Copier',
+		copied: 'Copié ✓',
+		linkLabel: (name) => `Lien d’accès pour ${name}`,
+	},
 	card: {
 		members: 'Membres',
 		round: (i, t) => `Tour ${i} sur ${t}`,
@@ -489,6 +515,14 @@ const ES: CirclesLocale = {
 			demo_readonly: 'Regístrese gratis para organizar sus propios círculos.',
 			generic: 'No se guardó. Inténtelo de nuevo.',
 		},
+	},
+	claim: {
+		get: 'Obtener enlace',
+		minting: 'Creando enlace…',
+		retry: 'Reintentar',
+		copy: 'Copiar',
+		copied: 'Copiado ✓',
+		linkLabel: (name) => `Enlace de acceso para ${name}`,
 	},
 	card: {
 		members: 'Integrantes',

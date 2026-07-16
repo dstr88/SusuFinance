@@ -11,11 +11,27 @@ import Layout from '../../../layouts/Layout.astro';
 import MemberCards from '../../../components/circles/MemberCards';
 import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
 const session = await requireTenantSession(Astro.request);
 if (!session) return Astro.redirect('/login?next=/dashboard/circles');
+
+// Only the operator (owner/admin) may mint a member's claim link, so only she is
+// shown the button. The mint endpoint re-checks this server-side — the flag just
+// keeps the control off everyone else's screen.
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const viewerId = auth?.user?.id ? String(auth.user.id) : '';
+let viewerIsAdmin = false;
+if (viewerId) {
+  const roleRes = await db.execute({
+    sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`,
+    args: [session.tenantId, viewerId],
+  });
+  const role = roleRes.rows[0] ? String((roleRes.rows[0] as any).role ?? '') : '';
+  viewerIsAdmin = role === 'owner' || role === 'admin';
+}
 
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);
@@ -44,7 +60,7 @@ const kind = String(c.type) === 'circle' ? t.kind.circle : t.kind.targetGroup;
       </p>
     </header>
 
-    <MemberCards client:load lang={lang} contractId={id} />
+    <MemberCards client:load lang={lang} contractId={id} isAdmin={viewerIsAdmin} />
 
     <p class="mc-page__foot">{t.footnote}</p>
   </section>

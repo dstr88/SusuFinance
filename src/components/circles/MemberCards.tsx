@@ -34,6 +34,8 @@ interface Member {
 	turnOrder: number | null;
 	payoutVerified: boolean;
 	isRecipientOfOpenRound: boolean;
+	/** Has she bound a login? A seeded member (false) can be handed a claim link. */
+	claimed: boolean;
 }
 interface Round { index: number; dueDate: string; status: string; recipientId: string | null; payoutObserved: boolean; payoutFrozen: boolean }
 /** No `detail`: the admin feed renders action + actor only, and the endpoint
@@ -66,7 +68,56 @@ function label(m: Member) {
 	return m.id.length > 14 ? `${m.id.slice(0, 8)}…${m.id.slice(-4)}` : m.id;
 }
 
-function MemberCard({ m, t, cycleLength }: { m: Member; t: ReturnType<typeof getCirclesLocale>; cycleLength: number }) {
+/**
+ * The organizer's per-member claim link. A seeded member (no login) gets a button
+ * that mints a single-use link; the organizer copies it and sends it to her however
+ * they reach each other. Shown only to the operator, only for an unclaimed member.
+ */
+function ClaimLink({ memberId, name, t }: { memberId: string; name: string; t: ReturnType<typeof getCirclesLocale> }) {
+	const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+	const [url, setUrl] = useState('');
+	const [copied, setCopied] = useState(false);
+
+	async function mint() {
+		setState('loading');
+		try {
+			const res = await fetch('/api/circles/member-claim', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ memberId }),
+			});
+			const j = await res.json().catch(() => ({}));
+			if (!j?.ok || !j.url) { setState('error'); return; }
+			setUrl(String(j.url));
+			setState('done');
+		} catch {
+			setState('error');
+		}
+	}
+
+	if (state === 'done') {
+		return (
+			<div className="mc-claim mc-claim--done">
+				<input className="mc-claim__url" type="text" readOnly value={url} aria-label={t.claim.linkLabel(name)} onFocus={(e) => e.currentTarget.select()} />
+				<button
+					className="mc-claim__copy"
+					type="button"
+					onClick={() => { navigator.clipboard?.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+				>
+					{copied ? t.claim.copied : t.claim.copy}
+				</button>
+			</div>
+		);
+	}
+
+	return (
+		<button className="mc-claim__btn" type="button" onClick={mint} disabled={state === 'loading'}>
+			{state === 'loading' ? t.claim.minting : state === 'error' ? t.claim.retry : t.claim.get}
+		</button>
+	);
+}
+
+function MemberCard({ m, t, cycleLength, isAdmin }: { m: Member; t: ReturnType<typeof getCirclesLocale>; cycleLength: number; isAdmin: boolean }) {
 	const gone = Boolean(m.leftAt);
 	return (
 		<article className={`mc-card ${gone ? 'mc-card--left' : ''} ${m.isRecipientOfOpenRound ? 'mc-card--receiving' : ''}`}>
@@ -95,11 +146,18 @@ function MemberCard({ m, t, cycleLength }: { m: Member; t: ReturnType<typeof get
 				<span className="mc-verify__dot" aria-hidden="true" />
 				{m.payoutVerified ? t.card.payoutVerified : t.card.payoutUnverified}
 			</footer>
+
+			{/* Operator-only, and only while she has no login of her own to reach the app. */}
+			{isAdmin && !gone && !m.claimed && (
+				<div className="mc-claim-row">
+					<ClaimLink memberId={m.id} name={label(m)} t={t} />
+				</div>
+			)}
 		</article>
 	);
 }
 
-export default function MemberCards({ lang, contractId }: { lang: Lang; contractId: string }) {
+export default function MemberCards({ lang, contractId, isAdmin = false }: { lang: Lang; contractId: string; isAdmin?: boolean }) {
 	const t = getCirclesLocale(lang);
 	const [data, setData] = useState<Payload | null>(null);
 	const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -160,7 +218,7 @@ export default function MemberCards({ lang, contractId }: { lang: Lang; contract
 				</div>
 				<div className="mc-grid">
 					{members.map((m) => (
-						<MemberCard key={`${m.id}-${m.turnOrder}-${m.joinedAt}`} m={m} t={t} cycleLength={contract.cycleLength} />
+						<MemberCard key={`${m.id}-${m.turnOrder}-${m.joinedAt}`} m={m} t={t} cycleLength={contract.cycleLength} isAdmin={isAdmin} />
 					))}
 				</div>
 			</section>

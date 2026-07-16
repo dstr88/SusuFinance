@@ -152,3 +152,60 @@
 }
 
 .mc-msg { padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+
+/* ── Claim link (operator-only, unclaimed members) ─────────────────────────────
+   The organizer mints a single-use link for a seeded member and copies it to send
+   her. Tokens only. */
+.mc-claim-row {
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--border-subtle);
+}
+.mc-claim__btn {
+	width: 100%;
+	padding: 0.5rem 0.75rem;
+	border-radius: 8px;
+	border: 1px solid var(--border-bright);
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.mc-claim__btn:hover:not(:disabled) {
+	border-color: var(--accent);
+	color: var(--accent);
+	background: var(--accent-soft);
+}
+.mc-claim__btn:disabled { opacity: 0.6; cursor: default; }
+.mc-claim__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.mc-claim--done {
+	display: flex;
+	gap: 0.4rem;
+}
+.mc-claim__url {
+	flex: 1;
+	min-width: 0;
+	padding: 0.45rem 0.6rem;
+	border-radius: 8px;
+	border: 1px solid var(--border-subtle);
+	background: var(--surface-card-2);
+	color: var(--text-secondary);
+	font-size: 0.72rem;
+	font-family: inherit;
+}
+.mc-claim__url:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.mc-claim__copy {
+	flex: none;
+	padding: 0.45rem 0.75rem;
+	border-radius: 8px;
+	border: none;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.72rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.mc-claim__copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
