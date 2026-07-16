@@ -41,6 +41,7 @@
 import type { APIRoute } from 'astro';
 import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
+import { closeExpiredVotes } from '@/lib/circles/votes';
 
 export const prerender = false;
 
@@ -50,6 +51,10 @@ export const GET: APIRoute = async ({ params, request }) => {
 	const tenantId = session.tenantId;
 	const contractId = String(params.id ?? '');
 	if (!contractId) return json({ ok: false, error: 'bad_request' }, 400);
+
+	// Opportunistic close: resolve any of this programme's lapsed votes on view, so a
+	// tallied outcome lands even if the cron is not provisioned. Non-fatal.
+	await closeExpiredVotes(tenantId).catch(() => { /* the drill-in still loads */ });
 
 	try {
 		const cRes = await db.execute({

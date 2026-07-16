@@ -246,6 +246,111 @@ async function admitMember(tenantId: string, contractId: string, memberId: strin
 	});
 }
 
+// ── The close pass ───────────────────────────────────────────────────────────
+//
+// `sponsor` admissions resolve the instant the sponsor votes (above). The tallied
+// thresholds — majority, blackball, unanimous_no — resolve only when their window
+// ends, which is what this does: scan open votes past closes_at, apply the
+// threshold, and stamp the outcome (admitting or expelling on the way). Run by a
+// cron and opportunistically on-read.
+
+/** Apply a vote's threshold at close, given its ballots. Returns the verdict. */
+async function evaluateAtClose(v: {
+	tenant_id: string; contract_id: string; threshold: string;
+	subject_member_id: string | null; invited_by: string | null;
+}, voteId: string): Promise<'passed' | 'failed'> {
+	const ballots = (await db.execute({
+		sql: `SELECT member_id, ballot FROM circle_vote_ballots WHERE vote_id = ?`,
+		args: [voteId],
+	})).rows as any[];
+
+	switch (v.threshold) {
+		case 'sponsor':
+			// Still open at close means the sponsor never voted yes — no vouch, no entry.
+			return ballots.some((b) => String(b.member_id) === String(v.invited_by) && String(b.ballot) === 'yes')
+				? 'passed' : 'failed';
+		case 'majority': {
+			const yes = ballots.filter((b) => b.ballot === 'yes').length;
+			const no = ballots.filter((b) => b.ballot === 'no').length;
+			return yes > no ? 'passed' : 'failed';
+		}
+		case 'blackball':
+			// Silence consents; one no fails. §5a.
+			return ballots.some((b) => b.ballot === 'no') ? 'failed' : 'passed';
+		case 'unanimous_no': {
+			// Expulsion: every eligible voter (live members except the subject) must vote
+			// no. Silence blocks. §5b.
+			const eligRes = await db.execute({
+				sql: `SELECT COUNT(*) AS n FROM contract_members
+				       WHERE tenant_id = ? AND contract_id = ? AND left_at IS NULL AND member_id <> ?`,
+				args: [v.tenant_id, v.contract_id, String(v.subject_member_id ?? '')],
+			});
+			const eligible = Number((eligRes.rows[0] as any)?.n ?? 0);
+			const noVotes = ballots.filter((b) => b.ballot === 'no').length;
+			return eligible > 0 && noVotes >= eligible ? 'passed' : 'failed';
+		}
+		default:
+			return 'failed';
+	}
+}
+
+/** Expulsion's side effect: the subject leaves. Her row keeps its turn_order forever
+ *  (a departed member is never overwritten — 0021). */
+async function expelMember(tenantId: string, contractId: string, memberId: string): Promise<void> {
+	await db.execute({
+		sql: `UPDATE contract_members SET left_at = now()
+		       WHERE tenant_id = ? AND contract_id = ? AND member_id = ? AND left_at IS NULL`,
+		args: [tenantId, contractId, memberId],
+	});
+}
+
+/**
+ * Resolve every open vote whose window has closed. Idempotent and safe to run often:
+ * the status='open' guard on the UPDATE means two concurrent passes cannot both
+ * apply the same outcome. Optionally scoped to one tenant.
+ */
+export async function closeExpiredVotes(tenantId?: string): Promise<{ resolved: number }> {
+	const due = await db.execute({
+		sql: `SELECT id, tenant_id, contract_id, kind, subject_member_id, invited_by, threshold
+		        FROM circle_votes
+		       WHERE status = 'open' AND closes_at <= now()
+		         ${tenantId ? 'AND tenant_id = ?' : ''}`,
+		args: tenantId ? [tenantId] : [],
+	});
+
+	let resolved = 0;
+	for (const row of due.rows as any[]) {
+		const v = {
+			id: String(row.id),
+			tenant_id: String(row.tenant_id),
+			contract_id: String(row.contract_id),
+			kind: String(row.kind),
+			subject_member_id: row.subject_member_id ? String(row.subject_member_id) : null,
+			invited_by: row.invited_by ? String(row.invited_by) : null,
+			threshold: String(row.threshold),
+		};
+		const verdict = await evaluateAtClose(v, v.id);
+
+		// Guarded: only the pass that flips 'open' → verdict does the side effect.
+		const upd = await db.execute({
+			sql: `UPDATE circle_votes SET status = ?, outcome_at = now()
+			       WHERE id = ? AND status = 'open'`,
+			args: [verdict, v.id],
+		});
+		if ((upd.rowsAffected ?? 0) === 0) continue; // another pass got it
+
+		if (verdict === 'passed' && v.subject_member_id) {
+			if (v.kind === 'admission' || v.kind === 'mid_entry') {
+				await admitMember(v.tenant_id, v.contract_id, v.subject_member_id);
+			} else if (v.kind === 'expulsion') {
+				await expelMember(v.tenant_id, v.contract_id, v.subject_member_id);
+			}
+		}
+		resolved += 1;
+	}
+	return { resolved };
+}
+
 export class VoteError extends Error {
 	code: string;
 	constructor(code: string, message: string) {
