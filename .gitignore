@@ -65,6 +65,12 @@ ping.php
 public_html/
 context/.obsidian/
 
+# The whole vault, not just the editor config. Ignoring context/.obsidian/
+# alone left the NOTES tracked — which is how context/green-paper.html got
+# committed here and into the Almstins repo, carrying a private name, until
+# both histories were rewritten on 2026-07-16. The vault is vault-only.
+context/
+
 # Almstins-era GitHub workflows, parked out of .github so they never fire
 .almstins-legacy/
 
