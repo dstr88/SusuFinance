@@ -78,6 +78,27 @@ const isAdmin =
   (tenantId ? ADMIN_TENANT_IDS.has(String(tenantId).toLowerCase()) : false) ||
   Boolean(displayEmail && ADMIN_EMAILS.has(displayEmail.toLowerCase()));
 
+// ── The veil ──────────────────────────────────────────────────────────────────
+//
+// A temporary grey-out over the dashboard while the programme is still being
+// furnished, so the second founder does not sign in to an empty room. The LOBBY is
+// not veiled — it uses LoginLayout — so he still arrives somewhere finished, and
+// only the door marked "admin" is papered over.
+//
+// ADMIN_EMAILS sees through it: the person furnishing the room can see what he is
+// doing while everyone else sees grey.
+//
+// COSMETIC, NOT A PERMISSION. The page renders underneath, the APIs still answer,
+// and devtools removes it in one click. It says "not ready yet"; it does not keep
+// anyone out. Never put anything behind this that must not be seen — the real
+// boundaries are tenant scoping and the endpoint gates.
+//
+// Lift it by unsetting DASHBOARD_VEIL in Render. No deploy, no code change.
+const _veilRaw = ((process.env as any).DASHBOARD_VEIL ?? import.meta.env.DASHBOARD_VEIL ?? '')
+  .toString().trim().toLowerCase();
+const veilEnabled = _veilRaw === '1' || _veilRaw === 'true' || _veilRaw === 'on';
+const showVeil = veilEnabled && !isAdmin;
+
 // Support unread count — only fetched for admin sessions (one cheap query)
 let adminSupportUnread = 0;
 if (isAdmin) {
@@ -197,6 +218,27 @@ const memberSinceDisplay = memberSinceIso
 </script>
 	</head>
 	<body>
+		{/* The veil — greys the dashboard while the programme is being furnished.
+		    Fixed-position, so its place in the DOM does not matter visually; it sits
+		    here so it paints immediately rather than after the nav.
+		    COSMETIC ONLY — see the note in the frontmatter. It is not a boundary. */}
+		{showVeil && (
+			<div class="veil" role="status" aria-live="polite">
+				<div class="veil__note">
+					<p class="veil__title">
+						{navLang === 'fr' ? 'Bientôt prêt' : navLang === 'es' ? 'Casi listo' : 'Almost ready'}
+					</p>
+					<p class="veil__body">
+						{navLang === 'fr'
+							? 'Cet espace est en cours de préparation. Il ouvrira très bientôt.'
+							: navLang === 'es'
+								? 'Este espacio se está preparando. Se abrirá muy pronto.'
+								: 'This space is still being set up. It will open shortly.'}
+					</p>
+				</div>
+			</div>
+		)}
+
 		{isDemo && <DemoBanner />}
 		{promoDaysLeft !== null && (
 			<div class="promo-expiry-banner">
@@ -746,6 +788,41 @@ window.__chromeI18n = chromeI18n;
 </script>
 
 <style>
+	/* ── The veil ───────────────────────────────────────────────────────────────
+	   A grey-out over the dashboard while the programme is being furnished.
+	   Cosmetic: the page is still under it and the APIs still answer. Colours are
+	   tokens only — the grey is --surface-bg at 97%, not a hard-coded hex. */
+	.veil {
+		position: fixed;
+		inset: 0;
+		z-index: 9999;
+		display: grid;
+		place-items: center;
+		padding: 2rem;
+		/* Fully opaque. 0.97 looked grey but left the member names legible through
+		   it — a veil you can read is not a veil. Solid --surface-bg, and the blur
+		   stays as belt-and-braces for any child that paints above. */
+		background: var(--surface-bg);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+	}
+	.veil__note {
+		max-width: 26rem;
+		text-align: center;
+	}
+	.veil__title {
+		margin: 0 0 0.5rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		color: var(--text-secondary);
+	}
+	.veil__body {
+		margin: 0;
+		font-size: 0.85rem;
+		line-height: 1.6;
+		color: var(--text-muted);
+	}
+
 	.lang-switch { display: inline-flex; gap: 2px; align-items: center; }
 	.lang-opt {
 		background: transparent;
