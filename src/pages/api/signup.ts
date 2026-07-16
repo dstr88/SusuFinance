@@ -78,7 +78,10 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 		args: [userId, email, TERMS_VERSION],
 	});
 	await db.execute({
-		sql: `INSERT INTO auth_credentials (user_id, password_hash, created_at, updated_at) VALUES (?, ?, to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS'), to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS'))`,
+		// now(), not to_char: auth_credentials.created_at/updated_at are timestamptz.
+		// (auth_users.created_at above is genuinely TEXT, so its to_char is correct —
+		// the two tables really do differ, which is exactly how this stayed hidden.)
+		sql: `INSERT INTO auth_credentials (user_id, password_hash, created_at, updated_at) VALUES (?, ?, now(), now())`,
 		args: [userId, passwordHash],
 	});
 

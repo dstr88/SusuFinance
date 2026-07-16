@@ -131,8 +131,8 @@ export async function markOnboardingComplete(userId: string): Promise<boolean> {
 		const res = await db.execute({
 			sql: `
         UPDATE auth_users
-        SET is_onboarded = 1,
-            setup_completed_at = COALESCE(setup_completed_at, to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS'))
+        SET is_onboarded = true,
+            setup_completed_at = COALESCE(setup_completed_at, now())
         WHERE id = ?
       `,
 			args: [userId],
@@ -224,7 +224,7 @@ export async function ensureTenantForUser(userId: string, label?: string | null)
 				try {
 					await db.execute({
 						sql: `INSERT INTO tenant_memberships (id, tenant_id, user_id, role, created_at)
-						      VALUES (?, ?, ?, 'member', to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS'))
+						      VALUES (?, ?, ?, 'member', now())
 ON CONFLICT DO NOTHING`,
 						args: [membershipId, siblingTenantId, userId],
 					});
@@ -305,14 +305,20 @@ ON CONFLICT DO NOTHING`,
 	const membershipId: string = crypto.randomUUID();
 	const tenantName = (label && label.trim().length ? label.trim() : 'Primary').slice(0, 120);
 
+	// now(), not to_char(now(), …). These columns are timestamptz, and to_char returns
+	// text: Postgres coerces a bare string LITERAL but refuses an expression already
+	// typed as text, so this INSERT threw on every sign-in ever attempted. The
+	// to_char form is a Turso leftover — there, timestamps were text columns and this
+	// was the faithful translation. It stayed faithful to a schema that no longer
+	// exists.
 	await db.execute({
-		sql: `INSERT INTO tenants (id, name, created_at) VALUES (?, ?, to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS'))`,
+		sql: `INSERT INTO tenants (id, name, created_at) VALUES (?, ?, now())`,
 		args: [tenantId, tenantName],
 	});
 	try {
 		await db.execute({
 			sql: `INSERT INTO tenant_memberships (id, tenant_id, user_id, role, created_at)
-      VALUES (?, ?, ?, ?, to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS'))`,
+      VALUES (?, ?, ?, ?, now())`,
 			args: [membershipId, tenantId, userId, 'owner'],
 		});
 	} catch (error) {
