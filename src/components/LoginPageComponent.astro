@@ -27,7 +27,13 @@ const isLockedOut = message === 'LOCKED_OUT';
     <a class="lang-switch__lang" href="/fr" aria-current={t.lang === 'fr' ? 'true' : undefined}>FR</a>
   </nav>
 
-  <!-- ── Fixed sign-in pill — top-right ───────────────────────────────── -->
+  <!-- ── Fixed sign-in pill — top-right ─────────────────────────────────
+       Ships `disabled` on purpose: the dropdown it opens is pure client JS, so
+       before that script runs the button can do nothing, and a button that looks
+       alive but is not is worse than one that plainly is not. The toggle script
+       enables it as its last act — see "Sign-in pill toggle" below. Do not remove
+       `disabled` here without moving that guarantee somewhere else: the pair is the
+       promise that the pill is only clickable once clicking it works. -->
   <div class="signin-pill-wrap" id="signinPillWrap">
     <button
       class="signin-pill"
@@ -301,6 +307,21 @@ const isLockedOut = message === 'LOCKED_OUT';
       pill.addEventListener('click', () => {
         dropdown.hidden ? openDropdown() : closeDropdown();
       });
+
+      // Now that the click actually does something, let it be clicked.
+      //
+      // This line was missing, and the pill sat `disabled` forever: the only code
+      // that removed the attribute targeted `button[data-needs-csrf]`, which the
+      // pill is not (it submits nothing — it opens a menu). :disabled styles it to
+      // pointer-events:none, so every click fell straight through to the wrapper
+      // behind it. No error, no console warning; the button was simply off. The
+      // whole sign-in surface on the landing page was unreachable.
+      //
+      // It belongs HERE, after the listener is attached, not in the CSRF block:
+      // what makes the pill safe to click is its handler existing, and CSRF has
+      // nothing to do with opening a menu.
+      pill.disabled = false;
+      pill.removeAttribute('aria-disabled');
 
       document.getElementById('signinDropdownClose')?.addEventListener('click', closeDropdown);
 
