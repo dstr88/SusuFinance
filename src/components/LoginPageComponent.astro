@@ -1,7 +1,20 @@
 ---
 import type { LoginPageLocale } from '../i18n/loginPage';
 import LoginLayout from '../layouts/LoginLayout.astro';
+import { getImage } from 'astro:assets';
 import Logo from '../assets/logo-scene.png';
+
+// The source logo is 634x634 / ~592KB. It renders at 80x80. Served raw, that whole
+// 592KB downloaded every visit, scaled down by CSS — half the page-weight budget in
+// one image, on an audience paying for data by the megabyte. On a slow connection
+// it simply hadn't arrived when the operator opened the page, so the browser showed
+// the alt text where the logo should be.
+//
+// Emit it at display size instead: a small webp, with a resized PNG fallback for any
+// browser too old for webp (same <picture> pattern the lobby uses). 160px covers a
+// 2x retina 80px slot. This drops ~592KB to a few KB.
+const logoWebp = await getImage({ src: Logo, format: 'webp', width: 160, height: 160, quality: 78 });
+const logoPng  = await getImage({ src: Logo, format: 'png',  width: 160, height: 160, quality: 78 });
 
 interface Props {
   t: LoginPageLocale;
@@ -120,7 +133,10 @@ const isLockedOut = message === 'LOCKED_OUT';
     <!-- Header: brand (language switcher + Login are the fixed pills above) -->
     <header class="hub-top">
       <a href="/" class="wordmark" aria-label={t.hero.wordmarkAriaLabel}>
-        <img src={Logo.src} width="80" height="80" alt="SusuFinance logo" class="wordmark-img" />
+        <picture>
+          <source srcset={logoWebp.src} type="image/webp" />
+          <img src={logoPng.src} width="80" height="80" alt="SusuFinance logo" class="wordmark-img" loading="eager" decoding="async" />
+        </picture>
         <span class="wordmark-text">SusuFinance</span>
       </a>
     </header>

@@ -288,7 +288,6 @@ const memberSinceDisplay = memberSinceIso
 						<a href="/dashboard/wallets" class={`nav-link ${isActive('/dashboard/wallets') ? 'active' : ''}`}>{tNav.nav.addresses}</a>
 						<a href="/dashboard/yearEnd/memory-lane" class={`nav-link ${currentPath.includes('memory-lane') ? 'active' : ''}`}>{tNav.nav.history}</a>
 						<a href="/dashboard/alerts" class={`nav-link ${isActive('/dashboard/alerts') ? 'active' : ''}`}>{tNav.nav.alerts}</a>
-						<a href="/wallet-checker" class={`nav-link ${isActive('/wallet-checker') ? 'active' : ''}`}>{tNav.chrome.scamChecker}</a>
 					</>
 				)}
 				{!isTradfiDomain && isAdmin && (
@@ -298,7 +297,6 @@ const memberSinceDisplay = memberSinceIso
 							Support{adminSupportUnread > 0 ? ` (${adminSupportUnread})` : ''}
 						</a>
 						<a href="/aave-alisis" class={`nav-link nav-link--admin ${isActive('/aave-alisis') ? 'active' : ''}`}>AaveAlisis</a>
-						<a href="/dashboard/petro-tins" class={`nav-link nav-link--admin ${isActive('/dashboard/petro-tins') ? 'active' : ''}`}>⛽ PetroTins</a>
 					</>
 				)}
 
