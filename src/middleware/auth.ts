@@ -45,6 +45,9 @@ export function isPublicPath(pathname: string): boolean {
 		pathname.startsWith('/signup/') ||
 		// Credentials signup endpoint — must be reachable without a session
 		pathname === '/api/signup' ||
+		// Geo-bypass cookie setter — public (validates its own secret) and must be
+		// reachable without a session, since it is how a blocked visitor gets in.
+		pathname === '/api/geo/allow' ||
 		pathname === '/wallet' ||
 		pathname.startsWith('/wallet/') ||
 		pathname === '/wallet-checker' ||

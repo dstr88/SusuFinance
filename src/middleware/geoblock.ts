@@ -41,6 +41,64 @@ export function isBlockedLocation(country: string, region: string): boolean {
 	return false;
 }
 
+// ── Africa-only mode ─────────────────────────────────────────────────────────
+//
+// When GEOBLOCK_AFRICA_ONLY is on, the sanctions BLOCKLIST becomes an ALLOWLIST:
+// only visitors geolocating to an African country pass; everyone else gets the
+// 451. Decided Jul 16 (SusuData §1): "Scope: Africa. No one else is welcome."
+//
+// OFF by default. This is a fail-closed, continent-wide access rule on top of
+// geoip data that is imperfect for African mobile carriers (some Ghana ranges
+// resolve to the wrong African country — harmless, still allowed — but some
+// resolve to NULL, which fail-closes to a block). It must be switched on
+// deliberately in Render and tested against a real Ghana connection BEFORE it is
+// trusted, or it can turn away the pilot. Unset the env to revert instantly, no
+// deploy.
+//
+// The DIASPORA cost is real and intended-with-eyes-open: a Ghanaian in London or
+// a Nigerian in Houston sits on a non-African IP and is blocked. The scope note
+// includes the diaspora; this rule, while on, excludes them. Revisit before any
+// diaspora push.
+const AFRICA_ISO = new Set<string>([
+	// 54 UN member states
+	'DZ', 'AO', 'BJ', 'BW', 'BF', 'BI', 'CV', 'CM', 'CF', 'TD', 'KM', 'CG', 'CD',
+	'CI', 'DJ', 'EG', 'GQ', 'ER', 'SZ', 'ET', 'GA', 'GM', 'GH', 'GN', 'GW', 'KE',
+	'LS', 'LR', 'LY', 'MG', 'MW', 'ML', 'MR', 'MU', 'MA', 'MZ', 'NA', 'NE', 'NG',
+	'RW', 'ST', 'SN', 'SC', 'SL', 'SO', 'ZA', 'SS', 'SD', 'TZ', 'TG', 'TN', 'UG',
+	'ZM', 'ZW',
+	// Inhabited African territories geoip-lite may emit
+	'EH', 'RE', 'YT', 'SH',
+]);
+
+function envFlag(name: string): boolean {
+	const raw = ((process.env as Record<string, string | undefined>)[name] ??
+		(import.meta.env as Record<string, string | undefined>)[name] ?? '')
+		.toString().trim().toLowerCase();
+	return raw === '1' || raw === 'true' || raw === 'on';
+}
+
+function bypassToken(): string {
+	return ((process.env as Record<string, string | undefined>).GEOBLOCK_BYPASS_TOKEN ??
+		(import.meta.env as Record<string, string | undefined>).GEOBLOCK_BYPASS_TOKEN ?? '')
+		.toString().trim();
+}
+
+/** "My computer" — a secret cookie, so Donnie (a non-African IP, otherwise
+ *  blocked) reaches his own site from anywhere, and it survives IP changes.
+ *  Set once via /api/geo/allow?token=… which validates against the same secret.
+ *  Empty token → no bypass exists (cannot be enabled by an empty string). */
+export const GEO_BYPASS_COOKIE = 'sf-geo-pass';
+export function hasGeoBypass(request: Request): boolean {
+	const token = bypassToken();
+	if (!token) return false;
+	const cookie = request.headers.get('cookie') ?? '';
+	for (const part of cookie.split(';')) {
+		const [k, ...v] = part.trim().split('=');
+		if (k === GEO_BYPASS_COOKIE && v.join('=') === token) return true;
+	}
+	return false;
+}
+
 const BLOCKED_PAGE = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -90,6 +148,15 @@ export function geoblockedResponse(): Response {
  * lookup errors resolve to a block.
  */
 export async function getGeoblockResponse(request: Request): Promise<Response | null> {
+	// The cookie-setting endpoint must stay reachable even to a blocked visitor —
+	// it is how Donnie (blocked as a non-African IP) sets the bypass in the first
+	// place. It validates the secret itself, so exempting it leaks nothing.
+	const { pathname } = new URL(request.url);
+	if (pathname === '/api/geo/allow') return null;
+
+	// "My computer" — the secret bypass cookie wins over any geo rule, from anywhere.
+	if (hasGeoBypass(request)) return null;
+
 	const ip = getClientIp(request);
 	// No IP, or an internal/private IP → not a foreign visitor; allow.
 	if (!ip || isPrivateIp(ip)) return null;
@@ -104,6 +171,14 @@ export async function getGeoblockResponse(request: Request): Promise<Response | 
 	// FAIL-CLOSED: a public IP with no country data is treated as unverified.
 	if (!geo || !geo.country) return geoblockedResponse();
 
+	// Sanctions block (always on).
 	if (isBlockedLocation(geo.country, geo.region)) return geoblockedResponse();
+
+	// Africa-only (opt-in): the blocklist becomes an allowlist. Anyone geolocating
+	// outside Africa is refused. Off unless GEOBLOCK_AFRICA_ONLY is set.
+	if (envFlag('GEOBLOCK_AFRICA_ONLY') && !AFRICA_ISO.has(geo.country)) {
+		return geoblockedResponse();
+	}
+
 	return null;
 }
