@@ -4,7 +4,6 @@ import type { Lang } from "@/lib/i18n/locale";
 import { getFooter } from "@/i18n/footer";
 import DonnieSelfie from "../assets/DonnieSelfie.jpeg";
 import SusuFinanceLogo from "../assets/logo-scene.png";
-import Faq from "./faq.astro";
 import Welcome from "./Welcome.astro";
 import PrivacyPolicy from "./privacy-policy.astro";
 import TermsOfService from "./terms-of-service.astro";
@@ -51,13 +50,14 @@ const year = new Date().getFullYear();
     </section>
 
     <section class="footer-col footer-faq">
-      <Faq lang={lang} />
+      {/* The FAQ that lived here answered Almstins questions — exchanges,
+          DeFi, the safety checker, filing returns — on a page about a savings
+          circle. Removed rather than rewritten: the questions a susu member
+          actually has are not yet known, and inventing them would be worse
+          than asking none. /howTo does the explaining. */}
       <div class="footer-legal">
         <a href={t.aboutHref} class="footer-legal-link">
           {t.aboutLabel}
-        </a>
-        <a href={t.pricingHref} class="footer-legal-link">
-          {t.pricingLabel}
         </a>
         <button class="footer-legal-link" type="button" data-footer-modal="privacy-modal">
           {t.privacyLabel}

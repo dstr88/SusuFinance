@@ -1,20 +1,30 @@
 export interface LoginPageLocale {
   lang: 'en' | 'es' | 'fr';
+  /**
+   * The landing page. One product, said once.
+   *
+   * This block used to describe Almstins: a crypto hub with three tools, a scam
+   * checker, and price tiers. SusuFinance is the book a savings circle keeps. The
+   * old keys (eyebrow/doors/checker/verify/watcher/plansLink) are gone rather than
+   * left empty — an unused key is a copy nobody edits and a page nobody trusts.
+   */
   hub: {
-    eyebrow: string;
+    /** Said first, above the headline. /howTo already opens this way. */
+    honestyTitle: string;
+    honestyBody: string;
+    /** The headline. Verbatim from /howTo — do not paraphrase it here. */
     title: string;
-    sub: string;
-    heroFree: string;
-    heroCta: string;
-    doorsAria: string;
+    sub1: string;
+    sub2: string;
+    /** The promise the whole product rests on. Rendered against an accent rule. */
+    promise: string;
+    /** The ONLY call to action on the page. There is nothing to buy. */
+    cta: string;
     trustAria: string;
-    trust1: string;
-    trust2: string;
-    checker: { title: string; desc: string; free: string; cta: string };
-    verify:  { title: string; desc: string; free: string; cta: string };
-    watcher: { title: string; desc: string; free: string; cta: string };
-    plansLink: string;
-    plansHref: string;  // language-aware: /prices · /prices/es · /prices/fr
+    /** Three quiet facts. `k` is the keyword, `v` the sentence. */
+    trust: Array<{ k: string; v: string }>;
+    githubLink: string;
+    contactLink: string;
   };
   meta: { title: string; description: string };
   signin: {
@@ -97,24 +107,25 @@ export interface LoginPageLocale {
 export const en: LoginPageLocale = {
   lang: 'en',
   hub: {
-    eyebrow: 'One hub · three tools',
-    title: 'Use crypto without the guesswork.',
-    sub: 'Check an address before you send, account for everything you own, and verify the QR codes your business publishes — all in one place. Read-only, no wallet connection.',
-    heroFree: 'Scanning for security is free for everyone. No account, no sign-in needed.',
-    heroCta: 'Start with the free checker',
-    doorsAria: 'SusuFinance tools',
-    trustAria: 'Our trust guarantees',
-    trust1: 'Your keys never touch our server',
-    trust2: 'No wallet connection, ever',
-    checker: { title: 'Wallet Checker', desc: 'Paste or scan any wallet address or website — instant scam, phishing, honeypot, and sanctions check.', free: 'Free · No account · No sign-in', cta: 'Open the checker' },
-    verify:  { title: 'Verify', desc: 'Register the receiving addresses you publish and catch a swapped QR before a customer pays the wrong one.', free: 'Free: 1 reusable QR connection. Need more? Upgrade.', cta: 'Go to Verify' },
-    watcher: { title: 'Wallet Watcher', desc: 'Track wallets, exchanges, and DeFi by address — cost basis, realized gains, and a clear year-end breakdown for your accountant.', free: 'Free tier · Sign in with email, Google, or GitHub · We only store your email', cta: 'Try the demo' },
-    plansLink: 'See all plans & pricing',
-    plansHref: '/prices',
+    honestyTitle: 'Being built in the open.',
+    honestyBody: 'The circle features are still being built. This is published early, on purpose — we would rather be trusted than look finished.',
+    title: 'The savings circle your community already trusts — with a book it can finally check.',
+    sub1: 'The oldest financial technology in the world, with a record that cannot fade.',
+    sub2: 'SusuFinance keeps the book: who is in, whose turn it is, what was contributed, and where the money went.',
+    promise: 'The app sees the circle. It never holds the pot.',
+    cta: 'How it works',
+    trustAria: 'What SusuFinance will not do',
+    trust: [
+      { k: 'No keys', v: 'No private keys, ever. Nothing to hand over, nothing to lose.' },
+      { k: 'No pot', v: 'The pot never exists here. Contributions go person to person, in stablecoin — a digital dollar.' },
+      { k: 'Public code', v: 'Read it yourself. Open since the first day.' },
+    ],
+    githubLink: 'Read the code',
+    contactLink: 'Contact',
   },
   meta: {
-    title: 'SusuFinance — Check, track, and verify your crypto',
-    description: 'Check any wallet or site for scams, track your portfolio and taxes, and verify the QR codes your business publishes — read-only, no wallet connection.',
+    title: 'SusuFinance — the book for your savings circle',
+    description: 'SusuFinance keeps the record for susu, tontine, chama, and esusu circles: who is in, whose turn it is, what was contributed. The app sees the circle. It never holds the pot.',
   },
   signin: {
     pillLabel: 'Login',
@@ -208,24 +219,25 @@ export const en: LoginPageLocale = {
 export const es: LoginPageLocale = {
   lang: 'es',
   hub: {
-    eyebrow: 'Un centro · tres herramientas',
-    title: 'Usa cripto sin adivinar.',
-    sub: 'Comprueba una dirección antes de enviar, contabiliza todo lo que tienes y verifica los códigos QR que publica tu negocio — todo en un solo lugar. Solo lectura, sin conectar la billetera.',
-    heroFree: 'Escanear por seguridad es gratis para todos. Sin cuenta, sin iniciar sesión.',
-    heroCta: 'Empieza con el verificador gratis',
-    doorsAria: 'Herramientas de SusuFinance',
-    trustAria: 'Nuestras garantías de confianza',
-    trust1: 'Tus llaves nunca tocan nuestro servidor',
-    trust2: 'Sin conectar la billetera, nunca',
-    checker: { title: 'Wallet Checker', desc: 'Pega o escanea cualquier dirección de billetera o sitio web — comprobación instantánea de estafas, phishing, honeypots y sanciones.', free: 'Gratis · Sin cuenta · Sin iniciar sesión', cta: 'Abrir el verificador' },
-    verify:  { title: 'Verify', desc: 'Registra las direcciones de cobro que publicas y detecta un QR cambiado antes de que un cliente pague al equivocado.', free: 'Gratis: 1 conexión QR reutilizable. ¿Necesitas más? Mejora tu plan.', cta: 'Ir a Verify' },
-    watcher: { title: 'Wallet Watcher', desc: 'Rastrea billeteras, exchanges y DeFi por dirección — base de costo, ganancias realizadas y un desglose de fin de año claro para tu contador.', free: 'Plan gratis · Inicia sesión con correo, Google o GitHub · Solo guardamos tu correo', cta: 'Probar la demo' },
-    plansLink: 'Ver todos los planes y precios',
-    plansHref: '/prices/es',
+    honestyTitle: 'Se construye a la vista de todos.',
+    honestyBody: 'Las funciones del círculo todavía se están construyendo. Se publica pronto, a propósito: preferimos merecer su confianza a parecer terminados.',
+    title: 'El círculo de ahorro en el que su comunidad ya confía — con un libro que por fin puede comprobar.',
+    sub1: 'La tecnología financiera más antigua del mundo, con un registro que no se borra.',
+    sub2: 'SusuFinance lleva el libro: quién está, a quién le toca, cuánto se aportó y a dónde fue el dinero.',
+    promise: 'La aplicación ve el círculo. Nunca guarda el fondo.',
+    cta: 'Cómo funciona',
+    trustAria: 'Lo que SusuFinance no hará',
+    trust: [
+      { k: 'Sin llaves', v: 'Ninguna llave privada, nunca. Nada que entregar, nada que perder.' },
+      { k: 'Sin fondo', v: 'Aquí el fondo nunca existe. Las aportaciones van de persona a persona, en stablecoin: un dólar digital.' },
+      { k: 'Código público', v: 'Léalo usted misma. Abierto desde el primer día.' },
+    ],
+    githubLink: 'Lea el código',
+    contactLink: 'Contacto',
   },
   meta: {
-    title: 'SusuFinance — Comprueba, rastrea y verifica tu cripto',
-    description: 'Comprueba cualquier billetera o sitio por estafas, rastrea tu portafolio e impuestos, y verifica los códigos QR que publica tu negocio — solo lectura, sin conectar la billetera.',
+    title: 'SusuFinance — el libro de su círculo de ahorro',
+    description: 'SusuFinance lleva el registro de los círculos susu, tontine, chama y esusu: quién está, a quién le toca, cuánto se aportó. La aplicación ve el círculo. Nunca guarda el fondo.',
   },
   signin: {
     pillLabel: 'Iniciar sesión',
@@ -319,24 +331,25 @@ export const es: LoginPageLocale = {
 export const fr: LoginPageLocale = {
   lang: 'fr',
   hub: {
-    eyebrow: 'Un hub · trois outils',
-    title: 'Utilisez la crypto sans deviner.',
-    sub: 'Vérifiez une adresse avant d\'envoyer, comptabilisez tout ce que vous possédez et vérifiez les QR codes que votre entreprise publie — le tout au même endroit. Lecture seule, aucune connexion de portefeuille.',
-    heroFree: 'L\'analyse de sécurité est gratuite pour tous. Aucun compte, aucune connexion requise.',
-    heroCta: 'Commencez avec le vérificateur gratuit',
-    doorsAria: 'Outils SusuFinance',
-    trustAria: 'Nos garanties de confiance',
-    trust1: 'Vos clés ne touchent jamais notre serveur',
-    trust2: 'Aucune connexion de portefeuille, jamais',
-    checker: { title: 'Wallet Checker', desc: 'Collez ou scannez n\'importe quelle adresse de portefeuille ou site web — vérification instantanée des arnaques, du phishing, des honeypots et des sanctions.', free: 'Gratuit · Sans compte · Sans connexion', cta: 'Ouvrir le vérificateur' },
-    verify:  { title: 'Verify', desc: 'Enregistrez les adresses de réception que vous publiez et détectez un QR substitué avant qu\'un client ne paie la mauvaise.', free: 'Gratuit : 1 connexion QR réutilisable. Besoin de plus ? Améliorez votre offre.', cta: 'Aller à Verify' },
-    watcher: { title: 'Wallet Watcher', desc: 'Suivez portefeuilles, plateformes d\'échange et DeFi par adresse — prix de revient, gains réalisés et un récapitulatif de fin d\'année clair pour votre comptable.', free: 'Offre gratuite · Connectez-vous par e-mail, Google ou GitHub · Nous ne stockons que votre e-mail', cta: 'Essayer la démo' },
-    plansLink: 'Voir tous les forfaits et tarifs',
-    plansHref: '/prices/fr',
+    honestyTitle: 'Construit au grand jour.',
+    honestyBody: 'Les fonctions du cercle sont encore en construction. Publié tôt, volontairement : nous préférons mériter votre confiance que paraître achevés.',
+    title: 'Le cercle d\'épargne auquel votre communauté fait déjà confiance — avec un livre qu\'elle peut enfin vérifier.',
+    sub1: 'La plus ancienne technologie financière au monde, avec un registre qui ne s\'efface pas.',
+    sub2: 'SusuFinance tient le livre : qui en fait partie, à qui c\'est le tour, ce qui a été versé, et où est allé l\'argent.',
+    promise: 'L\'application voit le cercle. Elle ne détient jamais la cagnotte.',
+    cta: 'Comment ça marche',
+    trustAria: 'Ce que SusuFinance ne fera pas',
+    trust: [
+      { k: 'Aucune clé', v: 'Aucune clé privée, jamais. Rien à confier, rien à perdre.' },
+      { k: 'Aucune cagnotte', v: 'Ici la cagnotte n\'existe jamais. Les cotisations vont de personne à personne, en stablecoin : un dollar numérique.' },
+      { k: 'Code public', v: 'Lisez-le vous-même. Ouvert depuis le premier jour.' },
+    ],
+    githubLink: 'Lire le code',
+    contactLink: 'Contact',
   },
   meta: {
-    title: 'SusuFinance — Contrôlez, suivez et vérifiez votre crypto',
-    description: 'Vérifiez une adresse ou un site contre les arnaques, suivez votre portefeuille et vos impôts, et protégez vos QR codes de paiement — lecture seule, sans connexion de portefeuille.',
+    title: 'SusuFinance — le livre de votre cercle d\'épargne',
+    description: 'SusuFinance tient le registre des cercles susu, tontine, chama et esusu : qui en fait partie, à qui c\'est le tour, ce qui a été versé. L\'application voit le cercle. Elle ne détient jamais la cagnotte.',
   },
   signin: {
     pillLabel: 'Connexion',

@@ -84,20 +84,6 @@ const isLockedOut = message === 'LOCKED_OUT';
             </button>
           </form>
 
-          <!-- GitHub -->
-          <form id="login-github" class="provider-form" method="POST" action="/api/auth/signin/github">
-            <input type="hidden" name="callbackUrl" value={safeCallbackUrl} />
-            <input type="hidden" name="csrfToken" value={csrfToken} />
-            <button class="provider-button github" type="submit" data-provider="github"
-              data-needs-csrf={!csrfToken || undefined} disabled={!csrfToken || undefined}>
-              <svg class="provider-icon" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-              </svg>
-              <span class="provider-label">{t.signin.continueGithub}</span>
-              <span class="last-used-badge" data-badge="github" hidden>{t.signin.lastUsed}</span>
-            </button>
-          </form>
-
           <div class="dropdown-divider"></div>
 
           <!-- Email -->
@@ -106,10 +92,6 @@ const isLockedOut = message === 'LOCKED_OUT';
               {t.signin.emailToggleLabel} <span class="toggle-chevron">›</span>
             </button>
             <div class="email-panel" id="emailPanel" hidden>
-              <div class="email-tabs" role="tablist">
-                <button class="email-tab active" id="tabPass" role="tab" aria-selected="true" type="button">{t.signin.tabPassword}</button>
-                <button class="email-tab" id="tabMagic" role="tab" aria-selected="false" type="button">{t.signin.tabMagicLink}</button>
-              </div>
               <form id="login-email-password" class="stack email-tab-panel" method="POST" action="/api/auth/callback/credentials">
                 <input type="hidden" name="callbackUrl" value={safeCallbackUrl} />
                 <input type="hidden" name="csrfToken" value={csrfToken} />
@@ -123,17 +105,6 @@ const isLockedOut = message === 'LOCKED_OUT';
                 </label>
                 <button type="submit" data-needs-csrf={!csrfToken || undefined} disabled={!csrfToken || undefined}>
                   {t.signin.signInEmail}
-                </button>
-              </form>
-              <form id="login-magic-link" class="stack email-tab-panel" method="POST" action="/api/auth/signin/email" hidden>
-                <input type="hidden" name="callbackUrl" value={safeCallbackUrl} />
-                <input type="hidden" name="csrfToken" value={csrfToken} />
-                <label>
-                  <span>{t.signin.emailLabel}</span>
-                  <input type="email" name="email" placeholder={t.signin.emailPlaceholder} required autocomplete="email" />
-                </label>
-                <button type="submit" data-needs-csrf={!csrfToken || undefined} disabled={!csrfToken || undefined}>
-                  {t.signin.sendMagicLink}
                 </button>
               </form>
             </div>
@@ -154,51 +125,54 @@ const isLockedOut = message === 'LOCKED_OUT';
       </a>
     </header>
 
-    <!-- Hero: tagline · H1 · subhead · free-tier statement -->
+    <!-- Said first, before any claim. /howTo opens this way and so should this. -->
+    <aside class="hub-honesty">
+      <span class="hub-honesty__title">{t.hub.honestyTitle}</span>
+      {' '}
+      <span class="hub-honesty__body">{t.hub.honestyBody}</span>
+    </aside>
+
+    <!-- Hero: the headline, the two sublines, the promise, one door out. -->
     <section class="hub-hero">
-      <p class="hub-hero__eyebrow">{t.hub.eyebrow}</p>
       <h1 class="hub-hero__title">{t.hub.title}</h1>
-      <p class="hub-hero__sub">{t.hub.sub}</p>
-      <a class="hub-hero__cta" href="/wallet-checker">{t.hub.heroCta} →</a>
-      <p class="hub-hero__free">{t.hub.heroFree}</p>
-      <a class="landing__changelog-link" href="/changelog">{t.hero.changelogLink}</a>
+      <p class="hub-hero__sub">{t.hub.sub1}</p>
+      <p class="hub-hero__sub">{t.hub.sub2}</p>
+
+      {/* The promise the product rests on. An accent rule AND stronger text —
+          never colour alone. */}
+      <p class="hub-hero__promise">{t.hub.promise}</p>
+
+      {/* The only call to action. There is nothing to buy, so nothing else asks. */}
+      <a class="hub-hero__cta" href="/howTo">{t.hub.cta} →</a>
     </section>
 
-    <!-- Three doors -->
-    <section class="hub-doors" aria-label={t.hub.doorsAria}>
-      <a class="door" href="/wallet-checker">
-        <span class="door__icon" aria-hidden="true">🛡️</span>
-        <h2 class="door__title">{t.hub.checker.title}</h2>
-        <p class="door__desc">{t.hub.checker.desc}</p>
-        <span class="door__free">{t.hub.checker.free}</span>
-        <span class="door__cta">{t.hub.checker.cta} →</span>
-      </a>
-      <a class="door" href="/verify">
-        <span class="door__icon" aria-hidden="true">🏷️</span>
-        <h2 class="door__title">{t.hub.verify.title}</h2>
-        <p class="door__desc">{t.hub.verify.desc}</p>
-        <span class="door__free">{t.hub.verify.free}</span>
-        <span class="door__cta">{t.hub.verify.cta} →</span>
-      </a>
-      <a class="door" href="/api/demo/start" rel="nofollow">
-        <span class="door__icon" aria-hidden="true">📊</span>
-        <h2 class="door__title">{t.hub.watcher.title}</h2>
-        <p class="door__desc">{t.hub.watcher.desc}</p>
-        <span class="door__free">{t.hub.watcher.free}</span>
-        <span class="door__cta">{t.hub.watcher.cta} →</span>
-      </a>
-    </section>
-
-    <!-- Compare plans: quiet secondary link, sits with the doors where "Need more?" is raised -->
-    <p class="hub-plans">
-      <a class="hub-plans__link" href={t.hub.plansHref}>{t.hub.plansLink} →</a>
-    </p>
-
-    <!-- Trust strip -->
+    <!-- Three quiet facts. Not feature cards — each names something the product
+         refuses to do, which is the whole argument. -->
     <section class="hub-trust" aria-label={t.hub.trustAria}>
-      <p class="hub-trust__item"><span class="hub-trust__icon" aria-hidden="true">🔑</span> {t.hub.trust1}</p>
-      <p class="hub-trust__item"><span class="hub-trust__icon" aria-hidden="true">🔌</span> {t.hub.trust2}</p>
+      {t.hub.trust.map((item, i) => (
+        <div class="tfact">
+          <span class="tfact__k">{item.k}</span>
+          <p class="tfact__v">
+            {item.v}
+            {i === 2 && (
+              <>
+                {' '}
+                <a class="tfact__link" href="https://github.com/dstr88/SusuFinance" target="_blank" rel="noopener noreferrer">
+                  {t.hub.githubLink} →
+                </a>
+              </>
+            )}
+          </p>
+        </div>
+      ))}
     </section>
+
+    <!-- Footer: the three things a reader may legitimately want next. -->
+    <nav class="hub-foot" aria-label="Secondary">
+      <a class="hub-foot__link" href="/changelog">{t.hero.changelogLink}</a>
+      <span class="hub-foot__dot" aria-hidden="true">·</span>
+      <a class="hub-foot__link" href="mailto:hello@susufinance.com">{t.hub.contactLink}</a>
+    </nav>
 
   </main>
 
@@ -335,16 +309,19 @@ const isLockedOut = message === 'LOCKED_OUT';
     })();
 
     // ── Email toggle ──────────────────────────────────────────────────
+    // The Password/Magic-link tab switcher used to live here and is gone with the
+    // markup it drove: EMAIL_SERVER is unset, so "send magic link" sent nothing.
+    // Dead listeners left behind in THIS module would be worse than untidy — a
+    // throw anywhere in it takes the sign-in pill's toggle down with it, silently,
+    // which is precisely how the pill sat dead on the landing page for weeks.
     (() => {
-      const toggleBtn = document.getElementById('emailToggle') as HTMLButtonElement;
+      const toggleBtn = document.getElementById('emailToggle') as HTMLButtonElement | null;
       const panel     = document.getElementById('emailPanel');
-      const tabPass   = document.getElementById('tabPass') as HTMLButtonElement;
-      const tabMagic  = document.getElementById('tabMagic') as HTMLButtonElement;
-      const formPass  = document.getElementById('login-email-password');
-      const formMagic = document.getElementById('login-magic-link');
-      const chevron   = toggleBtn?.querySelector('.toggle-chevron') as HTMLElement;
+      const chevron   = toggleBtn?.querySelector('.toggle-chevron') as HTMLElement | null;
 
-      toggleBtn?.addEventListener('click', () => {
+      if (!toggleBtn) return;
+
+      toggleBtn.addEventListener('click', () => {
         const open = !panel?.hidden;
         if (panel) panel.hidden = open;
         toggleBtn.setAttribute('aria-expanded', String(!open));
@@ -352,18 +329,6 @@ const isLockedOut = message === 'LOCKED_OUT';
         toggleBtn.classList.toggle('active', !open);
         if (!open) panel?.querySelector('input')?.focus();
       });
-
-      function switchTab(showPass: boolean) {
-        tabPass?.classList.toggle('active', showPass);
-        tabMagic?.classList.toggle('active', !showPass);
-        tabPass?.setAttribute('aria-selected', String(showPass));
-        tabMagic?.setAttribute('aria-selected', String(!showPass));
-        if (formPass) (formPass as HTMLElement).hidden = !showPass;
-        if (formMagic) (formMagic as HTMLElement).hidden = showPass;
-      }
-
-      tabPass?.addEventListener('click', () => switchTab(true));
-      tabMagic?.addEventListener('click', () => switchTab(false));
     })();
 
     // ── Demo invite modal (30s timer, reset on interaction) ──────────
@@ -540,71 +505,102 @@ const isLockedOut = message === 'LOCKED_OUT';
       padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem) 0;
       display: flex; justify-content: center;
     }
+    /* ── The honesty note ─────────────────────────────────────
+       Said before any claim. Quiet, not an alarm — a plain sentence, no badge.
+       /howTo opens this way; a landing page that looked finished while /howTo
+       admitted it wasn't would be the lie. */
+    .hub-honesty {
+      max-width: 46rem; margin: clamp(1.5rem, 4vw, 2.25rem) auto 0;
+      padding: 0 clamp(1.5rem, 4vw, 3rem);
+      text-align: center; font-size: 0.9rem; line-height: 1.6;
+    }
+    .hub-honesty__title { color: var(--text-primary); font-weight: 600; }
+    .hub-honesty__body  { color: var(--text-muted); }
+
+    /* ── Hero ─────────────────────────────────────────────────
+       Type only, no illustration: the audience is on mid-range phones paying for
+       data by the megabyte, and the sentence IS the product. */
     .hub-hero {
-      max-width: 50rem; margin: 0 auto;
-      padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+      max-width: 52rem; margin: 0 auto;
+      padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
       text-align: center;
     }
-    .hub-hero__eyebrow {
-      font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em;
-      color: var(--accent); margin: 0 0 1rem;
-    }
     .hub-hero__title {
-      font-size: clamp(2rem, 4vw + 1rem, 3.25rem); font-weight: 600; letter-spacing: -0.02em;
-      line-height: 1.1; color: var(--text-primary); margin: 0 0 1rem; text-wrap: balance;
+      font-size: clamp(1.9rem, 3.2vw + 1rem, 3rem);
+      font-weight: 600; letter-spacing: -0.02em; line-height: 1.15;
+      color: var(--text-primary); margin: 0 0 1.25rem; text-wrap: balance;
     }
     .hub-hero__sub {
-      font-size: clamp(1rem, 0.5vw + 0.9rem, 1.15rem); line-height: 1.6;
-      color: var(--text-secondary); max-width: 46ch; margin: 0 auto 1.5rem; text-wrap: balance;
+      font-size: clamp(0.98rem, 0.4vw + 0.9rem, 1.1rem); line-height: 1.65;
+      color: var(--text-secondary); max-width: 54ch; margin: 0 auto 0.85rem;
+      text-wrap: pretty;
+    }
+    /* The promise. Accent rule AND brighter text — never colour alone. Left
+       aligned on purpose: it is a statement, not a slogan. */
+    .hub-hero__promise {
+      max-width: 34rem; margin: clamp(1.75rem, 4vw, 2.5rem) auto;
+      padding: 0.1rem 0 0.1rem 1rem;
+      border-left: 2px solid var(--accent);
+      text-align: left;
+      font-size: clamp(1rem, 0.5vw + 0.9rem, 1.2rem);
+      font-weight: 600; line-height: 1.5;
+      color: var(--text-primary); text-wrap: balance;
     }
     .hub-hero__cta {
-      display: inline-block; margin: 0 0 1rem;
-      padding: 0.85rem 1.6rem; border-radius: 0.75rem;
+      display: inline-block; min-height: 44px; padding: 0.85rem 1.7rem;
+      border-radius: 999px;
       background: var(--accent); color: var(--surface-bg);
       font-size: 1rem; font-weight: 700; text-decoration: none;
       transition: box-shadow 0.15s ease, transform 0.1s ease;
     }
-    .hub-hero__cta:hover { box-shadow: 0 0 1.5rem var(--accent-glow); transform: translateY(-1px); }
-    .hub-hero__free {
-      display: inline-block; font-size: 0.85rem; color: var(--accent);
-      background: var(--accent-soft); border: 1px solid var(--accent-glow);
-      border-radius: 999px; padding: 0.45rem 1.1rem; margin: 0;
-    }
-    .hub-doors {
-      max-width: 64rem; margin: 0 auto;
-      padding: 0 clamp(1.5rem, 4vw, 3rem);
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 1.5rem);
-    }
-    @media (max-width: 52rem) { .hub-doors { grid-template-columns: 1fr; max-width: 32rem; } }
-    .door {
-      display: flex; flex-direction: column; align-items: flex-start; gap: 0.4rem;
-      text-decoration: none; padding: 1.5rem 1.4rem;
-      background: var(--surface-card); border: 1px solid var(--border-subtle);
-      border-radius: 18px; transition: border-color 0.15s, background 0.15s, transform 0.1s;
-    }
-    .door:hover { border-color: var(--border-bright); background: var(--surface-hover); transform: translateY(-3px); }
-    .door__icon { font-size: 2rem; line-height: 1; margin-bottom: 0.35rem; }
-    .door__title { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin: 0; }
-    .door__desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin: 0; flex: 1; }
-    .door__free { font-size: 0.78rem; color: var(--accent-dim); line-height: 1.5; margin: 0.6rem 0 0; }
-    .door__cta { font-size: 0.9rem; font-weight: 700; color: var(--accent); margin: 0.75rem 0 0; }
-    .door:hover .door__cta { text-decoration: underline; text-underline-offset: 3px; }
-    .hub-plans { max-width: 64rem; margin: 1.5rem auto 0; padding: 0 clamp(1.5rem, 4vw, 3rem); text-align: center; }
-    .hub-plans__link {
-      font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);
-      text-decoration: none; border-bottom: 1px solid var(--border-bright);
-      padding-bottom: 2px; transition: color 0.15s, border-color 0.15s;
-    }
-    .hub-plans__link:hover { color: var(--accent); border-color: var(--accent); }
+    .hub-hero__cta:hover { box-shadow: 0 0 0 6px var(--accent-glow); transform: translateY(-1px); }
+    .hub-hero__cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Three facts ──────────────────────────────────────────
+       Each names something the product refuses to do. The refusal IS the
+       argument, so it should not shout. */
     .hub-trust {
-      max-width: 64rem; margin: 0 auto;
-      padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4rem);
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem 2rem;
+      max-width: 60rem; margin: 0 auto;
+      padding: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2rem);
+      display: grid; grid-template-columns: 1fr; gap: 0.75rem;
     }
-    .hub-trust__item { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
-    .hub-trust__icon { font-size: 1.05rem; }
-    /* On small screens drop the brand below the fixed language / Login pills */
-    @media (max-width: 48rem) { .hub-top { padding-top: 5rem; } }
+    @media (min-width: 40rem) { .hub-trust { grid-template-columns: repeat(3, 1fr); gap: 1rem; } }
+    .tfact {
+      background: var(--surface-card); border: 1px solid var(--border-subtle);
+      border-radius: 12px; padding: 1rem 1.1rem;
+      transition: border-color 0.15s ease;
+    }
+    .tfact:hover { border-color: var(--border-bright); }
+    .tfact__k {
+      display: block; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
+      color: var(--text-primary); margin-bottom: 0.35rem;
+    }
+    .tfact__v { margin: 0; font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary); }
+    .tfact__link { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .tfact__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .tfact__link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    .hub-foot {
+      max-width: 60rem; margin: 0 auto;
+      padding: 0 clamp(1.5rem, 4vw, 3rem) clamp(3rem, 6vw, 4.5rem);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .hub-foot__link {
+      display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.25rem;
+      font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .hub-foot__link:hover { color: var(--accent); }
+    .hub-foot__link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .hub-foot__dot { color: var(--text-muted); }
+
+
+    /* On small screens drop the brand below the fixed language / Login pills.
+       7rem, not 5: the pills sit at top:2rem and are now 44px tall (the tap-target
+       floor), so they end near 5.25rem — 5rem was tuned when they were 28px and
+       the language switcher had started overlapping the logo. */
+    @media (max-width: 48rem) { .hub-top { padding-top: 7rem; } }
 
     /* ── Safety hero (the lead — free, no login) ─────────────── */
     .safety-hero {
@@ -978,6 +974,14 @@ const isLockedOut = message === 'LOCKED_OUT';
       animation: slideInFromRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
     .lang-switch__lang {
+      /* 44px floor. This measured 28px — and for a product that speaks three
+         languages to people reading on a phone, the language control is the first
+         thing a hand reaches for, not an afterthought. */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
       padding: 0.2rem 0.6rem;
       border-radius: 999px;
       color: var(--text-muted);
@@ -987,6 +991,7 @@ const isLockedOut = message === 'LOCKED_OUT';
       text-decoration: none;
       transition: background 0.15s, color 0.15s;
     }
+    .lang-switch__lang:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .lang-switch__lang:hover {
       background: var(--surface-hover);
       color: var(--text-primary);
@@ -1015,6 +1020,9 @@ const isLockedOut = message === 'LOCKED_OUT';
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      /* 44px floor: this is the only way in, and it is tapped with a thumb on a
+         mid-range phone. It measured 39px. */
+      min-height: 44px;
       padding: 0.625rem 1.25rem;
       border-radius: 999px;
       border: 1px solid var(--border-bright);
