@@ -1,0 +1,149 @@
+---
+// /dashboard/lobby — the lobby. You walk in, and you choose your door.
+//
+// ── The two doors ARE the fork ───────────────────────────────────────────────
+//
+//   admin      → the operator's vault (built)
+//   Invited by → the member's way in (NOT built — see below)
+//
+// The session today resolves to { tenantId } — "which programme?", never "which
+// member am I?". That is Almstins' shape: it only ever had operators. A circle
+// member cannot sign in at all: `members` has no link to `auth_users`, and the auth
+// tables are not applied to susufinancedata. So the right-hand door is a door to a
+// room that does not exist yet, and it is pointed at /login rather than at a route
+// that would 404 — the destination is an open question, not a decision.
+//
+// ── Layout ───────────────────────────────────────────────────────────────────
+//
+// LoginLayout, not Layout: Layout renders the Almstins dashboard nav (Bookkeeping,
+// Vault, Portfolio, Scam Checker) — dead scaffolding awaiting the feature strip,
+// and no way to put a full-bleed splash underneath it.
+//
+// ── The image ────────────────────────────────────────────────────────────────
+//
+// bank-lobby.png is 1.9 MB at 1376×768. It goes through Astro's pipeline to webp
+// because the audience is market women on data bundles — the member view is already
+// specced to respect that, and a background is the easiest place to spend someone's
+// money without noticing.
+import LoginLayout from '../../layouts/LoginLayout.astro';
+import { getImage } from 'astro:assets';
+import bankLobby from '../../assets/bank-lobby.png';
+import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getCirclesLocale } from '@/i18n/dashboard/circles';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const session = await requireTenantSession(Astro.request);
+if (!session) return Astro.redirect('/login?next=/dashboard/lobby');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+const t = getCirclesLocale(lang);
+
+// Two widths: phones get a 900px webp, desktops 1800. Same picture, a quarter of
+// the bytes on the device most likely to be paying per megabyte.
+const [bgSmall, bgLarge] = await Promise.all([
+  getImage({ src: bankLobby, format: 'webp', width: 900, quality: 62 }),
+  getImage({ src: bankLobby, format: 'webp', width: 1800, quality: 68 }),
+]);
+---
+
+<LoginLayout title={t.lobby.welcome} noindex={true} lang={lang}>
+  <section
+    class="lobby"
+    style={`--bg-small: url(${bgSmall.src}); --bg-large: url(${bgLarge.src});`}
+  >
+    <!-- Scrim: the photograph is bright marble and gold, so the text needs ground to
+         stand on. Built from --surface-bg and `transparent` so it stays inside the
+         token rule — no rgba() anywhere. -->
+    <div class="lobby__scrim" aria-hidden="true"></div>
+
+    <nav class="lobby__doors" aria-label="Choose your way in">
+      <a class="lobby__door lobby__door--left" href="/dashboard/circles">{t.lobby.admin}</a>
+      <a class="lobby__door lobby__door--right" href="/login">{t.lobby.invitedBy}</a>
+    </nav>
+
+    <h1 class="lobby__welcome">{t.lobby.welcome}</h1>
+  </section>
+</LoginLayout>
+
+<style>
+  .lobby {
+    position: relative;
+    width: 100%;
+    /* svh, not vh: on a phone, 100vh sits under the browser chrome and the welcome
+       line lands off-screen. svh is the small viewport — what she can actually see. */
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    background-image: var(--bg-small);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: var(--surface-bg);
+  }
+  @media (min-width: 901px) {
+    .lobby { background-image: var(--bg-large); }
+  }
+  /* Older browsers without svh support still get a full screen. */
+  @supports not (min-height: 100svh) {
+    .lobby { min-height: 100vh; }
+  }
+
+  .lobby__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to bottom, var(--surface-bg), transparent 22%, transparent 55%, var(--surface-bg)),
+      linear-gradient(to bottom, transparent 70%, var(--surface-bg));
+    opacity: 0.92;
+  }
+
+  .lobby__doors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 1.25rem 1.25rem 0;
+    z-index: 1;
+  }
+  .lobby__door {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    background: var(--surface-card);
+    transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+  }
+  .lobby__door:hover {
+    color: var(--accent);
+    border-color: var(--accent-soft);
+    background: var(--surface-card-2);
+  }
+  .lobby__door:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .lobby__welcome {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 clamp(2rem, 8vh, 4.5rem);
+    padding: 0 1.25rem;
+    text-align: center;
+    font-size: clamp(1.75rem, 6vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+
+  @media (min-width: 768px) {
+    .lobby__doors { padding: 1.75rem 2rem 0; }
+    .lobby__door { font-size: 0.9rem; }
+  }
+</style>

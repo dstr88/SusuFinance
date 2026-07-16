@@ -69,6 +69,12 @@ export interface CirclesLocale {
 		none: string;
 	};
 	footnote: string;
+	/** The lobby — the splash you land in, and the two doors out of it. */
+	lobby: {
+		welcome: string;
+		admin: string;
+		invitedBy: string;
+	};
 	/** The programme, in aggregate. No member ever appears here. */
 	stats: {
 		title: string;
@@ -215,6 +221,12 @@ const EN: CirclesLocale = {
 			early_withdrawal: 'Early withdrawal',
 		},
 	},
+	lobby: {
+		// The brand name does not translate; the sentence around it does.
+		welcome: 'Welcome to SusuFinance',
+		admin: 'admin',
+		invitedBy: 'Invited by',
+	},
 	stats: {
 		title: 'Programme',
 		subtitle: 'How the programme is doing — never how any one member is doing',
@@ -338,6 +350,11 @@ const FR: CirclesLocale = {
 			early_withdrawal: 'Retrait anticipé',
 		},
 	},
+	lobby: {
+		welcome: 'Bienvenue à SusuFinance',
+		admin: 'admin',
+		invitedBy: 'Invité par',
+	},
 	stats: {
 		title: 'Programme',
 		subtitle: 'Comment va le programme — jamais comment va une membre en particulier',
@@ -381,10 +398,141 @@ const FR: CirclesLocale = {
 	},
 };
 
-const LOCALES: Record<string, CirclesLocale> = { en: EN, fr: FR, es: EN };
+const ES: CirclesLocale = {
+	lang: 'es',
+	page: {
+		title: 'Círculos',
+		subtitle: 'Cada círculo y grupo de ahorro de su programa',
+		loading: 'Cargando los círculos…',
+		empty: 'Todavía no hay círculos',
+		emptyHint: 'Un círculo aparece aquí una vez creado y con sus integrantes inscritas.',
+		error: 'No se pudieron cargar los círculos',
+		retry: 'Reintentar',
+	},
+	kind: { circle: 'Círculo', targetGroup: 'Grupo de ahorro' },
+	cadence: { weekly: 'Cada semana', biweekly: 'Cada dos semanas', monthly: 'Cada mes' },
+	status: { forming: 'En formación', completed: 'Terminado', active: 'En curso', abandoned: 'Detenido' },
+	card: {
+		members: 'Integrantes',
+		round: (i, t) => `Ronda ${i} de ${t}`,
+		roundLabel: 'Rotación',
+		progress: 'Progreso',
+		thisPeriod: 'Este período',
+		paidOf: (p, e) => `${p} de ${e} aportaron`,
+		nextDue: 'Próximo vencimiento',
+		dueIn: (d) => (d === 1 ? 'en 1 día' : `en ${d} días`),
+		dueToday: 'hoy',
+		overdueBy: (d) => (d === 1 ? 'venció hace 1 día' : `venció hace ${d} días`),
+		noRoundOpen: 'Ninguna ronda abierta',
+		receiving: 'Recibe',
+		payoutVerified: 'Dirección de pago verificada',
+		payoutUnverified: 'Dirección de pago sin verificar',
+		payoutVerifiedHint: 'Verificada por auto-envío, y fijada para esta ronda.',
+		payoutUnverifiedHint: 'Esta ronda no debería abrirse hasta verificar la dirección.',
+		unitsOnly: 'Los montos son unidades de token — nunca una valoración.',
+	},
+	discipline: {
+		// "morosa" is the Spanish for delinquent and it is BANNED here, exactly as
+		// "delinquent" and "défaillant" are: bank-speak imports the wrong moral frame,
+		// and the operator's vocabulary becomes the programme's culture. `behind` means
+		// only "she owes, now" — an aporte still awaited, not a verdict on a person.
+		early: 'Anticipado',
+		on_time: 'A tiempo',
+		late: 'Con retraso',
+		repaid: 'Regularizado',
+		behind: 'Aporte en espera',
+		pending: 'Aún no vence',
+		none: 'Todavía sin historial',
+	},
+	footnote:
+		'Aportes observados en la cadena. Este panel muestra la relación — nunca el saldo de la billetera de una integrante.',
+	lobby: {
+		welcome: 'Bienvenida a SusuFinance',
+		admin: 'admin',
+		invitedBy: 'Invitada por',
+	},
+	drill: {
+		back: 'Todos los círculos',
+		loading: 'Cargando las tarjetas…',
+		error: 'No se pudo cargar este círculo',
+		membersHeading: 'Tarjetas',
+		membersHint:
+			'Quién está en este círculo, y dónde va cada turno. El historial de aportes pertenece a la integrante y vive en su propia pantalla — el círculo lo ve, y el círculo hace cumplir.',
+		memberSince: 'Integrante desde',
+		turnOf: (n, total) => `Turno ${n} de ${total}`,
+		noTurn: 'Sin turno — ahorra a su propio ritmo',
+		departed: 'Dejó el círculo',
+		departedOn: (d) => `Se fue el ${d}`,
+		herTurnNow: 'Recibe esta ronda',
+		uuidOnly: 'Esta integrante no eligió un nombre para mostrar.',
+		statusIn: 'En el grupo',
+		statusLeft: 'Se fue',
+		actorOrganizer: 'Organizador',
+		roundsHeading: 'Rotación',
+		roundsHint: 'La dirección de pago de cada ronda se fija al abrir la ronda.',
+		payoutObserved: 'Pago observado',
+		payoutPending: 'Aún sin pagar',
+		eventsHeading: 'Registro del círculo',
+		eventsHint:
+			'Solo se añade. Las integrantes también pueden leerlo — así verifican al organizador. Los votos nunca aparecen aquí.',
+		action: {
+			contract_created: 'Círculo creado',
+			turn_order_recorded: 'Orden de turnos registrado',
+			round_opened: 'Ronda abierta',
+			payout_observed: 'Pago observado',
+			member_departed: 'Una integrante se fue',
+			member_replaced: 'Integrante reemplazada',
+			early_withdrawal: 'Retiro anticipado',
+		},
+	},
+	stats: {
+		title: 'Programa',
+		subtitle: 'Cómo va el programa — nunca cómo va una integrante en particular',
+		loading: 'Cargando…',
+		error: 'No se pudieron cargar las cifras del programa',
+		people: 'Personas',
+		peopleActive: (n) => (n > 1 ? 'activas' : 'activa'),
+		peopleDeparted: (n) => (n > 1 ? 'se fueron' : 'se fue'),
+		peopleTotal: 'en total',
+		activeOf: (a, t) => `${a} ${a > 1 ? 'activas' : 'activa'} de ${t}`,
+		circles: 'Círculos y grupos',
+		circlesActive: 'en curso',
+		completion: 'Ciclos terminados',
+		completionNone: 'Ningún ciclo ha terminado todavía — no hay nada que reportar.',
+		discipline: 'Disciplina de aportes',
+		disciplineHint:
+			'Sobre cada aporte que el programa esperaba. Los aportes que siguen dentro de su plazo de gracia no se cuentan — nadie es nada hasta que cierre el plazo que el grupo acordó.',
+		judgedOf: (n) => `${n} aportes contados`,
+		trend: 'Disciplina por ronda',
+		trendHint: '¿Se sostiene la disciplina al final de una rotación? La pregunta más vieja sobre los círculos de ahorro, respondida para este programa.',
+		roundN: (n) => `Ronda ${n}`,
+		flow: 'Dinero observado',
+		flowIn: 'aportados',
+		flowPayouts: 'pagos observados',
+		unitsNote: 'Unidades de token — nunca una valoración.',
+		withdrawals: 'Retiros anticipados',
+		withdrawalsHint:
+			'Su derecho, ejercido. Una tasa alta señala emergencias o un producto que no encaja — algo para entender, nunca para sancionar. Aquí no se nombra a ninguna integrante, por diseño.',
+		withdrawalsPeople: (n) => (n === 1 ? '1 integrante' : `${n} integrantes`),
+		withdrawalsUnits: 'retirados',
+		withdrawalsNone: 'Ninguno todavía.',
+		safety: 'Seguridad',
+		safetyVerified: 'direcciones de pago verificadas',
+		safetyRisk: 'rondas abiertas cuya receptora no está verificada',
+		safetyRiskNone: 'Cada ronda abierta tiene una receptora verificada.',
+		ops: 'Recordatorios',
+		opsNotBuilt: 'Las notificaciones aún no están construidas — no se ha enviado nada.',
+		export: 'Exportar el informe del programa',
+		exportHint: 'Solo agregados. Ninguna fila de integrante sale de este programa.',
+		noData: '—',
+	},
+};
 
-/** ES falls back to EN on purpose: the doc commits to EN/FR, and a machine-guessed
- *  Spanish would be worse than an honest English string. */
+const LOCALES: Record<string, CirclesLocale> = { en: EN, fr: FR, es: ES };
+
+/** Three languages, because the app's own switcher offers three. An `es: EN` fallback
+ *  meant clicking ES silently served English — the switcher lying about itself, which
+ *  is worse than a missing translation because nothing tells you anything is absent. */
 export function getCirclesLocale(lang: Lang): CirclesLocale {
 	return LOCALES[lang] ?? EN;
 }
