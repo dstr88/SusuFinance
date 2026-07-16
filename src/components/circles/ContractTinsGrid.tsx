@@ -123,9 +123,10 @@ function rosterLabel(r: NonNullable<CircleCard['roster']>[number]) {
 /**
  * One woman's card inside a forming tin.
  *
- * Nothing about her record is here, and nothing could be: a forming tin has run no
- * rounds, so there is no record yet — and the API sends no roster at all for the
- * live tins that do have one.
+ * Nothing about her record is here — not because she has none (she carries one
+ * across every circle she is in), but because this is the operator's screen and he
+ * sees membership, not payment. What a forming tin has none of is a rotation: no
+ * rounds have run, so no stars for this group's cycle.
  *
  * The corner square is a drag handle, not a button. It is deliberately not a
  * `<button>`: a button promises that clicking does something, and clicking this does

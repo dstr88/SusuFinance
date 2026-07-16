@@ -1,8 +1,10 @@
 // MemberCards — the tin, opened. One card per member: her standing in THIS circle.
 //
-// A card is a relationship, not a person. It exists inside a tin and nowhere else,
-// so it cannot carry anything about her beyond this group — a woman in three
-// circles has three cards and none of them knows about the others.
+// A card is her standing in one group. A woman in three circles has three cards —
+// and they are not strangers to each other: her history goes with her, her rotation
+// does not. Each card shows the same record, because the record is hers, derived
+// from her contributions across every circle. What differs card to card is her turn
+// slot and her stars for that group's current cycle. She never starts from zero.
 //
 // ── What is deliberately not here ────────────────────────────────────────────
 //

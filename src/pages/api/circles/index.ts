@@ -68,8 +68,13 @@ export interface CircleCard {
 	 * UI would only refuse to render is a wider surface than the feature needs, and
 	 * "fetched and dropped" is not a boundary — not fetching is.
 	 *
-	 * There is nothing about her record here, in any tin. A card is her standing in
-	 * this group, and in a forming tin she has no standing yet: no rounds have run.
+	 * There is nothing about her record here, in any tin — because this is the
+	 * operator's screen, and the cut he made stands: he sees who is in the group, not
+	 * whether or when she paid. That is not the same as her having no record. She
+	 * carries one across every circle she is in; it belongs on her screen, not his.
+	 *
+	 * What a forming tin genuinely lacks is a ROTATION: no rounds have run, so there
+	 * are no stars for this group's cycle yet. Her history is untouched by that.
 	 */
 	roster:
 		| {

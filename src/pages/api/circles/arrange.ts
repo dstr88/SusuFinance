@@ -21,10 +21,15 @@
  *   copy — she joins the destination, source untouched. The corner square. This is
  *          how a woman comes to be in three tins.
  *
- * Copy duplicates the PERSON, not her record. Contributions carry contract_id, so
- * her card in the destination starts empty and always would have: there is nothing
- * in this endpoint that could carry a record across, because a record is not a
- * property of a person here — it is a property of her standing in one group.
+ * Neither one moves her record, and neither one has to. Her history goes with her;
+ * her rotation does not. She does not start from zero.
+ *
+ * Her reputation is derived from her contributions across EVERY circle — scope the
+ * query to member_id and you have it, portable by construction. What is per-tin is
+ * her stars for the current cycle (member_id AND contract_id) and her turn slot.
+ * So there is nothing here to carry across: she cannot arrive empty, because there
+ * is no per-tin record for empty to be. Copying rows would not move her reputation,
+ * it would double-count it.
  *
  * ── The turn slot ────────────────────────────────────────────────────────────
  *
