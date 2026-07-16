@@ -22,7 +22,6 @@
     "seed:circle": "node --env-file-if-exists=.env src/scripts/seedDemoCircle.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.80.0",
     "@astrojs/node": "^10.1.4",
     "@astrojs/react": "^5.0.7",
     "@auth/core": "^0.34.3",
