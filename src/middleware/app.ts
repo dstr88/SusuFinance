@@ -266,44 +266,41 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		const tenantState = await getTenantStateDetails(userId);
 		let redirectDecision = 'allow';
 
+		// The onboarding page itself is dead. Almstins sent people here to name a vault;
+		// there is no such step, so a signed-in human who reaches it is somewhere that
+		// asks them nothing. Send them to the lobby — including the one already stuck
+		// on it with a bookmark or a back button.
+		//
+		// Note the old redirect went to /dashboard/vault, which is Almstins' door, not
+		// this product's. Everyone enters the lobby and picks their own door.
 		if (pathname.startsWith('/onboarding/')) {
-			if (tenantState.onboardingComplete) {
-				redirectDecision = 'redirect_dashboard';
-				console.log('[tenant-route]', {
-					userId,
-					activeTenantId: tenantState.activeTenantId,
-					hasTenant: tenantState.hasTenant,
-					onboardingComplete: tenantState.onboardingComplete,
-					pathname,
-					redirectDecision,
-				});
-				return finish(Response.redirect(`https://${canonicalHost}/dashboard/vault`, 303));
-			}
-			redirectDecision = 'allow_onboarding';
+			redirectDecision = 'redirect_lobby';
 			console.log('[tenant-route]', {
 				userId,
 				activeTenantId: tenantState.activeTenantId,
 				hasTenant: tenantState.hasTenant,
-				onboardingComplete: tenantState.onboardingComplete,
 				pathname,
 				redirectDecision,
 			});
-			return proceedWith(isAdminPath ? null : (tenantState.activeTenantId ?? null));
+			return finish(Response.redirect(`https://${canonicalHost}/dashboard/lobby`, 303));
 		}
 
+		// ── No onboarding wall ────────────────────────────────────────────────
+		//
+		// Almstins stopped anyone whose `is_onboarded` was false and made them name
+		// their vault first. There is nothing to ask here: the programme is created at
+		// sign-in, and the lobby is the door — "when the operator logs in, he will enter
+		// the lobby like everyone else, then he will click admin."
+		//
+		// The wall did not just inconvenience him, it broke the invite flow whole: an
+		// invitee redeems a link, gets a membership, lands on /dashboard/lobby — and
+		// her `is_onboarded` is false too, so she would have been bounced into an
+		// Almstins setup page for a vault she does not have.
+		//
+		// `is_onboarded` is now vestigial: nothing gates on it, because nothing here
+		// has a step to complete. It stays in the schema rather than being dropped in
+		// the same breath as the redirect.
 		if (pathname.startsWith('/dashboard/')) {
-			if (!tenantState.onboardingComplete) {
-				redirectDecision = 'redirect_onboarding';
-				console.log('[tenant-route]', {
-					userId,
-					activeTenantId: tenantState.activeTenantId,
-					hasTenant: tenantState.hasTenant,
-					onboardingComplete: tenantState.onboardingComplete,
-					pathname,
-					redirectDecision,
-				});
-				return finish(Response.redirect(`https://${canonicalHost}/onboarding/tenant-setup`, 303));
-			}
 			redirectDecision = 'allow_dashboard';
 		}
 

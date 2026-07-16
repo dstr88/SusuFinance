@@ -9,9 +9,11 @@ function normalizeNextPath(nextValue: FormDataEntryValue | string | null | undef
 	// Reject `//host` and `/\host` — both are treated as protocol-relative
 	// external URLs by browsers (Chrome normalizes `\` to `/`).
 	if (nextValue.startsWith('/') && !nextValue.startsWith('//') && !nextValue.startsWith('/\\')) {
-		// Never treat API endpoints as post-login destinations.
+		// Never treat API endpoints as post-login destinations. Falls back to the lobby,
+		// not Almstins' onboarding page — there is no setup step here, and that page now
+		// just bounces back to the lobby anyway.
 		if (nextValue.startsWith('/api/')) {
-			return '/onboarding/tenant-setup';
+			return '/dashboard/lobby';
 		}
 		return nextValue;
 	}
