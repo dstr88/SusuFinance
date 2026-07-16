@@ -1,17 +1,17 @@
 ---
-// /dashboard/lobby — the lobby. You walk in, and you choose your door.
+// /dashboard/lobby — the way in for everyone who is NOT an admin.
 //
-// ── The two doors ARE the fork ───────────────────────────────────────────────
+// ── Who sees this ────────────────────────────────────────────────────────────
 //
-//   admin      → the operator's vault (built)
-//   Invited by → the member's way in (NOT built — see below)
+// Revised Jul 16: admins no longer pass through the lobby. An admin (owner/co-owner)
+// logs straight into her panel — and the "admin" door was deleted with that change,
+// because there is no door to click when you are already inside. A demo session
+// showcases the operator panel, so it goes there too.
 //
-// The session today resolves to { tenantId } — "which programme?", never "which
-// member am I?". That is Almstins' shape: it only ever had operators. A circle
-// member cannot sign in at all: `members` has no link to `auth_users`, and the auth
-// tables are not applied to susufinancedata. So the right-hand door is a door to a
-// room that does not exist yet, and it is pointed at /login rather than at a route
-// that would 404 — the destination is an open question, not a decision.
+// So the lobby is now the landing for a signed-in NON-admin — a member, or a person
+// who has signed in but is not yet in any programme (non-members can now sign in;
+// the two-founder gate returns null instead of throwing). Her way in is "invited by"
+// — the member/join path (still being built).
 //
 // ── Layout ───────────────────────────────────────────────────────────────────
 //
@@ -30,6 +30,7 @@ import { getImage } from 'astro:assets';
 import bankLobby from '../../assets/bank-lobby.png';
 import { getAuthSession } from '@/lib/authSession';
 import { isDemoRequest } from '@/lib/demo';
+import { db } from '@/lib/db';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
@@ -40,8 +41,24 @@ import { langFromCookieHeader } from '@/lib/i18n/locale';
 // /login, where she would sign in, and bounce again. A door you cannot reach
 // without already being through it.
 const auth = await getAuthSession(Astro.request).catch(() => null);
-const signedIn = Boolean(auth?.user?.id) || isDemoRequest(Astro.request);
+const isDemo = isDemoRequest(Astro.request);
+const userId = auth?.user?.id ? String(auth.user.id) : '';
+const signedIn = Boolean(userId) || isDemo;
 if (!signedIn) return Astro.redirect('/login?next=/dashboard/lobby');
+
+// Admins log straight into their panel — they never see the lobby, and the "admin"
+// door was deleted with this change. The demo showcases the operator panel, so it
+// goes there too. Everyone still here is a non-admin (a member, or a signed-in
+// non-member not yet in any programme).
+if (isDemo) return Astro.redirect('/dashboard/circles');
+if (userId) {
+  const roleRes = await db.execute({
+    sql: `SELECT role FROM tenant_memberships WHERE user_id = ? LIMIT 1`,
+    args: [userId],
+  });
+  const role = roleRes.rows[0] ? String((roleRes.rows[0] as any).role ?? '') : '';
+  if (role === 'owner' || role === 'admin') return Astro.redirect('/dashboard/circles');
+}
 
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);
@@ -64,8 +81,9 @@ const [bgSmall, bgLarge] = await Promise.all([
          token rule — no rgba() anywhere. -->
     <div class="lobby__scrim" aria-hidden="true"></div>
 
-    <nav class="lobby__doors" aria-label="Choose your way in">
-      <a class="lobby__door lobby__door--left" href="/dashboard/circles">{t.lobby.admin}</a>
+    <nav class="lobby__doors" aria-label="Your way in">
+      {/* The "admin" door was deleted Jul 16 — admins land straight in their panel.
+          "Invited by" is the member's way in (the join/claim path, still being built). */}
       <a class="lobby__door lobby__door--right" href="/login">{t.lobby.invitedBy}</a>
     </nav>
 
@@ -114,7 +132,8 @@ const [bgSmall, bgLarge] = await Promise.all([
     left: 0;
     right: 0;
     display: flex;
-    justify-content: space-between;
+    /* One door now (the admin door was removed) — keep it top-right where it was. */
+    justify-content: flex-end;
     padding: 1.25rem 1.25rem 0;
     z-index: 1;
   }
