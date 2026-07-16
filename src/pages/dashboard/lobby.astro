@@ -83,8 +83,9 @@ const [bgSmall, bgLarge] = await Promise.all([
 
     <nav class="lobby__doors" aria-label="Your way in">
       {/* The "admin" door was deleted Jul 16 — admins land straight in their panel.
-          "Invited by" is the member's way in (the join/claim path, still being built). */}
-      <a class="lobby__door lobby__door--right" href="/login">{t.lobby.invitedBy}</a>
+          "Invited by" is the member's way in: the self-serve join form, where she
+          names her group and sponsor. (A seeded member instead gets a claim link.) */}
+      <a class="lobby__door lobby__door--right" href="/join">{t.lobby.invitedBy}</a>
     </nav>
 
     <h1 class="lobby__welcome">{t.lobby.welcome}</h1>
