@@ -7,7 +7,6 @@ import { getAuthSession } from '@/lib/authSession';
 import { db } from '@/lib/db';
 import { isDemoRequest } from '@/lib/demo';
 import { getActivePlan } from '@/lib/subscriptions';
-import { tenantHasTaxAccess } from '@/lib/taxAuth';
 import kingSolomon from '@/assets/KingSolomon.png';
 
 import minerva from '@/assets/Minerva.png';
@@ -30,26 +29,26 @@ const tenantId = session?.tenantId ?? null;
 
 // Tax section (Summary + yearEnd/*) is owner-gated — hide its nav entry from
 // everyone else so the demo has no dead-end links into /tax-login.
-const canTax = tenantHasTaxAccess(tenantId);
 
 // Avatar: use OAuth profile image if available, otherwise pick a random default
 const defaultAvatars = [kingSolomon, minerva];
 const defaultAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
 
 // Pull last_login, email, and member-since from DB for the account dropdown
-let lastLoginIso: string | null = null;
 let memberSinceIso: string | null = null;
 let dbEmail: string | null = null;
-let alertEmail: string | null = null;
+// Two queries, run independently. They used to share a Promise.all and select
+// last_login + alert_email — columns that do not exist on auth_users here. The
+// whole thing threw, the catch swallowed it, and "member since" (from the OTHER
+// query) silently vanished with it. A try/catch around a Promise.all makes one
+// missing column erase every result beside it.
 if (user?.id) {
   try {
-    const [userRow, memberRow] = await Promise.all([
-      db.execute({ sql: 'SELECT last_login, email, alert_email FROM auth_users WHERE id = ? LIMIT 1', args: [user.id] }),
-      db.execute({ sql: 'SELECT created_at FROM tenant_memberships WHERE user_id = ? ORDER BY created_at ASC LIMIT 1', args: [user.id] }),
-    ]);
-    lastLoginIso = userRow.rows[0] ? String((userRow.rows[0] as any).last_login ?? '') || null : null;
+    const userRow = await db.execute({ sql: 'SELECT email FROM auth_users WHERE id = ? LIMIT 1', args: [user.id] });
     dbEmail = userRow.rows[0] ? String((userRow.rows[0] as any).email ?? '') || null : null;
-    alertEmail = userRow.rows[0] ? String((userRow.rows[0] as any).alert_email ?? '') || null : null;
+  } catch { /* non-fatal */ }
+  try {
+    const memberRow = await db.execute({ sql: 'SELECT created_at FROM tenant_memberships WHERE user_id = ? ORDER BY created_at ASC LIMIT 1', args: [user.id] });
     memberSinceIso = memberRow.rows[0] ? String((memberRow.rows[0] as any).created_at ?? '') || null : null;
   } catch { /* non-fatal */ }
 }
@@ -141,14 +140,6 @@ if (tenantId) {
   } catch { /* non-fatal */ }
 }
 
-const fmtDate = (iso: string | null) => {
-  if (!iso) return null;
-  try {
-    return new Intl.DateTimeFormat(navLang === 'es' ? 'es-ES' : navLang === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
-  } catch { return null; }
-};
-
-const lastLoginDisplay = fmtDate(lastLoginIso);
 const memberSinceDisplay = memberSinceIso
   ? new Intl.DateTimeFormat(navLang === 'es' ? 'es-ES' : navLang === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(memberSinceIso))
   : null;
@@ -310,51 +301,24 @@ const memberSinceDisplay = memberSinceIso
 									<span class="account-meta-label">{tNav.chrome.accountEmail}</span>
 									<span class="account-meta-value account-meta-email">{displayEmail ?? '—'}</span>
 								</div>
-								<div class="account-meta-row">
-									<span class="account-meta-label">{tNav.chrome.alertEmail}</span>
-									<span id="alert-email-display" class="account-meta-value">
-										{alertEmail
-											? <span id="alert-email-text">{alertEmail}</span>
-											: <em id="alert-email-text" class="account-meta-unset">{tNav.chrome.notSet}</em>
-										}
-										<button type="button" id="alert-email-edit-btn" class="account-inline-edit" title={tNav.chrome.ariaEditAlertEmail} aria-label={tNav.chrome.ariaEditAlertEmail}>✏</button>
-									</span>
-									<form id="alert-email-form" class="alert-email-form" hidden>
-										<input
-											type="email"
-											id="alert-email-input"
-											name="alertEmail"
-											placeholder={displayEmail ?? 'you@example.com'}
-											value={alertEmail ?? ''}
-											autocomplete="email"
-										/>
-										<div class="alert-email-actions">
-											<button type="submit" class="alert-email-save">{tNav.ui.save}</button>
-											<button type="button" id="alert-email-cancel" class="alert-email-cancel">{tNav.ui.cancel}</button>
-										</div>
-									</form>
-								</div>
-								{tenantId && (
+								{user?.id && (
 									<div class="account-meta-row">
-										<span class="account-meta-label">{tNav.chrome.tenantId}</span>
+										{/* The HUMAN's UUID (auth_users.id → token.sub), not the
+										    programme's. Email already says which human, but this is
+										    the id every support conversation and access log turns on. */}
+										<span class="account-meta-label">{tNav.chrome.uuid}</span>
 										<span class="account-meta-value">
-											<code>{tenantId.slice(0, 8)}&hellip;</code>
+											<code>{user.id.slice(0, 8)}&hellip;</code>
 											<button
 												class="copy-btn"
 												type="button"
-												data-copy={tenantId}
-												aria-label={tNav.chrome.ariaCopyTenantId}
-												title={tNav.chrome.ariaCopyTenantId}
+												data-copy={user.id}
+												aria-label={tNav.chrome.ariaCopyUuid}
+												title={tNav.chrome.ariaCopyUuid}
 											>
 												<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
 											</button>
 										</span>
-									</div>
-								)}
-								{lastLoginDisplay && (
-									<div class="account-meta-row">
-										<span class="account-meta-label">{tNav.chrome.lastLogin}</span>
-										<span class="account-meta-value">{lastLoginDisplay}</span>
 									</div>
 								)}
 								{memberSinceDisplay && (
@@ -364,10 +328,6 @@ const memberSinceDisplay = memberSinceIso
 									</div>
 								)}
 							</div>
-
-							<hr class="account-divider" />
-
-							<a href="/dashboard/billing" class="account-billing-link">{tNav.chrome.billingPlan}</a>
 
 							<hr class="account-divider" />
 
@@ -680,63 +640,6 @@ window.__chromeI18n = chromeI18n;
 
 	document.querySelectorAll<HTMLButtonElement>('.copy-btn[data-copy]').forEach(initCopyBtn);
 
-	// ── Alert email inline editor ────────────────────────────────────────────
-	(() => {
-		const editBtn   = document.getElementById('alert-email-edit-btn') as HTMLButtonElement | null;
-		const cancelBtn = document.getElementById('alert-email-cancel')   as HTMLButtonElement | null;
-		const form      = document.getElementById('alert-email-form')     as HTMLFormElement   | null;
-		const display   = document.getElementById('alert-email-display')  as HTMLElement       | null;
-		const input     = document.getElementById('alert-email-input')    as HTMLInputElement  | null;
-
-		if (!editBtn || !form || !display || !input) return;
-
-		editBtn.addEventListener('click', () => {
-			display.hidden = true;
-			form.hidden = false;
-			input.focus();
-		});
-
-		cancelBtn?.addEventListener('click', () => {
-			form.hidden = true;
-			display.hidden = false;
-		});
-
-		form.addEventListener('submit', async (e) => {
-			e.preventDefault();
-			const saveBtn = form.querySelector<HTMLButtonElement>('.alert-email-save');
-			if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving\u2026'; }
-
-			try {
-				const res = await fetch('/api/account/alert-email', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ alertEmail: input.value.trim() }),
-				});
-				const data = await res.json();
-				if (!data.ok) throw new Error(data.error ?? 'Save failed');
-
-				// Update display text without a page reload
-				const textEl = document.getElementById('alert-email-text');
-				if (textEl) {
-					const newVal = data.alertEmail ?? '';
-					if (textEl.tagName === 'EM') {
-						const span = document.createElement('span');
-						span.id = 'alert-email-text';
-						span.textContent = newVal || 'not set';
-						textEl.replaceWith(span);
-					} else {
-						textEl.textContent = newVal || 'not set';
-					}
-				}
-				form.hidden = true;
-				display.hidden = false;
-			} catch (err: any) {
-				alert(err?.message ?? 'Could not save alert email. Please try again.');
-			} finally {
-				if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
-			}
-		});
-	})();
 </script>
 
 <script>

@@ -50,7 +50,7 @@ export interface DashboardCommon {
     accountEmail: string;
     alertEmail: string;
     notSet: string;
-    tenantId: string;
+    uuid: string;
     lastLogin: string;
     memberSince: string;
     billingPlan: string;
@@ -58,7 +58,7 @@ export interface DashboardCommon {
     logOut: string;
     /** aria-labels */
     ariaEditAlertEmail: string;
-    ariaCopyTenantId: string;
+    ariaCopyUuid: string;
     /** help pill / drawer static */
     helpPill: string;
     helpTitle: string;
@@ -126,14 +126,14 @@ const en: DashboardCommon = {
     accountEmail: 'Account email',
     alertEmail: 'Alert email',
     notSet: 'not set',
-    tenantId: 'Tenant ID',
+    uuid: 'UUID',
     lastLogin: 'Last login',
     memberSince: 'Member since',
     billingPlan: 'Billing & Plan',
     deleteAccount: 'Delete my account',
     logOut: 'Log out',
     ariaEditAlertEmail: 'Edit alert email',
-    ariaCopyTenantId: 'Copy tenant ID',
+    ariaCopyUuid: 'Copy UUID',
     helpPill: '💬 Help',
     helpTitle: 'Get Help',
     helpPlaceholder: 'Describe your issue…',
@@ -195,14 +195,14 @@ const es: DashboardCommon = {
     accountEmail: "Correo de la cuenta",
     alertEmail: "Correo de alertas",
     notSet: "no definido",
-    tenantId: "ID de inquilino",
+    uuid: "UUID",
     lastLogin: "Último acceso",
     memberSince: "Miembro desde",
     billingPlan: "Facturación y plan",
     deleteAccount: "Eliminar mi cuenta",
     logOut: "Cerrar sesión",
     ariaEditAlertEmail: "Editar correo de alertas",
-    ariaCopyTenantId: "Copiar ID de inquilino",
+    ariaCopyUuid: "Copiar el UUID",
     helpPill: "💬 Ayuda",
     helpTitle: "Obtener ayuda",
     helpPlaceholder: "Describe tu problema…",
@@ -264,14 +264,14 @@ const fr: DashboardCommon = {
     accountEmail: "Adresse e-mail du compte",
     alertEmail: "E-mail d'alerte",
     notSet: "non défini",
-    tenantId: "Identifiant locataire",
+    uuid: "UUID",
     lastLogin: "Dernière connexion",
     memberSince: "Membre depuis",
     billingPlan: "Facturation et plan",
     deleteAccount: "Supprimer mon compte",
     logOut: "Se déconnecter",
     ariaEditAlertEmail: "Modifier l'e-mail d'alerte",
-    ariaCopyTenantId: "Copier l'identifiant locataire",
+    ariaCopyUuid: "Copier l'UUID",
     helpPill: "💬 Aide",
     helpTitle: "Obtenir de l'aide",
     helpPlaceholder: "Décrivez votre problème…",
