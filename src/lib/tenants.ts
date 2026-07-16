@@ -167,7 +167,7 @@ export async function markOnboardingComplete(userId: string): Promise<boolean> {
 	}
 }
 
-export async function ensureTenantForUser(userId: string, label?: string | null): Promise<string> {
+export async function ensureTenantForUser(userId: string, label?: string | null): Promise<string | null> {
 	const MAX_RETRIES = 3;
 	const BACKOFF_MS = 15;
 
@@ -302,12 +302,19 @@ ON CONFLICT DO NOTHING`,
 	});
 
 	if (founders.rows.length >= BOOTSTRAP_OWNERS) {
-		// Signed in, but in no programme. Not an error — it is the invitee between
-		// sign-in and redemption, and the honest answer is "you are nobody here yet".
-		const err = new Error('No programme for this user — an invite is required');
-		(err as any).status = 403;
-		(err as any).code = 'no_programme';
-		throw err;
+		// Signed in, in no programme — a member before she has claimed or joined. This
+		// USED TO THROW (no_programme), which broke her sign-in entirely: the throw
+		// propagated out of the jwt callback and Auth.js reported "temporarily
+		// unavailable", so a 3rd+ human could never log in, and therefore never reach
+		// the claim or join page that would give her a programme. Chicken and egg.
+		//
+		// Return null instead. Login SUCCEEDS with no tenant; her session simply has
+		// no tenantId yet. She lands wherever `next` sent her — a /claim or /invite
+		// link (which set her tenant on redemption), or the join form. requireTenant-
+		// Session's slow path picks up the tenant the moment claim/join sets
+		// active_tenant_id, even on the same session. "You are nobody here yet" is now
+		// a state she can pass through, not a door slammed on sign-in.
+		return null;
 	}
 
 	if (founders.rows.length > 0) {
