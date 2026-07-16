@@ -1,0 +1,155 @@
+---
+// /dashboard/circles/new — the operator starts a circle.
+//
+// Owner/admin only. Creates a `forming` contract, then sends her to the drill-in
+// where she seeds members. This is how the real programme gets real circles (the
+// ones shipped so far are demo fixtures).
+import Layout from '../../../layouts/Layout.astro';
+import { db } from '@/lib/db';
+import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const session = await requireTenantSession(Astro.request);
+if (!session) return Astro.redirect('/login?next=/dashboard/circles/new');
+
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const userId = auth?.user?.id ? String(auth.user.id) : '';
+let isAdmin = false;
+if (userId) {
+  const r = await db.execute({ sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`, args: [session.tenantId, userId] });
+  const role = r.rows[0] ? String((r.rows[0] as any).role ?? '') : '';
+  isAdmin = role === 'owner' || role === 'admin';
+}
+// Only the operator creates circles. A non-admin who reaches this URL is sent back.
+if (!isAdmin) return Astro.redirect('/dashboard/circles');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+const C: Record<string, Record<string, string>> = {
+  en: { title: 'New circle', back: '← All circles',
+    name: 'Name', nameHint: 'What the group calls itself.',
+    type: 'Type', circle: 'Rotating circle (susu)', group: 'Savings group',
+    cadence: 'How often', weekly: 'Weekly', biweekly: 'Every two weeks', monthly: 'Monthly',
+    amount: 'Amount each period', amountHint: 'Per member, per contribution.',
+    grace: 'Grace days', graceHint: 'How many days late still counts as "late", not "behind".',
+    submit: 'Create', creating: 'Creating…',
+    e_missing_name: 'Give it a name.', e_bad_amount: 'Enter an amount above zero.', e_generic: 'That did not save. Try again.' },
+  fr: { title: 'Nouveau cercle', back: '← Tous les cercles',
+    name: 'Nom', nameHint: 'Comment le groupe se nomme.',
+    type: 'Type', circle: 'Cercle rotatif (susu)', group: 'Groupe d’épargne',
+    cadence: 'Fréquence', weekly: 'Chaque semaine', biweekly: 'Toutes les deux semaines', monthly: 'Chaque mois',
+    amount: 'Montant par période', amountHint: 'Par membre, par cotisation.',
+    grace: 'Jours de grâce', graceHint: 'Jusqu’à combien de jours de retard reste « en retard », pas « en défaut ».',
+    submit: 'Créer', creating: 'Création…',
+    e_missing_name: 'Donnez-lui un nom.', e_bad_amount: 'Entrez un montant supérieur à zéro.', e_generic: 'L’enregistrement a échoué. Réessayez.' },
+  es: { title: 'Nuevo círculo', back: '← Todos los círculos',
+    name: 'Nombre', nameHint: 'Cómo se llama el grupo.',
+    type: 'Tipo', circle: 'Círculo rotativo (susu)', group: 'Grupo de ahorro',
+    cadence: 'Con qué frecuencia', weekly: 'Semanal', biweekly: 'Cada dos semanas', monthly: 'Mensual',
+    amount: 'Monto por período', amountHint: 'Por integrante, por aporte.',
+    grace: 'Días de gracia', graceHint: 'Cuántos días de retraso siguen siendo «tarde», no «en falta».',
+    submit: 'Crear', creating: 'Creando…',
+    e_missing_name: 'Póngale un nombre.', e_bad_amount: 'Ingrese un monto mayor que cero.', e_generic: 'No se guardó. Inténtelo de nuevo.' },
+};
+const t = C[lang] ?? C.en;
+---
+
+<Layout title={`${t.title} | SusuFinance`} noindex={true}>
+  <section class="nc">
+    <a class="nc-back" href="/dashboard/circles">{t.back}</a>
+    <h1 class="nc-title">{t.title}</h1>
+
+    <form id="nc-form" class="nc-fields">
+      <label class="nc-field">
+        <span class="nc-label">{t.name}</span>
+        <input type="text" name="name" required maxlength="120" autocomplete="off" />
+        <span class="nc-hint">{t.nameHint}</span>
+      </label>
+      <label class="nc-field">
+        <span class="nc-label">{t.type}</span>
+        <select name="type">
+          <option value="circle">{t.circle}</option>
+          <option value="target_group">{t.group}</option>
+        </select>
+      </label>
+      <label class="nc-field">
+        <span class="nc-label">{t.cadence}</span>
+        <select name="cadence">
+          <option value="weekly">{t.weekly}</option>
+          <option value="biweekly">{t.biweekly}</option>
+          <option value="monthly">{t.monthly}</option>
+        </select>
+      </label>
+      <label class="nc-field">
+        <span class="nc-label">{t.amount}</span>
+        <input type="number" name="expectedAmount" required min="0.01" step="0.01" inputmode="decimal" />
+        <span class="nc-hint">{t.amountHint}</span>
+      </label>
+      <label class="nc-field">
+        <span class="nc-label">{t.grace}</span>
+        <input type="number" name="graceDays" value="3" min="0" step="1" inputmode="numeric" />
+        <span class="nc-hint">{t.graceHint}</span>
+      </label>
+      <p class="nc-error" id="nc-error" hidden></p>
+      <button type="submit" class="nc-submit" id="nc-submit">{t.submit}</button>
+    </form>
+  </section>
+</Layout>
+
+<script is:inline define:vars={{ t }}>
+  const form = document.getElementById('nc-form');
+  const errEl = document.getElementById('nc-error');
+  const submit = document.getElementById('nc-submit');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errEl.hidden = true;
+    submit.disabled = true;
+    const orig = submit.textContent;
+    submit.textContent = t.creating;
+    const fd = new FormData(form);
+    try {
+      const res = await fetch('/api/circles/create', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: fd.get('name'),
+          type: fd.get('type'),
+          cadence: fd.get('cadence'),
+          expectedAmount: Number(fd.get('expectedAmount')),
+          graceDays: Number(fd.get('graceDays')),
+        }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (j && j.ok && j.id) { window.location.href = `/dashboard/circles/${j.id}`; return; }
+      errEl.textContent = t['e_' + (j && j.error ? j.error : 'generic')] || t.e_generic;
+      errEl.hidden = false;
+    } catch {
+      errEl.textContent = t.e_generic; errEl.hidden = false;
+    } finally {
+      submit.disabled = false; submit.textContent = orig;
+    }
+  });
+</script>
+
+<style>
+  .nc { max-width: 32rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .nc-back { display: inline-block; margin-bottom: 1.25rem; font-size: 0.78rem; color: var(--text-muted); text-decoration: none; }
+  .nc-back:hover { color: var(--accent); }
+  .nc-title { margin: 0 0 1.5rem; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+  .nc-fields { display: flex; flex-direction: column; gap: 1rem; }
+  .nc-field { display: flex; flex-direction: column; gap: 0.3rem; }
+  .nc-label { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
+  .nc-field input, .nc-field select {
+    min-height: 44px; padding: 0.5rem 0.75rem; border-radius: 8px;
+    border: 1px solid var(--border-bright); background: var(--surface-card-2);
+    color: var(--text-primary); font-size: 0.9rem; font-family: inherit;
+  }
+  .nc-field input:focus-visible, .nc-field select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .nc-hint { font-size: 0.72rem; color: var(--text-muted); }
+  .nc-error { margin: 0; padding: 0.5rem 0.75rem; border-radius: 8px; border: 1px solid var(--loss-border); background: var(--loss-bg); color: var(--loss); font-size: 0.8rem; }
+  .nc-submit {
+    min-height: 44px; margin-top: 0.5rem; padding: 0.7rem 1.4rem; border-radius: 999px; border: none;
+    background: var(--accent); color: var(--surface-bg); font-size: 0.9rem; font-weight: 700; cursor: pointer;
+  }
+  .nc-submit:disabled { opacity: 0.6; cursor: default; }
+  .nc-submit:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>

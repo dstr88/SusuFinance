@@ -11,7 +11,9 @@
 // All stats within-tenant. No cross-tenant benchmarks, ever.
 import Layout from '../../layouts/Layout.astro';
 import ContractTinsGrid from '../../components/circles/ContractTinsGrid';
+import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
@@ -20,6 +22,18 @@ if (!session) return Astro.redirect('/login?next=/dashboard/circles');
 
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);
+
+// Only the operator sees "New circle" — creation is owner/admin (the endpoint
+// re-checks). A member viewing the grid does not get the control.
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const uid = auth?.user?.id ? String(auth.user.id) : '';
+let isAdmin = false;
+if (uid) {
+  const r = await db.execute({ sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`, args: [session.tenantId, uid] });
+  const role = r.rows[0] ? String((r.rows[0] as any).role ?? '') : '';
+  isAdmin = role === 'owner' || role === 'admin';
+}
+const newCircleLabel = lang === 'fr' ? '+ Nouveau cercle' : lang === 'es' ? '+ Nuevo círculo' : '+ New circle';
 ---
 
 <Layout title={`${t.page.title} | SusuFinance`} noindex={true}>
@@ -30,7 +44,10 @@ const t = getCirclesLocale(lang);
           <h1 class="ct-page__title">{t.page.title}</h1>
           <p class="ct-page__sub">{t.page.subtitle}</p>
         </div>
-        <a class="ct-page__statslink" href="/dashboard/circles/stats">{t.stats.title} →</a>
+        <div class="ct-page__headactions">
+          {isAdmin && <a class="ct-page__newlink" href="/dashboard/circles/new">{newCircleLabel}</a>}
+          <a class="ct-page__statslink" href="/dashboard/circles/stats">{t.stats.title} →</a>
+        </div>
       </div>
     </header>
 
@@ -54,6 +71,25 @@ const t = getCirclesLocale(lang);
     gap: 1rem;
     flex-wrap: wrap;
   }
+  .ct-page__headactions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .ct-page__newlink {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--accent-soft);
+    border-radius: 999px;
+    background: var(--accent-soft);
+  }
+  .ct-page__newlink:hover { background: var(--accent-glow); }
   .ct-page__statslink {
     font-size: 0.78rem;
     font-weight: 600;
