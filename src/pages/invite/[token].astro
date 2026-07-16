@@ -1,0 +1,183 @@
+---
+// /invite/:token — redeeming an admin invite.
+//
+// Someone was handed a link. This is where it becomes a membership.
+//
+// ── The order of events matters, and it is not the obvious one ───────────────
+//
+// She clicks the link → she is not signed in → /login?next=/invite/:token → she
+// signs in with Google → **the jwt callback runs ensureTenantForUser and mints her
+// a brand-new empty programme, with her as owner** → she lands back here.
+//
+// That is Almstins' model asserting itself: one user = one vault = one tenant. It
+// fires before this page ever runs, and nothing here can prevent it. So redemption
+// has to CORRECT it rather than avoid it: attach her to the programme she was
+// actually invited to, and point her active_tenant_id at that one.
+//
+// The empty programme she was silently given is left in place, orphaned. It is
+// harmless (no circles, no members, no surface renders it) and deleting it from
+// here would mean reasoning about whether it is truly hers and truly empty in the
+// middle of a redemption. Logged as a known wart rather than half-solved.
+//
+// ── The token is a bearer credential ─────────────────────────────────────────
+//
+// Whoever holds this link becomes an admin of the programme. So: single-use,
+// expiring, and consumed in a guarded UPDATE rather than a read-then-write — two
+// people opening the same link at once must not both get in.
+import LoginLayout from '../../layouts/LoginLayout.astro';
+import crypto from 'node:crypto';
+import { db } from '@/lib/db';
+import { getAuthSession } from '@/lib/authSession';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const token = Astro.params.token ?? '';
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+
+// Not signed in? Send her to sign in, and come straight back here. The `next` path
+// survives the round-trip (postLoginRedirect honours it over the lobby default).
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const userId = auth?.user?.id ? String(auth.user.id) : '';
+if (!userId) {
+  return Astro.redirect(`/login?next=${encodeURIComponent(`/invite/${token}`)}`);
+}
+
+type Outcome = 'joined' | 'already' | 'invalid' | 'error';
+let outcome: Outcome = 'invalid';
+let programmeName = '';
+
+if (token) {
+  try {
+    // Consume the token in ONE guarded write. Read-then-write would let two people
+    // open the same link simultaneously and both pass the check before either
+    // marked it spent. The WHERE clause is the lock.
+    const claim = await db.execute({
+      sql: `UPDATE admin_invites
+               SET redeemed_at = now(), redeemed_by = ?
+             WHERE token = ?
+               AND redeemed_at IS NULL
+               AND expires_at > now()
+             RETURNING tenant_id`,
+      args: [userId, token],
+    });
+
+    if (!claim.rows.length) {
+      // Spent, expired, or never existed. Deliberately one outcome: telling her
+      // WHICH would let someone probe for real tokens.
+      outcome = 'invalid';
+    } else {
+      const tenantId = String((claim.rows[0] as any).tenant_id);
+
+      // Already a member? Then the invite was unnecessary — but it is spent now,
+      // which is correct: a link that has been clicked should not still work.
+      const existing = await db.execute({
+        sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`,
+        args: [tenantId, userId],
+      });
+
+      if (!existing.rows.length) {
+        await db.execute({
+          sql: `INSERT INTO tenant_memberships (id, tenant_id, user_id, role)
+                VALUES (?, ?, ?, 'admin')`,
+          args: [crypto.randomUUID(), tenantId, userId],
+        });
+      }
+
+      // The correction: point her at the programme she was invited to, not the
+      // empty one sign-in minted for her.
+      await db.execute({
+        sql: `UPDATE auth_users SET active_tenant_id = ? WHERE id = ?`,
+        args: [tenantId, userId],
+      });
+
+      const t = await db.execute({ sql: `SELECT name FROM tenants WHERE id = ?`, args: [tenantId] });
+      programmeName = t.rows[0] ? String((t.rows[0] as any).name ?? '') : '';
+      outcome = existing.rows.length ? 'already' : 'joined';
+    }
+  } catch (err) {
+    console.error('[invite] redeem failed', err);
+    outcome = 'error';
+  }
+}
+
+const COPY: Record<string, Record<Outcome, { title: string; body: string }>> = {
+  en: {
+    joined:  { title: 'You are in', body: 'You now help run this programme. Your active programme has been switched to it.' },
+    already: { title: 'You were already in', body: 'You already help run this programme. The link has been used up.' },
+    invalid: { title: 'This link no longer works', body: 'An invite can be used once, and lasts seven days. Ask for a new one.' },
+    error:   { title: 'Something went wrong', body: 'The invite could not be completed. Try the link again, or ask for a new one.' },
+  },
+  fr: {
+    joined:  { title: 'Vous y êtes', body: 'Vous aidez maintenant à gérer ce programme. Votre programme actif a été basculé dessus.' },
+    already: { title: 'Vous y étiez déjà', body: 'Vous aidez déjà à gérer ce programme. Le lien est désormais utilisé.' },
+    invalid: { title: 'Ce lien ne fonctionne plus', body: 'Une invitation s’utilise une fois et dure sept jours. Demandez-en une nouvelle.' },
+    error:   { title: 'Une erreur est survenue', body: 'L’invitation n’a pas pu aboutir. Réessayez le lien, ou demandez-en un nouveau.' },
+  },
+  es: {
+    joined:  { title: 'Ya está dentro', body: 'Ahora ayuda a gestionar este programa. Su programa activo ha cambiado a este.' },
+    already: { title: 'Ya estaba dentro', body: 'Ya ayuda a gestionar este programa. El enlace ya se ha usado.' },
+    invalid: { title: 'Este enlace ya no funciona', body: 'Una invitación se usa una vez y dura siete días. Pida una nueva.' },
+    error:   { title: 'Algo salió mal', body: 'No se pudo completar la invitación. Intente el enlace de nuevo, o pida uno nuevo.' },
+  },
+};
+const GO: Record<string, { on: string; off: string }> = {
+  en: { on: 'Go to the lobby', off: 'Back to the lobby' },
+  fr: { on: 'Aller au hall', off: 'Retour au hall' },
+  es: { on: 'Ir al vestíbulo', off: 'Volver al vestíbulo' },
+};
+const t = (COPY[lang] ?? COPY.en)[outcome];
+const go = GO[lang] ?? GO.en;
+const ok = outcome === 'joined' || outcome === 'already';
+---
+
+<LoginLayout title={t.title} noindex={true} lang={lang}>
+  <section class="iv">
+    <div class={`iv-card ${ok ? 'iv-card--ok' : 'iv-card--no'}`}>
+      <h1 class="iv-title">{t.title}</h1>
+      {ok && programmeName && <p class="iv-programme">{programmeName}</p>}
+      <p class="iv-body">{t.body}</p>
+      {ok
+        ? <a class="iv-btn" href="/dashboard/lobby">{go.on}</a>
+        : <a class="iv-link" href="/dashboard/lobby">{go.off}</a>}
+    </div>
+  </section>
+</LoginLayout>
+
+<style>
+  .iv {
+    min-height: 70svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+  }
+  .iv-card {
+    max-width: 30rem;
+    width: 100%;
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 2rem 1.75rem;
+    text-align: center;
+  }
+  .iv-card--ok { border-color: var(--accent-soft); }
+  .iv-title { margin: 0 0 0.5rem; font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+  .iv-programme {
+    margin: 0 0 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .iv-body { margin: 0 0 1.5rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+  .iv-btn {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--surface-bg);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+  .iv-link { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; }
+  .iv-link:hover { color: var(--accent); }
+</style>

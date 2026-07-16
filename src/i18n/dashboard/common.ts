@@ -51,6 +51,13 @@ export interface DashboardCommon {
     alertEmail: string;
     notSet: string;
     uuid: string;
+    exportStats: string;
+    inviteAdmin: string;
+    inviteGenerating: string;
+    inviteCopy: string;
+    inviteCopied: string;
+    inviteHint: string;
+    inviteFailed: string;
     lastLogin: string;
     memberSince: string;
     billingPlan: string;
@@ -127,6 +134,13 @@ const en: DashboardCommon = {
     alertEmail: 'Alert email',
     notSet: 'not set',
     uuid: 'UUID',
+    exportStats: 'Export stats',
+    inviteAdmin: 'Invite an admin',
+    inviteGenerating: 'Making a link…',
+    inviteCopy: 'Copy link',
+    inviteCopied: 'Copied',
+    inviteHint: 'Anyone with this link can help run your programme. It works once, for 7 days.',
+    inviteFailed: 'Could not make a link',
     lastLogin: 'Last login',
     memberSince: 'Member since',
     billingPlan: 'Billing & Plan',
@@ -196,6 +210,13 @@ const es: DashboardCommon = {
     alertEmail: "Correo de alertas",
     notSet: "no definido",
     uuid: "UUID",
+    exportStats: "Exportar estadísticas",
+    inviteAdmin: "Invitar a un administrador",
+    inviteGenerating: "Creando un enlace…",
+    inviteCopy: "Copiar enlace",
+    inviteCopied: "Copiado",
+    inviteHint: "Cualquiera con este enlace puede ayudar a gestionar su programa. Sirve una vez, durante 7 días.",
+    inviteFailed: "No se pudo crear el enlace",
     lastLogin: "Último acceso",
     memberSince: "Miembro desde",
     billingPlan: "Facturación y plan",
@@ -265,6 +286,13 @@ const fr: DashboardCommon = {
     alertEmail: "E-mail d'alerte",
     notSet: "non défini",
     uuid: "UUID",
+    exportStats: "Exporter les statistiques",
+    inviteAdmin: "Inviter un administrateur",
+    inviteGenerating: "Création d’un lien…",
+    inviteCopy: "Copier le lien",
+    inviteCopied: "Copié",
+    inviteHint: "Toute personne ayant ce lien peut aider à gérer votre programme. Il sert une fois, pendant 7 jours.",
+    inviteFailed: "Impossible de créer le lien",
     lastLogin: "Dernière connexion",
     memberSince: "Membre depuis",
     billingPlan: "Facturation et plan",

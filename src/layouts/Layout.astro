@@ -331,6 +331,27 @@ const memberSinceDisplay = memberSinceIso
 
 							<hr class="account-divider" />
 
+							<!-- Export stats — the programme report. Aggregates only; no member
+							     row leaves this programme (the endpoint aggregates in SQL). -->
+							<a class="account-action" href="/api/circles/stats" download="programme-report.json">
+								{tNav.chrome.exportStats}
+							</a>
+
+							<!-- Invite an admin. There is no email configured, so this mints a
+							     LINK he sends however he likes. The token IS the credential:
+							     single-use, 7 days. Owner-gated server-side — this button is
+							     shown to everyone with an account, and the API decides. -->
+							<div class="account-invite">
+								<button id="invite-admin-btn" class="account-action" type="button">{tNav.chrome.inviteAdmin}</button>
+								<div id="invite-result" class="account-invite__result" hidden>
+									<input id="invite-url" class="account-invite__url" type="text" readonly />
+									<button id="invite-copy" class="account-invite__copy" type="button">{tNav.chrome.inviteCopy}</button>
+									<p class="account-invite__hint">{tNav.chrome.inviteHint}</p>
+								</div>
+							</div>
+
+							<hr class="account-divider" />
+
 							<!-- Delete account -->
 							<div class="account-delete-wrap">
 								<button id="delete-account-btn" class="account-delete" type="button">{tNav.chrome.deleteAccount}</button>
@@ -405,6 +426,10 @@ const memberSinceDisplay = memberSinceIso
   helpSend:          tNav.chrome.helpSend,
   helpSendError:     tNav.chrome.helpSendError,
   dateLocale:        navLang === 'es' ? 'es-ES' : navLang === 'fr' ? 'fr-FR' : 'en-US',
+  inviteGenerating:  tNav.chrome.inviteGenerating,
+  inviteCopy:        tNav.chrome.inviteCopy,
+  inviteCopied:      tNav.chrome.inviteCopied,
+  inviteFailed:      tNav.chrome.inviteFailed,
 } }}>
 window.__chromeI18n = chromeI18n;
 </script>
@@ -639,6 +664,49 @@ window.__chromeI18n = chromeI18n;
 	}
 
 	document.querySelectorAll<HTMLButtonElement>('.copy-btn[data-copy]').forEach(initCopyBtn);
+
+	// ── Invite an admin ───────────────────────────────────────────────────────
+	// Mints a single-use link. The button is visible to anyone with an account;
+	// the API refuses anyone who is not an owner of this programme. Client-side
+	// hiding is decoration — the server is the gate.
+	(() => {
+		const btn    = document.getElementById('invite-admin-btn') as HTMLButtonElement | null;
+		const result = document.getElementById('invite-result')    as HTMLElement       | null;
+		const urlEl  = document.getElementById('invite-url')       as HTMLInputElement  | null;
+		const copyEl = document.getElementById('invite-copy')      as HTMLButtonElement | null;
+		if (!btn || !result || !urlEl || !copyEl) return;
+
+		const i18n = (window as any).__chromeI18n ?? {};
+		btn.addEventListener('click', async () => {
+			const original = btn.textContent;
+			btn.disabled = true;
+			btn.textContent = i18n.inviteGenerating || 'Making a link…';
+			try {
+				const res = await fetch('/api/admin/invite', { method: 'POST' });
+				const data = await res.json();
+				if (!res.ok || !data.ok) throw new Error(data.error || String(res.status));
+				urlEl.value = data.url;
+				result.hidden = false;
+				btn.hidden = true;
+			} catch {
+				btn.textContent = i18n.inviteFailed || 'Could not make a link';
+				btn.disabled = false;
+				setTimeout(() => { btn.textContent = original; }, 2500);
+			}
+		});
+
+		copyEl.addEventListener('click', async () => {
+			urlEl.select();
+			try {
+				await navigator.clipboard.writeText(urlEl.value);
+			} catch {
+				document.execCommand('copy');
+			}
+			const was = copyEl.textContent;
+			copyEl.textContent = i18n.inviteCopied || 'Copied';
+			setTimeout(() => { copyEl.textContent = was; }, 1500);
+		});
+	})();
 
 </script>
 

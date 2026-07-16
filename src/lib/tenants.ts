@@ -269,6 +269,38 @@ ON CONFLICT DO NOTHING`,
 		throw new Error('Failed to attach active tenant');
 	}
 
+	// ── The bootstrap gate ────────────────────────────────────────────────────
+	//
+	// Everything above this line found an existing membership. Below it, Almstins
+	// would hand ANY signed-in stranger a brand-new programme with themselves as
+	// owner — because there, one user = one vault = one tenant, and that was right.
+	//
+	// Here it is wrong. A programme is a thing you are INVITED into, not a thing you
+	// are given for showing up. Left alone, the first market woman to sign in with
+	// Google would silently become the owner of her own empty programme instead of a
+	// member of Makola Traders, and the operator would never see her.
+	//
+	// So exactly one person may ever be given a programme this way: the FIRST human,
+	// when no one anywhere holds a membership. That is the operator, and the
+	// programme is his. Everyone after him arrives through an invite, which creates
+	// the membership that the code above will find.
+	//
+	// The signal is tenant_memberships being empty, not tenants being empty — the
+	// demo programme exists as seed data and has no members, so it must not count as
+	// someone having arrived.
+	const anyMembership = await db.execute({
+		sql: 'SELECT 1 FROM tenant_memberships LIMIT 1',
+		args: [],
+	});
+	if (anyMembership.rows.length > 0) {
+		// Signed in, but in no programme. Not an error — it is the invitee between
+		// sign-in and redemption, and the honest answer is "you are nobody here yet".
+		const err = new Error('No programme for this user — an invite is required');
+		(err as any).status = 403;
+		(err as any).code = 'no_programme';
+		throw err;
+	}
+
 	const tenantId: string = crypto.randomUUID();
 	const membershipId: string = crypto.randomUUID();
 	const tenantName = (label && label.trim().length ? label.trim() : 'Primary').slice(0, 120);

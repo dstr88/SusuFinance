@@ -433,19 +433,67 @@ main {
 	color: var(--gain);
 }
 
-.account-billing-link {
+/* Dropdown actions — export stats, invite an admin. Inherits the shape the
+   billing link used to have; billing itself is gone (no billing in this product). */
+.account-action {
 	display: block;
+	width: 100%;
 	padding: 0.55rem 0.9rem;
+	font: inherit;
 	font-size: 0.875rem;
 	font-weight: 500;
 	color: var(--text-secondary);
 	text-decoration: none;
+	text-align: left;
+	background: transparent;
+	border: 0;
 	border-radius: 8px;
+	cursor: pointer;
 	transition: background 0.15s, color 0.15s;
 }
-.account-billing-link:hover {
+.account-action:hover {
 	background: var(--accent-soft);
 	color: var(--accent);
+}
+.account-action:disabled { opacity: 0.6; cursor: default; }
+
+/* The minted invite link. Shown once, on purpose: the token is a credential and
+   the API never hands it back — if it is lost, make another. */
+.account-invite__result {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	padding: 0.5rem 0.9rem 0.2rem;
+}
+.account-invite__url {
+	flex: 1 1 100%;
+	min-width: 0;
+	padding: 0.4rem 0.5rem;
+	font-size: 0.7rem;
+	font-family: ui-monospace, monospace;
+	color: var(--text-primary);
+	background: var(--surface-card-2);
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+}
+.account-invite__copy {
+	padding: 0.35rem 0.7rem;
+	font: inherit;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--surface-bg);
+	background: var(--accent);
+	border: 0;
+	border-radius: 6px;
+	cursor: pointer;
+}
+.account-invite__copy:hover { background: var(--accent-dim); }
+.account-invite__hint {
+	flex: 1 1 100%;
+	margin: 0.15rem 0 0;
+	font-size: 0.65rem;
+	line-height: 1.45;
+	color: var(--text-muted);
 }
 
 .account-logout {
