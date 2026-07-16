@@ -63,6 +63,29 @@ if (userId) {
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);
 
+// Does this member have anyone waiting on her vouch? If so, surface it here — the
+// lobby is where she lands, and there is no member dashboard yet to notify her.
+let vouchCount = 0;
+if (userId) {
+  const meRes = await db.execute({
+    sql: `SELECT id, tenant_id FROM members WHERE user_id = ? LIMIT 1`,
+    args: [userId],
+  });
+  if (meRes.rows.length) {
+    const mid = String((meRes.rows[0] as any).id);
+    const tid = String((meRes.rows[0] as any).tenant_id);
+    const cntRes = await db.execute({
+      sql: `SELECT COUNT(*) AS n FROM circle_votes
+             WHERE tenant_id = ? AND invited_by = ? AND kind = 'admission' AND status = 'open'`,
+      args: [tid, mid],
+    });
+    vouchCount = Number((cntRes.rows[0] as any)?.n ?? 0);
+  }
+}
+const vouchLabel = lang === 'fr' ? 'Quelqu’un attend votre parrainage →'
+  : lang === 'es' ? 'Alguien espera su aval →'
+  : 'Someone is waiting for your vouch →';
+
 // Two widths: phones get a 900px webp, desktops 1800. Same picture, a quarter of
 // the bytes on the device most likely to be paying per megabyte.
 const [bgSmall, bgLarge] = await Promise.all([
@@ -88,6 +111,10 @@ const [bgSmall, bgLarge] = await Promise.all([
       <a class="lobby__door lobby__door--right" href="/join">{t.lobby.invitedBy}</a>
     </nav>
 
+    {vouchCount > 0 && (
+      <a class="lobby__vouch" href="/vouch">{vouchLabel}</a>
+    )}
+
     <h1 class="lobby__welcome">{t.lobby.welcome}</h1>
   </section>
 </LoginLayout>
@@ -100,8 +127,11 @@ const [bgSmall, bgLarge] = await Promise.all([
        line lands off-screen. svh is the small viewport — what she can actually see. */
     min-height: 100svh;
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    /* Column so a vouch prompt can stack above the welcome line; both stay bottom-
+       anchored and centered. */
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
     overflow: hidden;
     background-image: var(--bg-small);
     background-size: cover;
@@ -156,6 +186,24 @@ const [bgSmall, bgLarge] = await Promise.all([
     background: var(--surface-card-2);
   }
   .lobby__door:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .lobby__vouch {
+    position: relative;
+    z-index: 1;
+    align-self: center;
+    margin: 0 1.25rem clamp(1rem, 3vh, 1.75rem);
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+  }
+  .lobby__vouch:hover { background: var(--accent-glow); }
+  .lobby__vouch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
   .lobby__welcome {
     position: relative;

@@ -1,0 +1,142 @@
+---
+// /vouch — the sponsor's side of admission. Someone named her as the one who
+// invited them; here she confirms it. Her yes admits the candidate (sponsor-yes v1,
+// §5a); her decline blocks. This is the missing half that turns a pending join into
+// a member.
+//
+// A member's surface, not an operator's — so LoginLayout, and it resolves the
+// viewer to her MEMBER row (not a tenant_membership). An operator with no member row
+// simply has nothing to vouch.
+import LoginLayout from '../layouts/LoginLayout.astro';
+import { db } from '@/lib/db';
+import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const session = await requireTenantSession(Astro.request);
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const userId = auth?.user?.id ? String(auth.user.id) : '';
+if (!session || !userId) return Astro.redirect('/login?next=/vouch');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+
+// Her member row in this programme. No row → she is not a member (an operator, say);
+// there is nothing for her to vouch.
+const meRes = await db.execute({
+  sql: `SELECT id FROM members WHERE tenant_id = ? AND user_id = ? LIMIT 1`,
+  args: [session.tenantId, userId],
+});
+const myMemberId = meRes.rows[0] ? String((meRes.rows[0] as any).id) : '';
+
+// Open admissions where she is the named sponsor.
+let requests: { voteId: string; candidate: string; group: string }[] = [];
+if (myMemberId) {
+  const res = await db.execute({
+    sql: `SELECT v.id AS vote_id, m.display_name AS candidate, c.name AS group_name
+            FROM circle_votes v
+            JOIN members m   ON m.id = v.subject_member_id AND m.tenant_id = v.tenant_id
+            JOIN contracts c ON c.id = v.contract_id       AND c.tenant_id = v.tenant_id
+           WHERE v.tenant_id = ? AND v.invited_by = ? AND v.kind = 'admission' AND v.status = 'open'
+           ORDER BY v.opened_at`,
+    args: [session.tenantId, myMemberId],
+  });
+  requests = (res.rows as any[]).map((r) => ({
+    voteId: String(r.vote_id),
+    candidate: r.candidate ? String(r.candidate) : '—',
+    group: String(r.group_name),
+  }));
+}
+
+const COPY: Record<string, Record<string, string>> = {
+  en: { title: 'People to vouch for', none: 'No one is waiting on you right now.',
+    asks: (n: string, g: string) => `${n} says you invited her to ${g}.`,
+    vouch: 'Vouch for her', decline: 'Not her', vouching: 'Sending…',
+    vouched: 'Done — she is in.', declined: 'Declined.', err: 'That did not save. Try again.', back: 'Back to the lobby' },
+  fr: { title: 'Personnes à parrainer', none: 'Personne n’attend après vous pour l’instant.',
+    asks: (n: string, g: string) => `${n} dit que vous l’avez invitée à ${g}.`,
+    vouch: 'Je la parraine', decline: 'Pas elle', vouching: 'Envoi…',
+    vouched: 'C’est fait — elle y est.', declined: 'Refusé.', err: 'L’enregistrement a échoué. Réessayez.', back: 'Retour au hall' },
+  es: { title: 'Personas por avalar', none: 'Nadie la espera por ahora.',
+    asks: (n: string, g: string) => `${n} dice que usted la invitó a ${g}.`,
+    vouch: 'La avalo', decline: 'No es ella', vouching: 'Enviando…',
+    vouched: 'Listo — ya está dentro.', declined: 'Rechazado.', err: 'No se guardó. Inténtelo de nuevo.', back: 'Volver al vestíbulo' },
+};
+const t = COPY[lang] ?? COPY.en;
+---
+
+<LoginLayout title={t.title} noindex={true} lang={lang}>
+  <section class="vo">
+    <div class="vo-card">
+      <h1 class="vo-title">{t.title}</h1>
+      {requests.length === 0 ? (
+        <p class="vo-none">{t.none}</p>
+      ) : (
+        <ul class="vo-list">
+          {requests.map((r) => (
+            <li class="vo-item" data-vote={r.voteId}>
+              <p class="vo-ask">{t.asks(r.candidate, r.group)}</p>
+              <div class="vo-actions">
+                <button class="vo-btn vo-btn--yes" data-ballot="yes">{t.vouch}</button>
+                <button class="vo-btn vo-btn--no" data-ballot="no">{t.decline}</button>
+              </div>
+              <p class="vo-result" hidden></p>
+            </li>
+          ))}
+        </ul>
+      )}
+      <a class="vo-link" href="/dashboard/lobby">{t.back}</a>
+    </div>
+  </section>
+</LoginLayout>
+
+<script is:inline define:vars={{ t }}>
+  document.querySelectorAll('.vo-item').forEach((item) => {
+    const voteId = item.getAttribute('data-vote');
+    const result = item.querySelector('.vo-result');
+    const actions = item.querySelector('.vo-actions');
+    item.querySelectorAll('.vo-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const ballot = btn.getAttribute('data-ballot');
+        item.querySelectorAll('.vo-btn').forEach((b) => (b.disabled = true));
+        btn.textContent = t.vouching;
+        try {
+          const res = await fetch(`/api/circles/vote/${encodeURIComponent(voteId)}/ballot`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ballot }),
+          });
+          const j = await res.json().catch(() => ({}));
+          if (j && j.ok) {
+            actions.hidden = true;
+            result.textContent = ballot === 'yes' ? t.vouched : t.declined;
+            result.hidden = false;
+            return;
+          }
+          throw new Error();
+        } catch {
+          result.textContent = t.err;
+          result.hidden = false;
+          item.querySelectorAll('.vo-btn').forEach((b) => (b.disabled = false));
+          btn.textContent = ballot === 'yes' ? t.vouch : t.decline;
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .vo { min-height: 70svh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.25rem; }
+  .vo-card { max-width: 32rem; width: 100%; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem 1.75rem; }
+  .vo-title { margin: 0 0 1.25rem; font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+  .vo-none { margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--text-secondary); }
+  .vo-list { list-style: none; margin: 0 0 1rem; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .vo-item { border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1rem 1.1rem; background: var(--surface-card-2); }
+  .vo-ask { margin: 0 0 0.75rem; font-size: 0.9rem; color: var(--text-primary); line-height: 1.5; }
+  .vo-actions { display: flex; gap: 0.5rem; }
+  .vo-btn { min-height: 44px; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-bright); background: transparent; color: var(--text-secondary); }
+  .vo-btn--yes { background: var(--accent); color: var(--surface-bg); border-color: var(--accent); }
+  .vo-btn:disabled { opacity: 0.6; cursor: default; }
+  .vo-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .vo-result { margin: 0.75rem 0 0; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+  .vo-link { display: inline-block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); text-decoration: none; }
+  .vo-link:hover { color: var(--accent); }
+</style>
