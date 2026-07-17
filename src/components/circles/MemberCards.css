@@ -17,6 +17,21 @@
 .mc-wrap { display: flex; flex-direction: column; gap: 2.5rem; }
 
 .mc-section__head { margin-bottom: 1rem; }
+
+/* Operator: advance to the next round (live Verify gate) */
+.mc-openround { margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+.mc-openround__btn {
+	padding: 0.45rem 0.95rem;
+	border: none;
+	border-radius: 0.5rem;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.82rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.mc-openround__btn:disabled { opacity: 0.5; cursor: default; }
+.mc-openround__msg { margin: 0; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
 .mc-section__title {
   margin: 0 0 0.2rem;
   font-size: 0.7rem;

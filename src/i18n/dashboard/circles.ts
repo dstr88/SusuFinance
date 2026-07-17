@@ -287,6 +287,16 @@ export interface CirclesLocale {
 			checking: string;
 			notFound: string;
 		};
+		/** Operator advances the circle to its next round (live Verify gate). */
+		openRound: {
+			cta: string;
+			opening: string;
+			opened: (n: number, name: string) => string;
+			notVerified: (name: string) => string;
+			noAddress: (name: string) => string;
+			noScheduled: string;
+			err: string;
+		};
 	};
 }
 
@@ -405,6 +415,15 @@ const EN: CirclesLocale = {
 			verify: 'Verify',
 			checking: 'Checking with Verify…',
 			notFound: 'Not proven with Verify yet. She proves her wallet with Verify, then verify again.',
+		},
+		openRound: {
+			cta: 'Open next round',
+			opening: 'Checking & opening…',
+			opened: (n, name) => `Round ${n} opened${name ? ` — paying ${name}` : ''}.`,
+			notVerified: (name) => `Can't open: ${name || 'the recipient'}'s payout wallet is not verified with Verify.`,
+			noAddress: (name) => `Can't open: ${name || 'the recipient'} has no payout wallet set yet.`,
+			noScheduled: 'No more rounds to open.',
+			err: 'Could not open the round. Try again.',
 		},
 	},
 	lobby: {
@@ -655,6 +674,15 @@ const FR: CirclesLocale = {
 			verify: 'Vérifier',
 			checking: 'Vérification avec Verify…',
 			notFound: 'Pas encore prouvé avec Verify. Elle prouve son portefeuille avec Verify, puis vérifiez à nouveau.',
+		},
+		openRound: {
+			cta: 'Ouvrir le tour suivant',
+			opening: 'Vérification et ouverture…',
+			opened: (n, name) => `Tour ${n} ouvert${name ? ` — versement à ${name}` : ''}.`,
+			notVerified: (name) => `Impossible d'ouvrir : le portefeuille de versement de ${name || 'la bénéficiaire'} n'est pas vérifié avec Verify.`,
+			noAddress: (name) => `Impossible d'ouvrir : ${name || 'la bénéficiaire'} n'a pas encore de portefeuille de versement.`,
+			noScheduled: 'Plus aucun tour à ouvrir.',
+			err: 'Impossible d’ouvrir le tour. Réessayez.',
 		},
 	},
 	lobby: {
@@ -993,6 +1021,15 @@ const ES: CirclesLocale = {
 			verify: 'Verificar',
 			checking: 'Consultando con Verify…',
 			notFound: 'Aún no está probada con Verify. Ella prueba su billetera con Verify y verifica de nuevo.',
+		},
+		openRound: {
+			cta: 'Abrir la siguiente ronda',
+			opening: 'Verificando y abriendo…',
+			opened: (n, name) => `Ronda ${n} abierta${name ? ` — paga a ${name}` : ''}.`,
+			notVerified: (name) => `No se puede abrir: la billetera de pago de ${name || 'la receptora'} no está verificada con Verify.`,
+			noAddress: (name) => `No se puede abrir: ${name || 'la receptora'} aún no tiene billetera de pago.`,
+			noScheduled: 'No hay más rondas por abrir.',
+			err: 'No se pudo abrir la ronda. Inténtalo de nuevo.',
 		},
 	},
 	stats: {

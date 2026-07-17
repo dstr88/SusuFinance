@@ -258,6 +258,35 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 
 	useEffect(() => { load(); }, [load]);
 
+	// Advance to the next round — gated by a live Verify re-check of the recipient's
+	// payout wallet (server-side). A revoked address blocks the open.
+	const [opening, setOpening] = useState(false);
+	const [openMsg, setOpenMsg] = useState<string | null>(null);
+	const openNextRound = useCallback(async () => {
+		setOpenMsg(null); setOpening(true);
+		try {
+			const res = await fetch('/api/circles/open-round', {
+				method: 'POST', headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ contractId }),
+			});
+			const j = await res.json().catch(() => ({}));
+			const o = t.drill.openRound;
+			if (j?.ok) {
+				setOpenMsg(o.opened(Number(j.opened?.roundIndex ?? 0), j.opened?.recipientName ?? ''));
+				await load();
+			} else {
+				const name = j?.recipientName ?? '';
+				setOpenMsg(
+					j?.error === 'recipient_not_verified' ? o.notVerified(name)
+						: j?.error === 'recipient_no_address' ? o.noAddress(name)
+							: j?.error === 'no_scheduled_round' ? o.noScheduled
+								: o.err,
+				);
+			}
+		} catch { setOpenMsg(t.drill.openRound.err); }
+		finally { setOpening(false); }
+	}, [contractId, load, t]);
+
 	if (state === 'loading') return <p className="mc-msg">{t.drill.loading}</p>;
 	if (state === 'error' || !data)
 		return (
@@ -308,6 +337,14 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 					<div className="mc-section__head">
 						<h2 className="mc-section__title">{t.drill.roundsHeading}</h2>
 						<p className="mc-section__hint">{t.drill.roundsHint}</p>
+						{isAdmin && (
+							<div className="mc-openround">
+								<button type="button" className="mc-openround__btn" disabled={opening} onClick={openNextRound}>
+									{opening ? t.drill.openRound.opening : t.drill.openRound.cta}
+								</button>
+								{openMsg && <p className="mc-openround__msg">{openMsg}</p>}
+							</div>
+						)}
 					</div>
 					<ol className="mc-rounds">
 						{rounds.map((r) => (
