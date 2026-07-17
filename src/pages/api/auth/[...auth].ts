@@ -297,9 +297,15 @@ ON CONFLICT DO NOTHING`,
 				token.tenantId = await ensureTenantForUser(String(user.id));
 			} else if (token.sub) {
 				// ── Token refresh: no user object ────────────────────────────────
-				if (!token.tenantId) {
-					token.tenantId = await resolveActiveTenantId(String(token.sub));
-				}
+				// Re-resolve the active tenant on EVERY refresh, not just when it is
+				// missing. The tenantId is baked at sign-in, but in the two-founder
+				// bootstrap a founder's membership/active tenant is set up AFTER their
+				// first login — so a cached tenantId goes stale and the session points
+				// at the wrong (often empty) programme until a manual re-login. This
+				// self-heals it. One cheap indexed lookup; only overwrite when we get a
+				// value, so a good token is never clobbered with null.
+				const activeTenantId = await resolveActiveTenantId(String(token.sub));
+				if (activeTenantId) token.tenantId = activeTenantId;
 				// Backfill email from DB on every refresh so sessions issued before
 				// explicit email-setting still pick it up without requiring re-login.
 				if (!token.email) {
