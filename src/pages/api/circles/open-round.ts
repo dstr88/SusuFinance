@@ -101,6 +101,23 @@ export const POST: APIRoute = async ({ request }) => {
 			args: [tenantId, contractId, roundId],
 		});
 
+		// This round's obligations now come due: one pending contribution per rotation
+		// member EXCEPT the recipient (she receives this round; the pot nets her share).
+		// Amount + due date are read straight from the round/contract, so nothing can
+		// drift. Runs once — the status='scheduled'→'open' guard above gates it.
+		await db.execute({
+			sql: `INSERT INTO contributions
+			        (tenant_id, contract_id, round_id, member_id, expected_amount, due_date, status, created_at, updated_at)
+			      SELECT r.tenant_id, r.contract_id, r.id, cm.member_id, c.expected_amount, r.due_date, 'pending', now(), now()
+			        FROM rounds r
+			        JOIN contracts c ON c.id = r.contract_id AND c.tenant_id = r.tenant_id
+			        JOIN contract_members cm ON cm.contract_id = r.contract_id AND cm.tenant_id = r.tenant_id
+			       WHERE r.tenant_id = ? AND r.id = ?
+			         AND cm.left_at IS NULL AND cm.turn_order IS NOT NULL
+			         AND cm.member_id <> r.recipient_member_id`,
+			args: [tenantId, roundId],
+		});
+
 		await db.execute({
 			sql: `INSERT INTO contract_events (tenant_id, contract_id, actor, action, detail, at)
 			      VALUES (?, ?, 'organizer', 'round_opened', ?, now())`,
