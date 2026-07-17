@@ -17,6 +17,7 @@
 
 import { db } from '@/lib/db';
 import { closeExpiredVotes } from '@/lib/circles/votes';
+import { getSusuCards, type SusuCard } from '@/lib/circles/susuCard';
 
 export type MemberVoteKind = 'admission' | 'mid_entry' | 'expulsion' | 'proposal';
 
@@ -40,6 +41,9 @@ export interface MemberCircle {
 	name: string;
 	type: string;
 	votes: MemberVote[];
+	/** Her susu card in this circle — her own record, decorated (SusuData §4). Null
+	 *  only if the card could not be built (never blanks the rest of the modal). */
+	card: SusuCard | null;
 }
 
 export interface MemberAccount {
@@ -136,11 +140,18 @@ export async function getMemberAccount(userId: string): Promise<MemberAccount | 
 		else votesByContract.set(key, [vote]);
 	}
 
+	const circleIds = (cRes.rows as any[]).map((c) => String(c.id));
+	// Her card in each circle — the susu card, her record decorated (SusuData §4).
+	// Non-fatal per-circle inside getSusuCards, so a card that fails to build leaves
+	// the circle (and its votes) intact rather than blanking the modal.
+	const cards = await getSusuCards(tenantId, memberId, circleIds);
+
 	const circles: MemberCircle[] = (cRes.rows as any[]).map((c) => ({
 		id: String(c.id),
 		name: String(c.name),
 		type: String(c.type),
 		votes: votesByContract.get(String(c.id)) ?? [],
+		card: cards.get(String(c.id)) ?? null,
 	}));
 
 	return { tenantId, memberId, displayName, circles };

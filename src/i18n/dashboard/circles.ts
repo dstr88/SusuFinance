@@ -146,6 +146,28 @@ export interface CirclesLocale {
 		};
 		err: string;
 		logout: string;
+		/** Her susu card — her record in one circle, decorated. Not a score. */
+		card: {
+			memberSince: (date: string) => string;
+			thisCycle: string;
+			cycleN: (n: number) => string;
+			/** Names for each glyph — also the slots' screen-reader labels. */
+			slot: {
+				on_time: string;
+				late: string;
+				turn: string;
+				missed: string;
+				pending: string;
+			};
+			lifetime: string;
+			onTime: string;
+			late: string;
+			repaid: string;
+			missed: string;
+			cyclesDone: (n: number) => string;
+			/** Her first cycle, nothing judged yet — not an empty or zero record. */
+			fresh: string;
+		};
 	};
 	/** The programme, in aggregate. No member ever appears here. */
 	stats: {
@@ -352,6 +374,25 @@ const EN: CirclesLocale = {
 		},
 		err: 'That did not go through. Try again.',
 		logout: 'Log out',
+		card: {
+			memberSince: (date) => `Member since ${date}`,
+			thisCycle: 'This cycle',
+			cycleN: (n) => `Cycle ${n}`,
+			slot: {
+				on_time: 'paid on time',
+				late: 'paid late',
+				turn: 'your turn — the circle pays you',
+				missed: 'missed',
+				pending: 'not yet due',
+			},
+			lifetime: 'Lifetime',
+			onTime: 'on time',
+			late: 'late',
+			repaid: 'repaid',
+			missed: 'missed',
+			cyclesDone: (n) => (n === 1 ? '1 cycle completed' : `${n} cycles completed`),
+			fresh: 'Your first cycle is under way — no marks yet.',
+		},
 	},
 	stats: {
 		title: 'Programme',
@@ -534,6 +575,25 @@ const FR: CirclesLocale = {
 		},
 		err: 'Cela n’a pas abouti. Réessayez.',
 		logout: 'Se déconnecter',
+		card: {
+			memberSince: (date) => `Membre depuis ${date}`,
+			thisCycle: 'Ce cycle',
+			cycleN: (n) => `Cycle ${n}`,
+			slot: {
+				on_time: 'payé à temps',
+				late: 'payé en retard',
+				turn: 'votre tour — le cercle vous paie',
+				missed: 'manqué',
+				pending: 'pas encore dû',
+			},
+			lifetime: 'Depuis le début',
+			onTime: 'à temps',
+			late: 'en retard',
+			repaid: 'régularisé',
+			missed: 'manqué',
+			cyclesDone: (n) => (n === 1 ? '1 cycle terminé' : `${n} cycles terminés`),
+			fresh: 'Votre premier cycle est en cours — pas encore de marques.',
+		},
 	},
 	stats: {
 		title: 'Programme',
@@ -684,6 +744,25 @@ const ES: CirclesLocale = {
 		},
 		err: 'No se pudo completar. Inténtalo de nuevo.',
 		logout: 'Cerrar sesión',
+		card: {
+			memberSince: (date) => `Integrante desde ${date}`,
+			thisCycle: 'Este ciclo',
+			cycleN: (n) => `Ciclo ${n}`,
+			slot: {
+				on_time: 'pagó a tiempo',
+				late: 'pagó con retraso',
+				turn: 'tu turno — el círculo te paga',
+				missed: 'faltó',
+				pending: 'aún no vence',
+			},
+			lifetime: 'Historial',
+			onTime: 'a tiempo',
+			late: 'con retraso',
+			repaid: 'regularizado',
+			missed: 'faltó',
+			cyclesDone: (n) => (n === 1 ? '1 ciclo completado' : `${n} ciclos completados`),
+			fresh: 'Tu primer ciclo está en marcha — todavía sin marcas.',
+		},
 	},
 	drill: {
 		back: 'Todos los círculos',

@@ -19,7 +19,19 @@ import { useCallback, useState } from 'react';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import type { Lang } from '@/lib/i18n/locale';
 import type { MemberCircle, MemberVote } from '@/lib/circles/memberAccount';
+import type { SusuCard, SlotState } from '@/lib/circles/susuCard';
 import './MemberAccount.css';
+
+// Glyphs, not colours — a colour-blind or pre-literate reader must parse the row
+// before she reads it (SusuData §4). Filled vs hollow star, diamond for her turn,
+// hollow circle for a missed week, faint dot for a slot not yet judged.
+const SLOT_GLYPH: Record<SlotState, string> = {
+	on_time: '★',
+	late: '☆',
+	turn: '◆',
+	missed: '○',
+	pending: '·',
+};
 
 interface InitialAccount {
 	member: { displayName: string | null } | null;
@@ -130,6 +142,8 @@ export default function MemberAccount({ lang, initial }: Props) {
 								<span className="ma__kind">{c.type === 'target_group' ? t.kind.targetGroup : t.kind.circle}</span>
 							</h3>
 
+							{c.card && <SusuCardFace card={c.card} t={t} lang={lang} />}
+
 							{c.votes.length === 0 ? (
 								<p className="ma__novotes">{t.me.noVotes}</p>
 							) : (
@@ -198,6 +212,77 @@ export default function MemberAccount({ lang, initial }: Props) {
 			</div>
 		</details>
 	);
+}
+
+// ── the susu card, digitized ──────────────────────────────────────────────────
+// Her record in this circle, decorated — never a score (SusuData §4). Entry date,
+// the current cycle's star row, and permanent lifetime tallies. Every mark is a fact
+// derived from the chain; nothing here compares her to anyone.
+function SusuCardFace({ card, t, lang }: { card: SusuCard; t: ReturnType<typeof getCirclesLocale>; lang: Lang }) {
+	const l = t.me.card;
+	const lt = card.lifetime;
+	const judged = lt.onTime + lt.late + lt.repaid + lt.missed;
+
+	return (
+		<div className="ma__card">
+			<div className="ma__cardhead">
+				{card.joinedAt && <span className="ma__since">{l.memberSince(fmtMonthYear(card.joinedAt, lang))}</span>}
+				<span className="ma__cyclelabel">{card.currentCycle > 1 ? l.cycleN(card.currentCycle) : l.thisCycle}</span>
+			</div>
+
+			{/* The star row — this cycle only. role=list so a screen reader walks the
+			    slots; each glyph carries its meaning as an aria-label, not by colour. */}
+			<div className="ma__stars" role="list" aria-label={l.thisCycle}>
+				{card.slots.map((s, i) => (
+					<span
+						key={i}
+						className={`ma__slot ma__slot--${s}`}
+						role="listitem"
+						aria-label={l.slot[s]}
+						title={l.slot[s]}
+					>{SLOT_GLYPH[s]}</span>
+				))}
+			</div>
+
+			{judged === 0 ? (
+				<p className="ma__fresh">{l.fresh}</p>
+			) : (
+				<div className="ma__lifetime">
+					<span className="ma__ltlabel">{l.lifetime}</span>
+					<span className="ma__ltcounts">
+						{lt.onTime > 0 && <span className="ma__lt">{lt.onTime} {l.onTime}</span>}
+						{lt.late > 0 && <span className="ma__lt">{lt.late} {l.late}</span>}
+						{lt.repaid > 0 && <span className="ma__lt">{lt.repaid} {l.repaid}</span>}
+						{lt.missed > 0 && <span className="ma__lt ma__lt--missed">{lt.missed} {l.missed}</span>}
+					</span>
+					{card.lifetime.cyclesCompleted > 0 && (
+						<span className="ma__gates" title={l.cyclesDone(card.lifetime.cyclesCompleted)} aria-label={l.cyclesDone(card.lifetime.cyclesCompleted)}>
+							<Tally n={card.lifetime.cyclesCompleted} />
+						</span>
+					)}
+				</div>
+			)}
+		</div>
+	);
+}
+
+// Tally gates — one mark per completed cycle, every fifth struck through (IIII̸),
+// readable with zero literacy (SusuData §4).
+function Tally({ n }: { n: number }) {
+	return (
+		<>
+			{Array.from({ length: n }, (_, i) => (
+				<span key={i} className={`ma__tallymark${(i + 1) % 5 === 0 ? ' ma__tallymark--gate' : ''}`} aria-hidden="true">|</span>
+			))}
+		</>
+	);
+}
+
+function fmtMonthYear(iso: string, lang: Lang): string {
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return iso;
+	const loc = lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : 'en-US';
+	return d.toLocaleDateString(loc, { month: 'short', year: 'numeric' });
 }
 
 function initialOf(name: string): string {

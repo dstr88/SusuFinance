@@ -112,6 +112,108 @@
 	color: var(--accent-dim);
 }
 
+/* ── the susu card ──────────────────────────────────────────────────────────── */
+.ma__card {
+	margin: 0 0 0.75rem;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 0.7rem;
+	background: var(--surface-card-2);
+}
+.ma__cardhead {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+.ma__since { font-size: 0.72rem; color: var(--text-muted); }
+.ma__cyclelabel {
+	font-size: 0.68rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--accent-dim);
+}
+
+/* The star row. Glyph shape is the meaning; colour only reinforces it, so the row
+   survives a colour-blind reader and a greyscale print of the export. */
+.ma__stars {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.15rem 0.2rem;
+	margin-bottom: 0.5rem;
+}
+.ma__slot {
+	font-size: 0.95rem;
+	line-height: 1;
+	width: 1.1rem;
+	text-align: center;
+	cursor: default;
+}
+.ma__slot--on_time { color: var(--gain); }
+.ma__slot--late { color: var(--accent-dim); }
+.ma__slot--turn { color: var(--accent); }
+.ma__slot--missed { color: var(--loss); }
+.ma__slot--pending { color: var(--text-muted); }
+
+.ma__fresh {
+	margin: 0;
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.ma__lifetime {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.35rem 0.6rem;
+}
+.ma__ltlabel {
+	font-size: 0.65rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--text-muted);
+}
+.ma__ltcounts { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; }
+.ma__lt {
+	font-size: 0.72rem;
+	color: var(--text-secondary);
+	white-space: nowrap;
+}
+.ma__lt--missed { color: var(--loss); }
+
+.ma__gates {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.05rem;
+	margin-left: auto;
+}
+.ma__tallymark {
+	font-weight: 700;
+	color: var(--text-primary);
+	font-size: 0.85rem;
+	line-height: 1;
+}
+/* Every fifth mark struck through — the closed gate (IIII̸). A pseudo-element line
+   so the strike is a shape, not a colour. */
+.ma__tallymark--gate {
+	position: relative;
+	margin-right: 0.25rem;
+}
+.ma__tallymark--gate::after {
+	content: '';
+	position: absolute;
+	left: -0.35rem;
+	right: -0.05rem;
+	top: 50%;
+	height: 1px;
+	background: var(--text-primary);
+	transform: rotate(-20deg);
+}
+
 .ma__novotes {
 	margin: 0 0 0.5rem;
 	font-size: 0.78rem;
