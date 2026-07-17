@@ -1,192 +1,42 @@
 services:
-  # ── Wallet transaction sync cron ───────────────────────────────────────────
-  # Fires every Monday at 02:00 UTC.
-  # Re-syncs on-chain transactions for every active onchain wallet across all
-  # tenants. Skips wallets synced within the last 6 days.
+  # ── Close lapsed votes ─────────────────────────────────────────────────────
+  # Resolves circle votes whose window has ended (majority proposals, blackball,
+  # unanimous_no expulsions). Idempotent — the status='open' guard makes a second
+  # run a no-op — and the drill-in also calls closeExpiredVotes opportunistically,
+  # so a lapsed vote still resolves on the next view even if this cron is not
+  # provisioned. Daily is ample for 7–10 day windows.
   #
-  # Required env vars (set in Render dashboard):
-  #   CRON_SECRET        — same value as on your web service
+  # Required env vars (set in the Render dashboard):
+  #   CRON_SECRET        — same value as on the web service
   #   APP_URL            — e.g. https://susufinance.com
   - type: cron
-    name: sync-wallets
+    name: close-votes
     runtime: image
     image:
       url: docker.io/curlimages/curl:latest
-    schedule: "0 2 * * 1"
+    schedule: "0 6 * * *"
     startCommand: >-
-      curl -sf --max-time 1800
+      curl -sf --max-time 300
       -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/sync-wallets"
+      "$APP_URL/api/cron/close-votes"
     envVars:
       - key: CRON_SECRET
         sync: false
       - key: APP_URL
         sync: false
 
-  # ── Aave/DeFi position sync cron ──────────────────────────────────────────
-  # Fires every Monday at 03:00 UTC (1 hour after sync-wallets).
-  # Refreshes Aave health factors and positions for every EVM onchain wallet
-  # across all tenants. Skips wallets synced within the last 6 days.
-  #
-  # Required env vars (set in Render dashboard):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
+  # ── Promo-code expiry ──────────────────────────────────────────────────────
+  # Sweeps expired promo codes. Same env vars as above.
   - type: cron
-    name: sync-aave
+    name: promo-expiry
     runtime: image
     image:
       url: docker.io/curlimages/curl:latest
-    schedule: "0 3 * * 1"
+    schedule: "0 7 * * *"
     startCommand: >-
-      curl -sf --max-time 1800
+      curl -sf --max-time 300
       -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/sync-aave"
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-      - key: APP_URL
-        sync: false
-
-  # ── Bitcoin balance & transaction sync cron ───────────────────────────────
-  # Fires every Monday at 04:00 UTC (1 hour after sync-aave).
-  # Re-syncs BTC transactions and balance snapshots for every Bitcoin wallet
-  # across all tenants via Blockstream. Skips wallets synced within 6 days.
-  #
-  # Required env vars (set in Render dashboard):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
-  - type: cron
-    name: sync-btc
-    runtime: image
-    image:
-      url: docker.io/curlimages/curl:latest
-    schedule: "0 4 * * 1"
-    startCommand: >-
-      curl -sf --max-time 1800
-      -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/sync-btc"
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-      - key: APP_URL
-        sync: false
-
-  # ── Solana transaction sync cron ──────────────────────────────────────────
-  # Fires every Monday at 05:00 UTC (1 hour after sync-btc).
-  # Re-syncs Solana transactions for every Solana wallet across all tenants.
-  # Skips wallets synced within 6 days. Requires SOLANA_RPC_URL on the web service.
-  #
-  # Required env vars (set in Render dashboard):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
-  - type: cron
-    name: sync-solana
-    runtime: image
-    image:
-      url: docker.io/curlimages/curl:latest
-    schedule: "0 5 * * 1"
-    startCommand: >-
-      curl -sf --max-time 1800
-      -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/sync-solana"
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-      - key: APP_URL
-        sync: false
-
-  # ── Monthly digest cron ────────────────────────────────────────────────────
-  # Fires at 06:00 UTC on the 1st of every month.
-  # Queries the prior month's flagged transactions and writes a monthly_digests
-  # row per tenant.  The vault pill appears when item_count > 0.
-  #
-  # Required env vars (set in Render dashboard):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
-  - type: cron
-    name: monthly-digest
-    runtime: image
-    image:
-      url: docker.io/curlimages/curl:latest
-    schedule: "0 6 1 * *"
-    startCommand: >-
-      curl -sf
-      -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/monthly-digest"
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-      - key: APP_URL
-        sync: false
-
-  # ── PetroTins bill reminder cron ───────────────────────────────────────────
-  # Runs on the 25th of every month at 09:00 UTC.
-  # Emails any tenant whose budget register has unchecked entries for the month.
-  #
-  # Required env vars (set in Render dashboard — not inherited from web service):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
-  - type: cron
-    name: petro-tins-reminder
-    runtime: image
-    image:
-      url: docker.io/curlimages/curl:latest
-    schedule: "0 9 25 * *"
-    startCommand: >-
-      curl -sf
-      -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/petro-tins-reminder"
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-      - key: APP_URL
-        sync: false
-
-  # ── Almstins Verify monitor cron (the watchman) ────────────────────────────
-  # Runs every 6 hours (00:30, 06:30, 12:30, 18:30 UTC). More frequent than the
-  # weekly syncs on purpose: it keeps the public "Verified publisher" mirror fresh
-  # well inside the 24h max-stale TTL (so the badge never goes stale-but-shown),
-  # re-validates merchant .well-known proofs for swaps, and emails owners on a
-  # revocation or a proof change. Safe no-op while no entity/merchant is onboarded.
-  #
-  # Required env vars (set in Render dashboard — not inherited from web service):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
-  - type: cron
-    name: verify-monitor
-    runtime: image
-    image:
-      url: docker.io/curlimages/curl:latest
-    schedule: "30 */6 * * *"
-    startCommand: >-
-      curl -sf --max-time 1800
-      -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/verify-monitor"
-    envVars:
-      - key: CRON_SECRET
-        sync: false
-      - key: APP_URL
-        sync: false
-
-  # ── Onboarding email drip cron ─────────────────────────────────────────────
-  # Hourly. Enrolls newly-SIGNED-UP users (auth_users.created_at) and sends the next due
-  # email in the 4-step welcome series (day 0 / 2 / 5 / 10) via Resend — hourly so the
-  # welcome (day 0) lands within ~an hour of signup, not a day later. Unsubscribe-aware;
-  # one step per user per run. Safe no-op if RESEND_API_KEY isn't set or nobody is due.
-  #
-  # Required env vars (set in Render dashboard — not inherited from web service):
-  #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://susufinance.com
-  - type: cron
-    name: onboarding-drip
-    runtime: image
-    image:
-      url: docker.io/curlimages/curl:latest
-    schedule: "0 * * * *"
-    startCommand: >-
-      curl -sf --max-time 1800
-      -H "x-cron-secret: $CRON_SECRET"
-      "$APP_URL/api/cron/onboarding-drip"
+      "$APP_URL/api/cron/promo-expiry"
     envVars:
       - key: CRON_SECRET
         sync: false

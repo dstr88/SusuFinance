@@ -36,9 +36,6 @@ export function isPublicPath(pathname: string): boolean {
 		// Privacy Policy + Terms of Service — public, crawlable canonical URLs
 		pathname === '/privacy' ||
 		pathname === '/terms' ||
-		// Pricing — public marketing page (EN + /prices/es + /prices/fr)
-		pathname === '/prices' ||
-		pathname.startsWith('/prices/') ||
 		// Changelog — public "What's new" page, linked from the login/marketing page
 		pathname === '/changelog' ||
 		pathname === '/signup' ||
@@ -48,19 +45,6 @@ export function isPublicPath(pathname: string): boolean {
 		// Geo-bypass cookie setter — public (validates its own secret) and must be
 		// reachable without a session, since it is how a blocked visitor gets in.
 		pathname === '/api/geo/allow' ||
-		pathname === '/wallet' ||
-		pathname.startsWith('/wallet/') ||
-		pathname === '/wallet-checker' ||
-		pathname.startsWith('/wallet-checker/') ||
-		// Community ratings — GET is a public aggregate shown on the wallet-checker.
-		// POST/DELETE self-enforce requireTenantSession (+ paid plan), so exposing
-		// the path is safe; the write methods stay gated inside the handler.
-		pathname === '/api/community-rating' ||
-		// SusuFinance Verify — public merchant landing (canonical /verify; /verify/es, /verify/fr;
-		// /marchand is the Francophone-Africa promo URL that redirects to /verify/fr)
-		pathname === '/verify' ||
-		pathname.startsWith('/verify/') ||
-		pathname === '/marchand' ||
 		// All @auth/core routes — callbacks, CSRF, providers, sessions, etc.
 		pathname === '/api/auth' ||
 		pathname.startsWith('/api/auth/') ||
@@ -69,26 +53,8 @@ export function isPublicPath(pathname: string): boolean {
 		// Demo mode — set/clear cookie without requiring an auth session
 		pathname === '/api/demo/start' ||
 		pathname === '/api/demo/end' ||
-		// PetroTins standalone login page — must be reachable without a session
-		pathname === '/petro-tins' ||
-		// PetroTins demo — clears session cookie then starts demo, no auth needed
-		pathname === '/api/petro-tins/demo' ||
-		// PetroTins docs — public documentation page
-		pathname === '/petro-tins/docs' ||
-		// PetroTins legal pages — public Terms & Privacy
-		pathname === '/petro-tins/terms' ||
-		pathname === '/petro-tins/privacy' ||
-		// Wallet + dApp safety checkers — public APIs backing the wallet-checker page
-		pathname === '/api/wallet-check' ||
-		pathname === '/api/dapp-check' ||
-		// Verified-publisher lookup — public, login-free; address → publishing domain
-		// (reads the global mirror, never exposes tenant_id/identity)
-		pathname === '/api/verify/lookup' ||
 		// Record-proof signing public key — published so anyone can verify a record proof
 		pathname === '/.well-known/susufinance-signing-key.json' ||
-		// Public record verification — verify a proof bundle without an account
-		pathname === '/verify-record' ||
-		pathname === '/api/verify-record' ||
 		// Deploy probe — public so the live commit SHA can be verified with one curl
 		// (no session). Returns only RENDER_GIT_COMMIT/branch/engine, no secrets.
 		pathname === '/api/version' ||

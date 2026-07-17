@@ -82,13 +82,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 		logEnvStatus();
 		const requestHost = request.headers.get('x-forwarded-host') ?? url.host;
-		const TRADFI_HOSTS = new Set(['tradifitins.com', 'www.tradifitins.com']);
 		const canonicalHost = (() => {
-			// TradfiTins uses its own domain for redirects
-			if (TRADFI_HOSTS.has(requestHost)) {
-				return 'tradifitins.com';
-			}
-			// All other domains use AUTH_URL
+			// Canonical host comes from AUTH_URL.
 			const authUrl = process.env.AUTH_URL ?? '';
 			if (!authUrl) return requestHost;
 			try {
@@ -154,16 +149,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
 			);
 		}
 
-		// TradfiTins secondary domain — enforce HTTPS and root redirect, then fall through to normal auth
-		if (TRADFI_HOSTS.has(requestHost)) {
-			if (!isDev && request.headers.get('x-forwarded-proto') === 'http') {
-				return finish(new Response(null, { status: 301, headers: { Location: `https://tradifitins.com${url.pathname}${url.search}` } }));
-			}
-			if (pathname === '/' || pathname === '') {
-				return finish(Response.redirect('https://tradifitins.com/petro-tins', 303));
-			}
-			// Fall through to normal auth middleware — login redirects will use susufinance.com
-		}
 
 		if (!isDev && request.headers.get('x-forwarded-proto') === 'http') {
 			return finish(
@@ -249,10 +234,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
 						}),
 					),
 				);
-			}
-			// PetroTins dashboard → PetroTins login page
-			if (pathname.startsWith('/dashboard/petro-tins')) {
-				return finish(Response.redirect(`https://${canonicalHost}/petro-tins`, 303));
 			}
 			// Preserve the intended destination so sign-in returns there (login.astro
 			// sanitizes `next` to an internal path). Otherwise everyone lands on the
