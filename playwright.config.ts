@@ -3,8 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * Almstins E2E test config.
  *
- * Local:  BASE_URL defaults to https://almstins.com (override for localhost)
- * CI/CD:  BASE_URL=https://almstins.com (GitHub Actions secret E2E_BASE_URL)
+ * Local:  BASE_URL defaults to https://susufinance.com (override for localhost)
+ * CI/CD:  BASE_URL=https://susufinance.com (GitHub Actions secret E2E_BASE_URL)
  *
  * Auth credentials (for authenticated tests):
  *   E2E_EMAIL / E2E_PASSWORD — set in .env or GitHub Actions secrets.
@@ -23,7 +23,7 @@ export default defineConfig({
 	workers: 1,
 	reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
 	use: {
-		baseURL: process.env.BASE_URL ?? process.env.E2E_BASE_URL ?? 'https://almstins.com',
+		baseURL: process.env.BASE_URL ?? process.env.E2E_BASE_URL ?? 'https://susufinance.com',
 		trace: 'on-first-retry',
 		screenshot: 'only-on-failure',
 		video: 'on-first-retry',

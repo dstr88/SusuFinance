@@ -5,14 +5,14 @@
  * uses, to verify the nodemailer 9 upgrade sends cleanly against real SMTP.
  *
  * Run where the SMTP env is present (Render shell, or locally with the vars set):
- *   EMAIL_SERVER='smtp://user:pass@host:587' EMAIL_FROM='Almstins <no-reply@almstins.com>' \
+ *   EMAIL_SERVER='smtp://user:pass@host:587' EMAIL_FROM='SusuFinance <no-reply@susufinance.com>' \
  *   node scripts/send-test-email.mjs titaniumhut@gmail.com
  */
 import nodemailer from 'nodemailer';
 
 const to = process.argv[2] || 'titaniumhut@gmail.com';
 const EMAIL_SERVER = process.env.EMAIL_SERVER ?? '';
-const EMAIL_FROM = process.env.EMAIL_FROM ?? 'Almstins <no-reply@almstins.com>';
+const EMAIL_FROM = process.env.EMAIL_FROM ?? 'SusuFinance <no-reply@susufinance.com>';
 
 if (!EMAIL_SERVER) {
   console.error('EMAIL_SERVER is not set — cannot send.');

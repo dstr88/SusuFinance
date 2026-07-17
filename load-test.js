@@ -4,7 +4,7 @@
 // Run:        k6 run load-test.js
 //
 // Before running the authenticated scenario:
-//   1. Log into almstins.com in your browser
+//   1. Log into susufinance.com in your browser
 //   2. Open DevTools → Application → Cookies
 //   3. Copy the value of the session cookie (usually named "next-auth.session-token" or similar)
 //   4. Paste it into SESSION_COOKIE below
@@ -15,7 +15,7 @@ import { Trend, Rate } from 'k6/metrics';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const BASE_URL = 'https://almstins.com';
+const BASE_URL = 'https://susufinance.com';
 
 // Provide your session cookie via env for authenticated tests:
 //   k6 run -e SESSION_COOKIE=<value> load-test.js

@@ -1,6 +1,6 @@
 // Standalone OFFLINE verifier for an Almstins record proof bundle.
 // Re-implements the verification logic inline (mirrors src/lib/recordProof/*) so an
-// auditor can verify WITHOUT trusting almstins.com — only deps are @noble + canonicalize.
+// auditor can verify WITHOUT trusting susufinance.com — only deps are @noble + canonicalize.
 //
 //   node scripts/verify-record.mjs <proof.json> [--pubkey <hex> | --well-known <url>]
 //

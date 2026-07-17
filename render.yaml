@@ -6,7 +6,7 @@ services:
   #
   # Required env vars (set in Render dashboard):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: sync-wallets
     runtime: image
@@ -30,7 +30,7 @@ services:
   #
   # Required env vars (set in Render dashboard):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: sync-aave
     runtime: image
@@ -54,7 +54,7 @@ services:
   #
   # Required env vars (set in Render dashboard):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: sync-btc
     runtime: image
@@ -78,7 +78,7 @@ services:
   #
   # Required env vars (set in Render dashboard):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: sync-solana
     runtime: image
@@ -102,7 +102,7 @@ services:
   #
   # Required env vars (set in Render dashboard):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: monthly-digest
     runtime: image
@@ -125,7 +125,7 @@ services:
   #
   # Required env vars (set in Render dashboard — not inherited from web service):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: petro-tins-reminder
     runtime: image
@@ -151,7 +151,7 @@ services:
   #
   # Required env vars (set in Render dashboard — not inherited from web service):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: verify-monitor
     runtime: image
@@ -176,7 +176,7 @@ services:
   #
   # Required env vars (set in Render dashboard — not inherited from web service):
   #   CRON_SECRET        — same value as on your web service
-  #   APP_URL            — e.g. https://almstins.com
+  #   APP_URL            — e.g. https://susufinance.com
   - type: cron
     name: onboarding-drip
     runtime: image

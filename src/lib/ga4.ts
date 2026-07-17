@@ -7,14 +7,16 @@
  * Required env vars:
  *   GA4_PROPERTY_ID  — numeric property ID (e.g. "123456789")
  *   GA4_PRIVATE_KEY  — service account private key (PEM, \n-escaped)
- *   GA4_CLIENT_EMAIL — service account email (optional, falls back to constant)
+ *   GA4_CLIENT_EMAIL — service account email (required when GA is enabled)
  */
 
 import { createSign } from 'crypto';
 
 const PROPERTY_ID  = process.env.GA4_PROPERTY_ID  ?? '';
 const PRIVATE_KEY  = (process.env.GA4_PRIVATE_KEY  ?? '').replace(/\\n/g, '\n');
-const CLIENT_EMAIL = process.env.GA4_CLIENT_EMAIL  ?? 'almstins-analytics@almstins.iam.gserviceaccount.com';
+// No baked-in default: GA is inert without GA4_PRIVATE_KEY anyway (see the guard
+// below), and a hardcoded service-account address only leaks it into a public repo.
+const CLIENT_EMAIL = process.env.GA4_CLIENT_EMAIL  ?? '';
 
 // ── Token cache (valid 55 min, re-fetch before the 60-min expiry) ─────────────
 let _token: string | null = null;
