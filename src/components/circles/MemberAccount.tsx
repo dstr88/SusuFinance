@@ -56,9 +56,8 @@ export default function MemberAccount({ lang, initial }: Props) {
 	const [addrSaving, setAddrSaving] = useState(false);
 	const [addrErr, setAddrErr] = useState<string | null>(null);
 
-	// Self-send verification. `verifyOpen` reveals the instructions; `verifyMsg` shows
-	// the last result (not-found / unsupported / error).
-	const [verifyOpen, setVerifyOpen] = useState(false);
+	// Verification against Almstins Verify. One tap re-checks; `verifyMsg` shows the
+	// "not proven yet" result.
 	const [verifyBusy, setVerifyBusy] = useState(false);
 	const [verifyMsg, setVerifyMsg] = useState<string | null>(null);
 
@@ -153,18 +152,10 @@ export default function MemberAccount({ lang, initial }: Props) {
 		try {
 			const res = await fetch('/api/me/address/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
 			const data = await res.json().catch(() => ({}));
-			if (data?.ok && data?.verified) {
-				setVerifyOpen(false);
-				await refetch(); // badge flips to verified
-			} else if (data?.reason === 'unsupported') {
-				setVerifyMsg(t.me.address.verify.unsupported);
-			} else if (data?.reason === 'not_found') {
-				setVerifyMsg(t.me.address.verify.notFound);
-			} else {
-				setVerifyMsg(t.me.address.verify.unavailable);
-			}
+			if (data?.ok && data?.verified) await refetch(); // badge flips to verified
+			else setVerifyMsg(t.me.address.verify.notFound);
 		} catch {
-			setVerifyMsg(t.me.address.verify.unavailable);
+			setVerifyMsg(t.me.address.verify.notFound);
 		} finally {
 			setVerifyBusy(false);
 		}
@@ -206,21 +197,13 @@ export default function MemberAccount({ lang, initial }: Props) {
 								<span className={`ma__addrstatus ${member.addressVerified ? 'ma__addrstatus--ok' : ''}`}>
 									{member.addressVerified ? t.me.address.verified : t.me.address.unverified}
 								</span>
-								{!member.addressVerified && !verifyOpen && (
-									<button type="button" className="ma__addrverifybtn" onClick={() => { setVerifyMsg(null); setVerifyOpen(true); }}>
-										{t.me.address.verify.cta}
+								{!member.addressVerified && (
+									<button type="button" className="ma__addrverifybtn" disabled={verifyBusy} onClick={checkVerify}>
+										{verifyBusy ? t.me.address.verify.checking : t.me.address.verify.cta}
 									</button>
 								)}
 							</div>
-							{!member.addressVerified && verifyOpen && (
-								<div className="ma__addrverifypanel">
-									<p className="ma__addrverifyhow">{t.me.address.verify.how}</p>
-									<button type="button" className="ma__addrverifycheck" disabled={verifyBusy} onClick={checkVerify}>
-										{verifyBusy ? t.me.address.verify.checking : t.me.address.verify.check}
-									</button>
-									{verifyMsg && <p className="ma__addrverifymsg">{verifyMsg}</p>}
-								</div>
-							)}
+							{!member.addressVerified && verifyMsg && <p className="ma__addrverifymsg">{verifyMsg}</p>}
 						</>
 					) : (
 						<>

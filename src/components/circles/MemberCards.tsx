@@ -135,7 +135,6 @@ function PayoutAddressEditor({ memberId, current, verified, t, onChanged }: {
 	const [draft, setDraft] = useState(current ?? '');
 	const [saving, setSaving] = useState(false);
 	const [err, setErr] = useState<string | null>(null);
-	const [verifyOpen, setVerifyOpen] = useState(false);
 	const [verifyBusy, setVerifyBusy] = useState(false);
 	const [verifyMsg, setVerifyMsg] = useState<string | null>(null);
 
@@ -161,11 +160,9 @@ function PayoutAddressEditor({ memberId, current, verified, t, onChanged }: {
 				body: JSON.stringify({ memberId }),
 			});
 			const j = await res.json().catch(() => ({}));
-			if (j?.ok && j?.verified) { setVerifyOpen(false); onChanged(); }
-			else if (j?.reason === 'unsupported') setVerifyMsg(a.unsupported);
-			else if (j?.reason === 'not_found') setVerifyMsg(a.notFound);
-			else setVerifyMsg(a.unavailable);
-		} catch { setVerifyMsg(a.unavailable); } finally { setVerifyBusy(false); }
+			if (j?.ok && j?.verified) onChanged();
+			else setVerifyMsg(a.notFound);
+		} catch { setVerifyMsg(a.notFound); } finally { setVerifyBusy(false); }
 	}
 
 	return (
@@ -188,16 +185,10 @@ function PayoutAddressEditor({ memberId, current, verified, t, onChanged }: {
 				</div>
 			)}
 			{err && <span className="mc-addr__err">{err}</span>}
-			{current && !editing && !verified && !verifyOpen && (
-				<button type="button" className="mc-addr__verifybtn" onClick={() => { setVerifyMsg(null); setVerifyOpen(true); }}>{a.verify}</button>
+			{current && !editing && !verified && (
+				<button type="button" className="mc-addr__verifybtn" disabled={verifyBusy} onClick={check}>{verifyBusy ? a.checking : a.verify}</button>
 			)}
-			{current && !editing && !verified && verifyOpen && (
-				<div className="mc-addr__verify">
-					<p className="mc-addr__how">{a.how}</p>
-					<button type="button" className="mc-addr__check" disabled={verifyBusy} onClick={check}>{verifyBusy ? a.checking : a.verify}</button>
-					{verifyMsg && <p className="mc-addr__msg">{verifyMsg}</p>}
-				</div>
-			)}
+			{current && !editing && !verified && verifyMsg && <p className="mc-addr__msg">{verifyMsg}</p>}
 		</div>
 	);
 }

@@ -184,15 +184,12 @@ export interface CirclesLocale {
 			badAddress: string;
 			taken: string;
 			genericErr: string;
-			/** Self-send proof of control (SusuData §3). */
+			/** Confirmed against Almstins Verify (its own product; every member is a
+			 *  customer). SusuFinance holds no verification machinery of its own. */
 			verify: {
 				cta: string;
-				how: string;
-				check: string;
 				checking: string;
 				notFound: string;
-				unsupported: string;
-				unavailable: string;
 			};
 		};
 		/** The signed, printable record card — the artifact she carries to a lender. */
@@ -288,10 +285,7 @@ export interface CirclesLocale {
 			err: string;
 			verify: string;
 			checking: string;
-			how: string;
 			notFound: string;
-			unsupported: string;
-			unavailable: string;
 		};
 	};
 }
@@ -409,11 +403,8 @@ const EN: CirclesLocale = {
 			taken: 'That address is already used by another member.',
 			err: 'Could not save. Try again.',
 			verify: 'Verify',
-			checking: 'Checking the chain…',
-			how: 'Ask her to send a tiny amount from her wallet to itself, then verify.',
-			notFound: 'No self-send seen yet. She sends a tiny amount to her own address, then verify again.',
-			unsupported: 'Verification works for Ethereum-style (0x) wallets right now.',
-			unavailable: 'Verification is not available right now — try again later.',
+			checking: 'Checking with Verify…',
+			notFound: 'Not proven with Verify yet. She proves her wallet with Verify, then verify again.',
 		},
 	},
 	lobby: {
@@ -485,12 +476,8 @@ const EN: CirclesLocale = {
 			genericErr: 'Could not save. Try again.',
 			verify: {
 				cta: 'Verify',
-				how: 'Send a tiny amount from your wallet to your own address (a self-send). We watch for it on-chain to confirm the wallet is yours — we never touch your funds.',
-				check: 'I sent it — check',
-				checking: 'Checking the chain…',
-				notFound: 'No self-send seen yet. Send a tiny amount from your wallet to itself, then check again.',
-				unsupported: 'Verification works for Ethereum-style (0x) wallets right now.',
-				unavailable: 'Verification is not available right now — try again later.',
+				checking: 'Checking with Verify…',
+				notFound: 'Not proven with Verify yet. Prove your wallet with Verify, then check again.',
 			},
 		},
 		export: {
@@ -666,11 +653,8 @@ const FR: CirclesLocale = {
 			taken: 'Cette adresse est déjà utilisée par une autre membre.',
 			err: 'Enregistrement impossible. Réessayez.',
 			verify: 'Vérifier',
-			checking: 'Vérification sur la chaîne…',
-			how: 'Demandez-lui d’envoyer un petit montant de son portefeuille vers lui-même, puis vérifiez.',
-			notFound: 'Aucun auto-envoi vu. Elle envoie un petit montant vers sa propre adresse, puis vérifiez à nouveau.',
-			unsupported: 'La vérification fonctionne pour les portefeuilles de type Ethereum (0x) pour le moment.',
-			unavailable: 'La vérification n’est pas disponible pour le moment — réessayez plus tard.',
+			checking: 'Vérification avec Verify…',
+			notFound: 'Pas encore prouvé avec Verify. Elle prouve son portefeuille avec Verify, puis vérifiez à nouveau.',
 		},
 	},
 	lobby: {
@@ -741,12 +725,8 @@ const FR: CirclesLocale = {
 			genericErr: 'Enregistrement impossible. Réessayez.',
 			verify: {
 				cta: 'Vérifier',
-				how: 'Envoyez un tout petit montant de votre portefeuille vers votre propre adresse (un auto-envoi). Nous l’observons sur la chaîne pour confirmer que le portefeuille est le vôtre — nous ne touchons jamais à vos fonds.',
-				check: 'C’est envoyé — vérifier',
-				checking: 'Vérification sur la chaîne…',
-				notFound: 'Aucun auto-envoi vu pour l’instant. Envoyez un petit montant de votre portefeuille vers lui-même, puis réessayez.',
-				unsupported: 'La vérification fonctionne pour les portefeuilles de type Ethereum (0x) pour le moment.',
-				unavailable: 'La vérification n’est pas disponible pour le moment — réessayez plus tard.',
+				checking: 'Vérification avec Verify…',
+				notFound: 'Pas encore prouvé avec Verify. Prouvez votre portefeuille avec Verify, puis réessayez.',
 			},
 		},
 		export: {
@@ -948,12 +928,8 @@ const ES: CirclesLocale = {
 			genericErr: 'No se pudo guardar. Inténtalo de nuevo.',
 			verify: {
 				cta: 'Verificar',
-				how: 'Envía una cantidad mínima desde tu billetera a tu propia dirección (un auto-envío). Lo observamos en la cadena para confirmar que la billetera es tuya — nunca tocamos tus fondos.',
-				check: 'Ya lo envié — verificar',
-				checking: 'Consultando la cadena…',
-				notFound: 'Aún no vemos un auto-envío. Envía una cantidad mínima de tu billetera a sí misma y verifica de nuevo.',
-				unsupported: 'La verificación funciona con billeteras tipo Ethereum (0x) por ahora.',
-				unavailable: 'La verificación no está disponible ahora — inténtalo más tarde.',
+				checking: 'Consultando con Verify…',
+				notFound: 'Aún no está probada con Verify. Prueba tu billetera con Verify y verifica de nuevo.',
 			},
 		},
 		export: {
@@ -1015,11 +991,8 @@ const ES: CirclesLocale = {
 			taken: 'Esa dirección ya la usa otra integrante.',
 			err: 'No se pudo guardar. Inténtalo de nuevo.',
 			verify: 'Verificar',
-			checking: 'Consultando la cadena…',
-			how: 'Pídele que envíe una cantidad mínima de su billetera a sí misma, luego verifica.',
-			notFound: 'Aún no vemos un auto-envío. Ella envía una cantidad mínima a su propia dirección y verifica de nuevo.',
-			unsupported: 'La verificación funciona con billeteras tipo Ethereum (0x) por ahora.',
-			unavailable: 'La verificación no está disponible ahora — inténtalo más tarde.',
+			checking: 'Consultando con Verify…',
+			notFound: 'Aún no está probada con Verify. Ella prueba su billetera con Verify y verifica de nuevo.',
 		},
 	},
 	stats: {

@@ -1,23 +1,19 @@
 /**
  * POST /api/circles/member-address/verify — operator confirms a member's payout
- * wallet by self-send proof, on her behalf.
+ * wallet against Almstins Verify, on her behalf.
  *
- * She (the seeded member) does the self-send from her own wallet — a real-world
- * on-chain action, no app login required. The operator then triggers the observation.
- * The app watches the chain read-only; it never sends, receives, or holds. Owner/admin
- * only, scoped to his own tenant.
+ * Verification lives in Verify (its own product; every member is a customer). This
+ * asks Verify's public lookup whether her address is proven and reflects the answer.
+ * No chain read, no custody. Owner/admin only, scoped to his own tenant.
  */
 
 import type { APIRoute } from 'astro';
 import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
 import { getAuthSession } from '@/lib/authSession';
-import { checkSelfSend } from '@/lib/circles/selfSendVerify';
 import { checkAlmstinsVerify } from '@/lib/circles/almstinsVerify';
 
 export const prerender = false;
-
-const WINDOW_SECONDS = 6 * 60 * 60;
 
 async function requireOperator(request: Request) {
 	const session = await requireTenantSession(request);
@@ -53,26 +49,15 @@ export const POST: APIRoute = async ({ request }) => {
 		const address = (meRes.rows[0] as any).payout_address ? String((meRes.rows[0] as any).payout_address) : '';
 		if (!address) return json({ ok: false, error: 'no_address' }, 400);
 
-		const markVerified = () => db.execute({
-			sql: `UPDATE members SET address_verified_at = now(), updated_at = now()
-			       WHERE tenant_id = ? AND id = ?`,
-			args: [gate.tenantId, memberId],
-		});
-
-		// Path 1 — already proven with Almstins Verify.
 		if (await checkAlmstinsVerify(address)) {
-			await markVerified();
-			return json({ ok: true, verified: true, via: 'almstins_verify' });
+			await db.execute({
+				sql: `UPDATE members SET address_verified_at = now(), updated_at = now()
+				       WHERE tenant_id = ? AND id = ?`,
+				args: [gate.tenantId, memberId],
+			});
+			return json({ ok: true, verified: true });
 		}
-
-		// Path 2 — a fresh self-send.
-		const result = await checkSelfSend(address, Math.floor(Date.now() / 1000) - WINDOW_SECONDS);
-		if (result.status === 'verified') {
-			await markVerified();
-			return json({ ok: true, verified: true, via: 'self_send', chain: result.chain });
-		}
-		if (result.status === 'unavailable') return json({ ok: false, error: 'unavailable' }, 503);
-		return json({ ok: true, verified: false, reason: result.status });
+		return json({ ok: true, verified: false, reason: 'not_in_verify' });
 	} catch (err) {
 		console.error('[api/circles/member-address/verify] failed', err);
 		return json({ ok: false, error: 'verify_failed' }, 500);
