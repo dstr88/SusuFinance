@@ -23,8 +23,13 @@ import type { SusuCard } from '@/lib/circles/susuCard';
 import { SLOT_GLYPH } from '@/lib/circles/slotGlyph';
 import './MemberAccount.css';
 
+interface MemberInfo {
+	displayName: string | null;
+	payoutAddress: string | null;
+	addressVerified: boolean;
+}
 interface InitialAccount {
-	member: { displayName: string | null } | null;
+	member: MemberInfo | null;
 	circles: MemberCircle[];
 }
 
@@ -44,6 +49,12 @@ export default function MemberAccount({ lang, initial }: Props) {
 	const [proposing, setProposing] = useState<Record<string, boolean>>({});
 	const [proposed, setProposed] = useState<Record<string, boolean>>({});
 	const [err, setErr] = useState<string | null>(null);
+
+	// Payout-address entry. `addrEditing` opens the field; `addrDraft` is what she types.
+	const [addrEditing, setAddrEditing] = useState(false);
+	const [addrDraft, setAddrDraft] = useState('');
+	const [addrSaving, setAddrSaving] = useState(false);
+	const [addrErr, setAddrErr] = useState<string | null>(null);
 
 	const refetch = useCallback(async () => {
 		try {
@@ -102,6 +113,34 @@ export default function MemberAccount({ lang, initial }: Props) {
 		}
 	}, [drafts, refetch, t]);
 
+	const saveAddress = useCallback(async () => {
+		const address = addrDraft.trim();
+		setAddrErr(null);
+		setAddrSaving(true);
+		try {
+			const res = await fetch('/api/me/address', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ address }),
+			});
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok || !data?.ok) {
+				setAddrErr(
+					data?.error === 'bad_address' ? t.me.address.badAddress
+						: data?.error === 'address_taken' ? t.me.address.taken
+							: t.me.address.genericErr,
+				);
+			} else {
+				setAddrEditing(false);
+				await refetch();
+			}
+		} catch {
+			setAddrErr(t.me.address.genericErr);
+		} finally {
+			setAddrSaving(false);
+		}
+	}, [addrDraft, refetch, t]);
+
 	// Not a member of any programme (an operator, or someone not yet joined). Her home
 	// is not for them — render nothing.
 	if (!member) return null;
@@ -118,6 +157,55 @@ export default function MemberAccount({ lang, initial }: Props) {
 
 			<div className="ma__panel" role="dialog" aria-label={t.me.heading}>
 				<p className="ma__name">{label}</p>
+
+				{/* Her payout wallet — where her turn pays. She sets it; the app never
+				    holds it. Verification (self-send) is deferred, so it reads
+				    "not yet verified" until that is rebuilt. */}
+				<section className="ma__addr">
+					<span className="ma__addrlabel">{t.me.address.label}</span>
+					{member.payoutAddress && !addrEditing ? (
+						<>
+							<div className="ma__addrrow">
+								<code className="ma__addrval" title={member.payoutAddress}>{member.payoutAddress}</code>
+								<button
+									type="button"
+									className="ma__addredit"
+									onClick={() => { setAddrDraft(member.payoutAddress ?? ''); setAddrErr(null); setAddrEditing(true); }}
+								>{t.me.address.edit}</button>
+							</div>
+							<span className={`ma__addrstatus ${member.addressVerified ? 'ma__addrstatus--ok' : ''}`}>
+								{member.addressVerified ? t.me.address.verified : t.me.address.unverified}
+							</span>
+						</>
+					) : (
+						<>
+							<div className="ma__addrrow">
+								<input
+									className="ma__addrinput"
+									type="text"
+									inputMode="text"
+									autoCapitalize="none"
+									autoCorrect="off"
+									spellCheck={false}
+									placeholder={t.me.address.placeholder}
+									value={addrDraft}
+									disabled={addrSaving}
+									onChange={(e) => setAddrDraft(e.target.value)}
+									onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); saveAddress(); } }}
+								/>
+								<button
+									type="button"
+									className="ma__addrsave"
+									disabled={addrSaving}
+									onClick={saveAddress}
+								>{addrSaving ? t.me.address.saving : t.me.address.save}</button>
+							</div>
+							{!member.payoutAddress && !addrErr && <span className="ma__addrhint">{t.me.address.notSet}</span>}
+						</>
+					)}
+					<span className="ma__addrhint">{t.me.address.hint}</span>
+					{addrErr && <span className="ma__addrerr">{addrErr}</span>}
+				</section>
 
 				{circles.length === 0 ? (
 					<div className="ma__empty">

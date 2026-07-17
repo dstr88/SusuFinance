@@ -72,6 +72,77 @@
 	color: var(--text-primary);
 }
 
+/* ── payout wallet ──────────────────────────────────────────────────────────── */
+.ma__addr {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	margin: 0 0 0.85rem;
+	padding: 0 0 0.85rem;
+	border-bottom: 1px solid var(--border-subtle);
+}
+.ma__addrlabel {
+	font-size: 0.68rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--text-muted);
+}
+.ma__addrrow { display: flex; align-items: center; gap: 0.4rem; }
+.ma__addrval {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.8rem;
+	color: var(--text-primary);
+	background: var(--surface-card-2);
+	padding: 0.35rem 0.5rem;
+	border-radius: 0.4rem;
+}
+.ma__addredit {
+	flex: 0 0 auto;
+	padding: 0.35rem 0.7rem;
+	border: 1px solid var(--border-bright);
+	border-radius: 0.4rem;
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: 0.75rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.ma__addredit:hover { background: var(--surface-hover); color: var(--text-primary); }
+.ma__addrinput {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 0.4rem 0.55rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 0.4rem;
+	background: var(--surface-card-2);
+	color: var(--text-primary);
+	font-size: 0.8rem;
+	font-family: inherit;
+}
+.ma__addrinput::placeholder { color: var(--text-muted); }
+.ma__addrinput:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ma__addrsave {
+	flex: 0 0 auto;
+	padding: 0.4rem 0.8rem;
+	border: none;
+	border-radius: 0.4rem;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.78rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.ma__addrsave:disabled { opacity: 0.5; cursor: default; }
+.ma__addrstatus { font-size: 0.72rem; color: var(--text-muted); }
+.ma__addrstatus--ok { color: var(--gain); }
+.ma__addrhint { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+.ma__addrerr { font-size: 0.75rem; color: var(--loss); }
+
 .ma__empty { text-align: center; padding: 0.5rem 0 0.25rem; }
 .ma__emptytext { margin: 0 0 0.75rem; font-size: 0.85rem; color: var(--text-secondary); }
 .ma__join {

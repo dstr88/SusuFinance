@@ -98,7 +98,7 @@ const [bgSmall, bgLarge] = await Promise.all([
       <MemberAccount
         client:load
         lang={lang}
-        initial={{ member: { displayName: memberAccount.displayName }, circles: memberAccount.circles }}
+        initial={{ member: { displayName: memberAccount.displayName, payoutAddress: memberAccount.payoutAddress, addressVerified: memberAccount.addressVerified }, circles: memberAccount.circles }}
       />
     )}
 

@@ -170,6 +170,21 @@ export interface CirclesLocale {
 			/** Link in the modal that opens her printable, signed record card. */
 			open: string;
 		};
+		/** Her payout wallet — where her turn pays. She sets it; the app never holds it. */
+		address: {
+			label: string;
+			hint: string;
+			placeholder: string;
+			notSet: string;
+			save: string;
+			saving: string;
+			edit: string;
+			verified: string;
+			unverified: string;
+			badAddress: string;
+			taken: string;
+			genericErr: string;
+		};
 		/** The signed, printable record card — the artifact she carries to a lender. */
 		export: {
 			pageTitle: string;
@@ -410,6 +425,20 @@ const EN: CirclesLocale = {
 			fresh: 'Your first cycle is under way — no marks yet.',
 			open: 'My record card →',
 		},
+		address: {
+			label: 'Your payout wallet',
+			hint: 'Where your turn pays. Your own wallet — SusuFinance never holds it.',
+			placeholder: 'Paste your wallet address',
+			notSet: 'No wallet set yet — add one so your turn can pay you.',
+			save: 'Save',
+			saving: 'Saving…',
+			edit: 'Edit',
+			verified: 'verified ✓',
+			unverified: 'not yet verified',
+			badAddress: 'That does not look like a wallet address.',
+			taken: 'That address is already used by another member.',
+			genericErr: 'Could not save. Try again.',
+		},
 		export: {
 			pageTitle: 'My record card',
 			heading: 'Susu record',
@@ -626,6 +655,20 @@ const FR: CirclesLocale = {
 			fresh: 'Votre premier cycle est en cours — pas encore de marques.',
 			open: 'Ma carte de record →',
 		},
+		address: {
+			label: 'Votre portefeuille de versement',
+			hint: 'Là où votre tour vous paie. Votre propre portefeuille — SusuFinance ne le détient jamais.',
+			placeholder: 'Collez votre adresse de portefeuille',
+			notSet: 'Aucun portefeuille — ajoutez-en un pour que votre tour puisse vous payer.',
+			save: 'Enregistrer',
+			saving: 'Enregistrement…',
+			edit: 'Modifier',
+			verified: 'vérifiée ✓',
+			unverified: 'pas encore vérifiée',
+			badAddress: 'Cela ne ressemble pas à une adresse de portefeuille.',
+			taken: 'Cette adresse est déjà utilisée par une autre membre.',
+			genericErr: 'Enregistrement impossible. Réessayez.',
+		},
 		export: {
 			pageTitle: 'Ma carte de record',
 			heading: 'Record susu',
@@ -809,6 +852,20 @@ const ES: CirclesLocale = {
 			cyclesDone: (n) => (n === 1 ? '1 ciclo completado' : `${n} ciclos completados`),
 			fresh: 'Tu primer ciclo está en marcha — todavía sin marcas.',
 			open: 'Mi tarjeta de historial →',
+		},
+		address: {
+			label: 'Tu billetera de pago',
+			hint: 'Donde te paga tu turno. Tu propia billetera — SusuFinance nunca la retiene.',
+			placeholder: 'Pega la dirección de tu billetera',
+			notSet: 'Sin billetera — agrega una para que tu turno pueda pagarte.',
+			save: 'Guardar',
+			saving: 'Guardando…',
+			edit: 'Editar',
+			verified: 'verificada ✓',
+			unverified: 'aún no verificada',
+			badAddress: 'Eso no parece una dirección de billetera.',
+			taken: 'Esa dirección ya la usa otra integrante.',
+			genericErr: 'No se pudo guardar. Inténtalo de nuevo.',
 		},
 		export: {
 			pageTitle: 'Mi tarjeta de historial',

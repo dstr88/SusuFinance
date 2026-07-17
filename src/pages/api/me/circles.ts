@@ -29,7 +29,11 @@ export const GET: APIRoute = async ({ request }) => {
 		if (!account) return json({ ok: true, member: null, circles: [] });
 		return json({
 			ok: true,
-			member: { displayName: account.displayName },
+			member: {
+				displayName: account.displayName,
+				payoutAddress: account.payoutAddress,
+				addressVerified: account.addressVerified,
+			},
 			circles: account.circles,
 		});
 	} catch (err) {

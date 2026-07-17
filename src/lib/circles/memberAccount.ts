@@ -50,6 +50,10 @@ export interface MemberAccount {
 	tenantId: string;
 	memberId: string;
 	displayName: string | null;
+	/** Where her turn pays (== her contribute-from wallet). Null until she sets it. */
+	payoutAddress: string | null;
+	/** Has the address been proven by self-send? False until verification is rebuilt. */
+	addressVerified: boolean;
 	circles: MemberCircle[];
 }
 
@@ -66,7 +70,8 @@ export async function getMemberAccount(userId: string): Promise<MemberAccount | 
 	// members_tenant_user partial-unique guarantees at most one per tenant; in
 	// practice one overall). LIMIT 1 takes it.
 	const meRes = await db.execute({
-		sql: `SELECT id, tenant_id, display_name FROM members WHERE user_id = ? LIMIT 1`,
+		sql: `SELECT id, tenant_id, display_name, payout_address, address_verified_at
+		        FROM members WHERE user_id = ? LIMIT 1`,
 		args: [userId],
 	});
 	if (!meRes.rows.length) return null;
@@ -74,6 +79,8 @@ export async function getMemberAccount(userId: string): Promise<MemberAccount | 
 	const tenantId = String(me.tenant_id);
 	const memberId = String(me.id);
 	const displayName = me.display_name ? String(me.display_name) : null;
+	const payoutAddress = me.payout_address ? String(me.payout_address) : null;
+	const addressVerified = Boolean(me.address_verified_at);
 
 	// Resolve any lapsed votes before we read them, so a closed outcome is not shown
 	// as still open. Non-fatal — the modal loads either way.
@@ -154,5 +161,5 @@ export async function getMemberAccount(userId: string): Promise<MemberAccount | 
 		card: cards.get(String(c.id)) ?? null,
 	}));
 
-	return { tenantId, memberId, displayName, circles };
+	return { tenantId, memberId, displayName, payoutAddress, addressVerified, circles };
 }
