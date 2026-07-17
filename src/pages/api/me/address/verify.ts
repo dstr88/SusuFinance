@@ -14,6 +14,7 @@ import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
 import { getAuthSession } from '@/lib/authSession';
 import { checkSelfSend } from '@/lib/circles/selfSendVerify';
+import { checkAlmstinsVerify } from '@/lib/circles/almstinsVerify';
 
 export const prerender = false;
 
@@ -39,16 +40,25 @@ export const POST: APIRoute = async ({ request }) => {
 		const address = (meRes.rows[0] as any).payout_address ? String((meRes.rows[0] as any).payout_address) : '';
 		if (!address) return json({ ok: false, error: 'no_address' }, 400);
 
+		const markVerified = () => db.execute({
+			sql: `UPDATE members SET address_verified_at = now(), updated_at = now()
+			       WHERE tenant_id = ? AND user_id = ?`,
+			args: [tenantId, userId],
+		});
+
+		// Path 1 — already proven with Almstins Verify (persistent proof, one call).
+		if (await checkAlmstinsVerify(address)) {
+			await markVerified();
+			return json({ ok: true, verified: true, via: 'almstins_verify' });
+		}
+
+		// Path 2 — a fresh self-send observed on-chain.
 		const sinceUnix = Math.floor(Date.now() / 1000) - WINDOW_SECONDS;
 		const result = await checkSelfSend(address, sinceUnix);
 
 		if (result.status === 'verified') {
-			await db.execute({
-				sql: `UPDATE members SET address_verified_at = now(), updated_at = now()
-				       WHERE tenant_id = ? AND user_id = ?`,
-				args: [tenantId, userId],
-			});
-			return json({ ok: true, verified: true, chain: result.chain });
+			await markVerified();
+			return json({ ok: true, verified: true, via: 'self_send', chain: result.chain });
 		}
 		if (result.status === 'unavailable') {
 			return json({ ok: false, error: 'unavailable' }, 503);
