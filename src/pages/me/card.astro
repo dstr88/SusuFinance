@@ -1,0 +1,196 @@
+---
+// /me/card — HER signed susu record, made to carry.
+//
+// The cross-circle artifact (SusuData §4/§5d): every circle's card in one signed
+// document she can show a lender, save as PDF, or hand over on paper. This is the one
+// place her record aggregates across circles — because it is HER disclosing HER OWN
+// record to a party she chose (owner → world, the encouraged direction of the
+// no-attribution line), gated to her own login and no one else's.
+//
+// Print note: rendered in the app's tokens (dark). Ink-friendly light printing would
+// need a light palette that does not exist in the token set — a design decision for
+// Donnie, not one to invent here. "Save as PDF" and showing on her phone both look
+// right as-is; literal paper prints dark.
+import LoginLayout from '../../layouts/LoginLayout.astro';
+import { getAuthSession } from '@/lib/authSession';
+import { getMemberAccount } from '@/lib/circles/memberAccount';
+import { buildCardExport } from '@/lib/circles/cardExport';
+import { SLOT_GLYPH } from '@/lib/circles/slotGlyph';
+import { getCirclesLocale } from '@/i18n/dashboard/circles';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const auth = await getAuthSession(Astro.request).catch(() => null);
+const userId = auth?.user?.id ? String(auth.user.id) : '';
+if (!userId) return Astro.redirect('/login?next=/me/card');
+
+const account = await getMemberAccount(userId);
+// A non-member (operator, or signed-in but not joined) has no record card.
+if (!account) return Astro.redirect('/dashboard/lobby');
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+const t = getCirclesLocale(lang);
+const x = t.me['export'];
+const cl = t.me.card;
+
+const bundle = buildCardExport(account, new Date().toISOString());
+const signed = bundle.signature;
+const loc = lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : 'en-US';
+const fmtDay = (iso: string | null) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString(loc, { year: 'numeric', month: 'short', day: 'numeric' });
+};
+const fmtMonth = (iso: string | null) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString(loc, { year: 'numeric', month: 'short' });
+};
+const verifyUrl = bundle.manifest.verify_url;
+const holder = account.displayName || bundle.manifest.subject.member_tag;
+---
+
+<LoginLayout title={`${x.pageTitle} | SusuFinance`} noindex={true} lang={lang}>
+  <main class="rec">
+    <div class="rec__actions noprint">
+      <a class="rec__btn rec__btn--ghost" href="/dashboard/lobby">{x.back}</a>
+      <div class="rec__actionsright">
+        <a class="rec__btn rec__btn--ghost" href="/api/me/card-export" download>{x.download}</a>
+        <button class="rec__btn" type="button" id="rec-print">{x.print}</button>
+      </div>
+    </div>
+
+    <article class="rec__doc">
+      <header class="rec__head">
+        <h1 class="rec__title">{x.heading}</h1>
+        <p class="rec__holder">{holder}</p>
+        <p class="rec__gen">{x.generatedOn(fmtDay(bundle.manifest.generated_at))}</p>
+      </header>
+
+      {account.circles.length === 0 ? (
+        <p class="rec__empty">{x.empty}</p>
+      ) : (
+        <div class="rec__cards">
+          {account.circles.map((c) => {
+            const card = c.card;
+            const lt = card?.lifetime;
+            const judged = lt ? lt.onTime + lt.late + lt.repaid + lt.missed : 0;
+            return (
+              <section class="rec__card">
+                <div class="rec__cardhead">
+                  <h2 class="rec__cardname">{c.name}</h2>
+                  <span class="rec__kind">{c.type === 'target_group' ? t.kind.targetGroup : t.kind.circle}</span>
+                </div>
+                {card?.joinedAt && <p class="rec__since">{cl.memberSince(fmtMonth(card.joinedAt))}</p>}
+
+                {card && (
+                  <>
+                    <p class="rec__cyclelabel">{card.currentCycle > 1 ? cl.cycleN(card.currentCycle) : cl.thisCycle}</p>
+                    <div class="rec__stars" role="list" aria-label={cl.thisCycle}>
+                      {card.slots.map((s) => (
+                        <span class={`rec__slot rec__slot--${s}`} role="listitem" aria-label={cl.slot[s]} title={cl.slot[s]}>{SLOT_GLYPH[s]}</span>
+                      ))}
+                    </div>
+
+                    {judged === 0 ? (
+                      <p class="rec__fresh">{cl.fresh}</p>
+                    ) : (
+                      <div class="rec__lifetime">
+                        <span class="rec__ltlabel">{cl.lifetime}</span>
+                        {lt!.onTime > 0 && <span class="rec__lt">{lt!.onTime} {cl.onTime}</span>}
+                        {lt!.late > 0 && <span class="rec__lt">{lt!.late} {cl.late}</span>}
+                        {lt!.repaid > 0 && <span class="rec__lt">{lt!.repaid} {cl.repaid}</span>}
+                        {lt!.missed > 0 && <span class="rec__lt rec__lt--missed">{lt!.missed} {cl.missed}</span>}
+                        {lt!.cyclesCompleted > 0 && <span class="rec__lt rec__lt--gates">{cl.cyclesDone(lt!.cyclesCompleted)}</span>}
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
+
+      <footer class="rec__sig">
+        {signed ? (
+          <p class="rec__signed">{x.signedBy(signed.key_id)}</p>
+        ) : (
+          <p class="rec__unsigned">{x.unsigned}</p>
+        )}
+        <p class="rec__verify">{x.verifyAt}<br /><a href={verifyUrl}>{verifyUrl}</a></p>
+        <p class="rec__disclaimer">{x.disclaimer}</p>
+      </footer>
+    </article>
+  </main>
+</LoginLayout>
+
+<script>
+  document.getElementById('rec-print')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .rec { max-width: 780px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  .rec__actions { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .rec__actionsright { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .rec__btn {
+    padding: 0.5rem 1rem; border-radius: 999px; border: none;
+    background: var(--accent); color: var(--surface-bg);
+    font-size: 0.82rem; font-weight: 700; cursor: pointer; text-decoration: none;
+  }
+  .rec__btn--ghost { background: transparent; border: 1px solid var(--border-bright); color: var(--text-secondary); }
+  .rec__btn--ghost:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+  .rec__doc {
+    border: 1px solid var(--border-bright); border-radius: 1rem;
+    background: var(--surface-card); padding: 1.75rem 1.5rem;
+  }
+  .rec__head { text-align: center; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1.5rem; }
+  .rec__title { margin: 0 0 0.35rem; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.01em; }
+  .rec__holder { margin: 0 0 0.25rem; font-size: 1.05rem; font-weight: 600; color: var(--accent); }
+  .rec__gen { margin: 0; font-size: 0.75rem; color: var(--text-muted); }
+
+  .rec__empty { text-align: center; color: var(--text-secondary); font-size: 0.9rem; padding: 1rem 0; }
+  .rec__cards { display: flex; flex-direction: column; gap: 1.25rem; }
+  .rec__card { padding: 1rem 1.1rem; border: 1px solid var(--border-subtle); border-radius: 0.8rem; background: var(--surface-card-2); }
+  .rec__cardhead { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; }
+  .rec__cardname { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+  .rec__kind {
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0.12rem 0.5rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent-dim);
+  }
+  .rec__since { margin: 0 0 0.75rem; font-size: 0.78rem; color: var(--text-muted); }
+  .rec__cyclelabel { margin: 0 0 0.4rem; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent-dim); }
+
+  .rec__stars { display: flex; flex-wrap: wrap; gap: 0.2rem 0.3rem; margin-bottom: 0.75rem; }
+  .rec__slot { font-size: 1.15rem; line-height: 1; width: 1.35rem; text-align: center; }
+  .rec__slot--on_time { color: var(--gain); }
+  .rec__slot--late { color: var(--accent-dim); }
+  .rec__slot--turn { color: var(--accent); }
+  .rec__slot--missed { color: var(--loss); }
+  .rec__slot--pending { color: var(--text-muted); }
+
+  .rec__fresh { margin: 0; font-size: 0.8rem; font-style: italic; color: var(--text-muted); }
+  .rec__lifetime { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.7rem; }
+  .rec__ltlabel { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+  .rec__lt { font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap; }
+  .rec__lt--missed { color: var(--loss); }
+  .rec__lt--gates { font-weight: 700; color: var(--text-primary); }
+
+  .rec__sig { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); }
+  .rec__signed { margin: 0 0 0.6rem; font-size: 0.78rem; font-weight: 600; color: var(--gain); }
+  .rec__unsigned { margin: 0 0 0.6rem; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+  .rec__verify { margin: 0 0 0.75rem; font-size: 0.72rem; color: var(--text-secondary); word-break: break-all; }
+  .rec__verify a { color: var(--accent); }
+  .rec__disclaimer { margin: 0; font-size: 0.68rem; line-height: 1.5; color: var(--text-muted); }
+
+  @media (min-width: 768px) { .rec { padding: 2.5rem 2rem 5rem; } }
+
+  /* Print faithfully to what is on screen. Ink-friendly light styling would need a
+     light palette absent from the token set — a design decision, not one to invent. */
+  @media print {
+    .noprint { display: none !important; }
+    .rec { padding: 0; max-width: 100%; }
+    .rec__doc { border: none; }
+    :global(body), .rec, .rec__doc { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>

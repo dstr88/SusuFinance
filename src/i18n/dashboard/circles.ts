@@ -167,6 +167,22 @@ export interface CirclesLocale {
 			cyclesDone: (n: number) => string;
 			/** Her first cycle, nothing judged yet — not an empty or zero record. */
 			fresh: string;
+			/** Link in the modal that opens her printable, signed record card. */
+			open: string;
+		};
+		/** The signed, printable record card — the artifact she carries to a lender. */
+		export: {
+			pageTitle: string;
+			heading: string;
+			generatedOn: (date: string) => string;
+			signedBy: (keyId: string) => string;
+			unsigned: string;
+			verifyAt: string;
+			print: string;
+			download: string;
+			back: string;
+			disclaimer: string;
+			empty: string;
 		};
 	};
 	/** The programme, in aggregate. No member ever appears here. */
@@ -392,6 +408,21 @@ const EN: CirclesLocale = {
 			missed: 'missed',
 			cyclesDone: (n) => (n === 1 ? '1 cycle completed' : `${n} cycles completed`),
 			fresh: 'Your first cycle is under way — no marks yet.',
+			open: 'My record card →',
+		},
+		export: {
+			pageTitle: 'My record card',
+			heading: 'Susu record',
+			generatedOn: (date) => `Generated ${date}`,
+			signedBy: (keyId) => `Digitally signed by SusuFinance · key ${keyId}`,
+			unsigned: 'Signing is not configured on this deployment — this copy is unsigned.',
+			verifyAt: 'Anyone can verify this card against SusuFinance’s published key:',
+			print: 'Print / Save as PDF',
+			download: 'Download signed record (JSON)',
+			back: '← Back',
+			disclaimer:
+				'This is her own record of contributions observed on-chain, disclosed by her. A valid signature attests only that it came from SusuFinance unaltered — not creditworthiness or fitness for any lending decision.',
+			empty: 'You are not in a circle yet, so there is no record card to show.',
 		},
 	},
 	stats: {
@@ -593,6 +624,21 @@ const FR: CirclesLocale = {
 			missed: 'manqué',
 			cyclesDone: (n) => (n === 1 ? '1 cycle terminé' : `${n} cycles terminés`),
 			fresh: 'Votre premier cycle est en cours — pas encore de marques.',
+			open: 'Ma carte de record →',
+		},
+		export: {
+			pageTitle: 'Ma carte de record',
+			heading: 'Record susu',
+			generatedOn: (date) => `Générée le ${date}`,
+			signedBy: (keyId) => `Signée numériquement par SusuFinance · clé ${keyId}`,
+			unsigned: 'La signature n’est pas configurée sur ce déploiement — cette copie n’est pas signée.',
+			verifyAt: 'Chacun peut vérifier cette carte avec la clé publiée de SusuFinance :',
+			print: 'Imprimer / Enregistrer en PDF',
+			download: 'Télécharger le record signé (JSON)',
+			back: '← Retour',
+			disclaimer:
+				'Ceci est son propre record de versements observés sur la chaîne, qu’elle divulgue. Une signature valide atteste seulement qu’il vient de SusuFinance sans altération — ni la solvabilité, ni l’aptitude à une décision de prêt.',
+			empty: 'Vous n’êtes encore dans aucun cercle : il n’y a pas de carte de record à afficher.',
 		},
 	},
 	stats: {
@@ -762,6 +808,21 @@ const ES: CirclesLocale = {
 			missed: 'faltó',
 			cyclesDone: (n) => (n === 1 ? '1 ciclo completado' : `${n} ciclos completados`),
 			fresh: 'Tu primer ciclo está en marcha — todavía sin marcas.',
+			open: 'Mi tarjeta de historial →',
+		},
+		export: {
+			pageTitle: 'Mi tarjeta de historial',
+			heading: 'Historial susu',
+			generatedOn: (date) => `Generada el ${date}`,
+			signedBy: (keyId) => `Firmada digitalmente por SusuFinance · clave ${keyId}`,
+			unsigned: 'La firma no está configurada en este despliegue — esta copia no está firmada.',
+			verifyAt: 'Cualquiera puede verificar esta tarjeta con la clave publicada de SusuFinance:',
+			print: 'Imprimir / Guardar como PDF',
+			download: 'Descargar historial firmado (JSON)',
+			back: '← Volver',
+			disclaimer:
+				'Este es su propio historial de aportes observados en la cadena, divulgado por ella. Una firma válida solo atesta que proviene de SusuFinance sin alterar — no la solvencia ni la idoneidad para ninguna decisión de préstamo.',
+			empty: 'Todavía no estás en ningún círculo, así que no hay tarjeta de historial que mostrar.',
 		},
 	},
 	drill: {

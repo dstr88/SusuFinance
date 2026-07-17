@@ -31,8 +31,9 @@
 
 import { db } from '@/lib/db';
 import { disciplineState } from '@/lib/circles/discipline';
+import type { SlotState } from '@/lib/circles/slotGlyph';
 
-export type SlotState = 'on_time' | 'late' | 'turn' | 'missed' | 'pending';
+export type { SlotState };
 
 export interface SusuCard {
 	joinedAt: string | null;

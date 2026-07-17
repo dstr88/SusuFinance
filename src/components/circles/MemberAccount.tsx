@@ -19,19 +19,9 @@ import { useCallback, useState } from 'react';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import type { Lang } from '@/lib/i18n/locale';
 import type { MemberCircle, MemberVote } from '@/lib/circles/memberAccount';
-import type { SusuCard, SlotState } from '@/lib/circles/susuCard';
+import type { SusuCard } from '@/lib/circles/susuCard';
+import { SLOT_GLYPH } from '@/lib/circles/slotGlyph';
 import './MemberAccount.css';
-
-// Glyphs, not colours — a colour-blind or pre-literate reader must parse the row
-// before she reads it (SusuData §4). Filled vs hollow star, diamond for her turn,
-// hollow circle for a missed week, faint dot for a slot not yet judged.
-const SLOT_GLYPH: Record<SlotState, string> = {
-	on_time: '★',
-	late: '☆',
-	turn: '◆',
-	missed: '○',
-	pending: '·',
-};
 
 interface InitialAccount {
 	member: { displayName: string | null } | null;
@@ -205,6 +195,10 @@ export default function MemberAccount({ lang, initial }: Props) {
 				)}
 
 				{err && <p className="ma__err">{err}</p>}
+
+				{circles.length > 0 && (
+					<a className="ma__record" href="/me/card">{t.me.card.open}</a>
+				)}
 
 				<form className="ma__logout" method="post" action="/api/logout">
 					<button type="submit" className="ma__logoutbtn">{t.me.logout}</button>
