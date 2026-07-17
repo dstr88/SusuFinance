@@ -89,7 +89,7 @@ export function isPublicPath(pathname: string): boolean {
 		// Onboarding-email unsubscribe — public one-click opt-out (token-based)
 		pathname === '/api/email/unsubscribe' ||
 		// Record-proof signing public key — published so anyone can verify a record proof
-		pathname === '/.well-known/almstins-signing-key.json' ||
+		pathname === '/.well-known/susufinance-signing-key.json' ||
 		// Public record verification — verify a proof bundle without an account
 		pathname === '/verify-record' ||
 		pathname === '/api/verify-record' ||

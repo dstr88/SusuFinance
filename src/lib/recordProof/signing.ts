@@ -59,7 +59,7 @@ export function getPublicKeyHex(): string | null {
 
 /** Content-derived key id (stable across processes, rotation-friendly). */
 export function deriveKeyId(publicKeyHex: string): string {
-  return 'almstins-' + bytesToHex(sha256(hexToBytes(publicKeyHex))).slice(0, 16);
+  return 'susufinance-' + bytesToHex(sha256(hexToBytes(publicKeyHex))).slice(0, 16);
 }
 
 export function getSigningKeyId(): string | null {

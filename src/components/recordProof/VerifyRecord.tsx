@@ -3,7 +3,7 @@ import { verifyBundle, type VerifyOutcome, type PublishedKey } from '@/lib/recor
 import type { ProofBundle } from '@/lib/recordProof/buildProof';
 import './VerifyRecord.css';
 
-const WELL_KNOWN = '/.well-known/almstins-signing-key.json';
+const WELL_KNOWN = '/.well-known/susufinance-signing-key.json';
 
 type State =
   | { s: 'idle' }

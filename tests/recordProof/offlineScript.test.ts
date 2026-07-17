@@ -16,11 +16,11 @@ describe('scripts/verify-record.mjs (offline)', () => {
   let pub: string;
   let dir: string;
   beforeAll(() => {
-    process.env.ALMSTINS_SIGNING_KEY = Buffer.from(ed.utils.randomSecretKey()).toString('base64');
+    process.env.SUSUFINANCE_SIGNING_KEY = Buffer.from(ed.utils.randomSecretKey()).toString('base64');
     pub = getPublicKeyHex()!;
     dir = mkdtempSync(join(tmpdir(), 'almstins-verify-'));
   });
-  afterAll(() => { delete process.env.ALMSTINS_SIGNING_KEY; });
+  afterAll(() => { delete process.env.SUSUFINANCE_SIGNING_KEY; });
 
   const runScript = (file: string) =>
     execFileSync('node', ['scripts/verify-record.mjs', file, '--pubkey', pub], { encoding: 'utf8' });

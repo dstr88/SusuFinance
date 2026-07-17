@@ -15,8 +15,8 @@ const seedB64 = Buffer.from(seed).toString('base64');
 
 describe('signing — no key configured (fail-closed)', () => {
   it('getSigningKey + signManifest return null', () => {
-    delete process.env.ALMSTINS_SIGNING_KEY;
-    delete process.env.ALMSTINS_SIGNING_PUBKEY;
+    delete process.env.SUSUFINANCE_SIGNING_KEY;
+    delete process.env.SUSUFINANCE_SIGNING_PUBKEY;
     expect(getSigningKey()).toBeNull();
     expect(signManifest(new Uint8Array([1, 2, 3]))).toBeNull();
     expect(getPublicKeyHex()).toBeNull();
@@ -24,8 +24,8 @@ describe('signing — no key configured (fail-closed)', () => {
 });
 
 describe('signing — key configured', () => {
-  beforeAll(() => { process.env.ALMSTINS_SIGNING_KEY = seedB64; });
-  afterAll(() => { delete process.env.ALMSTINS_SIGNING_KEY; });
+  beforeAll(() => { process.env.SUSUFINANCE_SIGNING_KEY = seedB64; });
+  afterAll(() => { delete process.env.SUSUFINANCE_SIGNING_KEY; });
 
   it('sign → verify round trip', () => {
     const bytes = canonicalManifestBytes({ b: 'x', a: 1 });
@@ -51,7 +51,7 @@ describe('signing — key configured', () => {
   it('deriveKeyId is deterministic and well-formed', () => {
     const pub = getPublicKeyHex()!;
     expect(deriveKeyId(pub)).toBe(deriveKeyId(pub));
-    expect(deriveKeyId(pub)).toMatch(/^almstins-[0-9a-f]{16}$/);
+    expect(deriveKeyId(pub)).toMatch(/^susufinance-[0-9a-f]{16}$/);
   });
 
   it('canonical manifest bytes are key-order independent', () => {

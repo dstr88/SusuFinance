@@ -43,10 +43,10 @@ describe('buildRecordProof', () => {
   });
 
   it('signs + verifies with a key; null signature without one', () => {
-    delete process.env.ALMSTINS_SIGNING_KEY;
+    delete process.env.SUSUFINANCE_SIGNING_KEY;
     expect(buildRecordProof('t', 2024, bd(), null, GEN).signature).toBeNull();
 
-    process.env.ALMSTINS_SIGNING_KEY = seedB64;
+    process.env.SUSUFINANCE_SIGNING_KEY = seedB64;
     const p = buildRecordProof('t', 2024, bd(), null, GEN);
     expect(p.signature).not.toBeNull();
     const bytes = canonicalManifestBytes(signedManifestView(p.manifest));
@@ -54,7 +54,7 @@ describe('buildRecordProof', () => {
     // tampering the root breaks the signature
     const tampered = canonicalManifestBytes({ ...signedManifestView(p.manifest), merkle_root: 'f'.repeat(64) });
     expect(verifyManifestSignature(tampered, p.signature!.signature_hex, getPublicKeyHex()!)).toBe(false);
-    delete process.env.ALMSTINS_SIGNING_KEY;
+    delete process.env.SUSUFINANCE_SIGNING_KEY;
   });
 
   it('BOUNDARY: manifest carries no PII; keys are the fixed allow-list', () => {

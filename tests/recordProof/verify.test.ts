@@ -15,10 +15,10 @@ const mkProof = (prev: string | null = null) => buildRecordProof('tenant-x', 202
 describe('verifyBundle', () => {
   let keys: PublishedKey[];
   beforeAll(() => {
-    process.env.ALMSTINS_SIGNING_KEY = seedB64;
+    process.env.SUSUFINANCE_SIGNING_KEY = seedB64;
     keys = [{ key_id: getSigningKeyId()!, public_key_hex: getPublicKeyHex()! }];
   });
-  afterAll(() => { delete process.env.ALMSTINS_SIGNING_KEY; });
+  afterAll(() => { delete process.env.SUSUFINANCE_SIGNING_KEY; });
 
   it('a genuine bundle → verified', () => {
     const o = verifyBundle(mkProof(), keys);
@@ -66,8 +66,8 @@ describe('verifyBundle', () => {
 });
 
 describe('verifyInclusion + verifyChainLink', () => {
-  beforeAll(() => { process.env.ALMSTINS_SIGNING_KEY = seedB64; });
-  afterAll(() => { delete process.env.ALMSTINS_SIGNING_KEY; });
+  beforeAll(() => { process.env.SUSUFINANCE_SIGNING_KEY = seedB64; });
+  afterAll(() => { delete process.env.SUSUFINANCE_SIGNING_KEY; });
 
   it('every leaf proves inclusion; a tampered leaf does not', () => {
     const p = mkProof();

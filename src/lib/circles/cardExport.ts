@@ -122,7 +122,7 @@ export function buildCardExport(account: MemberAccount, generatedAt: string): Ca
 		generated_at: generatedAt,
 		signing_key_id: getSigningKeyId(),
 		schema_version: '1',
-		verify_url: `${APP_BASE}/.well-known/almstins-signing-key.json`,
+		verify_url: `${APP_BASE}/.well-known/susufinance-signing-key.json`,
 		disclaimer: CARD_DISCLAIMER,
 	};
 
