@@ -297,6 +297,16 @@ export interface CirclesLocale {
 			noScheduled: string;
 			err: string;
 		};
+		/** Operator activates a forming circle — freezes the turn order into rounds. */
+		activate: {
+			cta: string;
+			activating: string;
+			note: string;
+			done: (n: number) => string;
+			needTurns: string;
+			notForming: string;
+			err: string;
+		};
 	};
 }
 
@@ -424,6 +434,15 @@ const EN: CirclesLocale = {
 			noAddress: (name) => `Can't open: ${name || 'the recipient'} has no payout wallet set yet.`,
 			noScheduled: 'No more rounds to open.',
 			err: 'Could not open the round. Try again.',
+		},
+		activate: {
+			cta: 'Activate circle',
+			activating: 'Activating…',
+			note: 'When the turn order is set, activate the circle to create its rounds and begin the rotation.',
+			done: (n) => `Circle activated — ${n} rounds created.`,
+			needTurns: 'Give at least two members a turn first, then activate.',
+			notForming: 'This circle is already active.',
+			err: 'Could not activate. Try again.',
 		},
 	},
 	lobby: {
@@ -683,6 +702,15 @@ const FR: CirclesLocale = {
 			noAddress: (name) => `Impossible d'ouvrir : ${name || 'la bénéficiaire'} n'a pas encore de portefeuille de versement.`,
 			noScheduled: 'Plus aucun tour à ouvrir.',
 			err: 'Impossible d’ouvrir le tour. Réessayez.',
+		},
+		activate: {
+			cta: 'Activer le cercle',
+			activating: 'Activation…',
+			note: 'Une fois l’ordre de passage défini, activez le cercle pour créer ses tours et lancer la rotation.',
+			done: (n) => `Cercle activé — ${n} tours créés.`,
+			needTurns: 'Donnez d’abord un tour à au moins deux membres, puis activez.',
+			notForming: 'Ce cercle est déjà actif.',
+			err: 'Activation impossible. Réessayez.',
 		},
 	},
 	lobby: {
@@ -1030,6 +1058,15 @@ const ES: CirclesLocale = {
 			noAddress: (name) => `No se puede abrir: ${name || 'la receptora'} aún no tiene billetera de pago.`,
 			noScheduled: 'No hay más rondas por abrir.',
 			err: 'No se pudo abrir la ronda. Inténtalo de nuevo.',
+		},
+		activate: {
+			cta: 'Activar el círculo',
+			activating: 'Activando…',
+			note: 'Cuando el orden de turnos esté listo, activa el círculo para crear sus rondas e iniciar la rotación.',
+			done: (n) => `Círculo activado — ${n} rondas creadas.`,
+			needTurns: 'Primero dale un turno a al menos dos integrantes, luego activa.',
+			notForming: 'Este círculo ya está activo.',
+			err: 'No se pudo activar. Inténtalo de nuevo.',
 		},
 	},
 	stats: {

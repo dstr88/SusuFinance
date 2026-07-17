@@ -32,6 +32,32 @@
 }
 .mc-openround__btn:disabled { opacity: 0.5; cursor: default; }
 .mc-openround__msg { margin: 0; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
+
+/* Operator: activate a forming circle */
+.mc-activate {
+	margin-bottom: 1.25rem;
+	padding: 0.85rem 1rem;
+	border: 1px solid var(--accent-soft);
+	border-radius: 0.7rem;
+	background: var(--accent-soft);
+	display: flex;
+	flex-direction: column;
+	gap: 0.55rem;
+	align-items: flex-start;
+}
+.mc-activate__note { margin: 0; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+.mc-activate__btn {
+	padding: 0.5rem 1.1rem;
+	border: none;
+	border-radius: 0.5rem;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.85rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.mc-activate__btn:disabled { opacity: 0.5; cursor: default; }
+.mc-activate__msg { margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--accent); }
 .mc-section__title {
   margin: 0 0 0.2rem;
   font-size: 0.7rem;

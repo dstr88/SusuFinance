@@ -287,6 +287,24 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 		finally { setOpening(false); }
 	}, [contractId, load, t]);
 
+	// Bring a forming circle to life — freezes the turn order into scheduled rounds.
+	const [activating, setActivating] = useState(false);
+	const [activateMsg, setActivateMsg] = useState<string | null>(null);
+	const activate = useCallback(async () => {
+		setActivateMsg(null); setActivating(true);
+		try {
+			const res = await fetch('/api/circles/activate', {
+				method: 'POST', headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ contractId }),
+			});
+			const j = await res.json().catch(() => ({}));
+			const a = t.drill.activate;
+			if (j?.ok) { setActivateMsg(a.done(Number(j.activated?.rounds ?? 0))); await load(); }
+			else setActivateMsg(j?.error === 'need_two_turns' ? a.needTurns : j?.error === 'not_forming' ? a.notForming : a.err);
+		} catch { setActivateMsg(t.drill.activate.err); }
+		finally { setActivating(false); }
+	}, [contractId, load, t]);
+
 	if (state === 'loading') return <p className="mc-msg">{t.drill.loading}</p>;
 	if (state === 'error' || !data)
 		return (
@@ -320,6 +338,15 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 
 	return (
 		<div className="mc-wrap">
+			{isAdmin && contract.status === 'forming' && (
+				<div className="mc-activate">
+					<p className="mc-activate__note">{t.drill.activate.note}</p>
+					<button type="button" className="mc-activate__btn" disabled={activating} onClick={activate}>
+						{activating ? t.drill.activate.activating : t.drill.activate.cta}
+					</button>
+					{activateMsg && <p className="mc-activate__msg">{activateMsg}</p>}
+				</div>
+			)}
 			<section className="mc-section">
 				<div className="mc-section__head">
 					<h2 className="mc-section__title">{t.drill.membersHeading}</h2>
