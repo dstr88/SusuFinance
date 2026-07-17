@@ -84,8 +84,6 @@ export function isPublicPath(pathname: string): boolean {
 		// Verified-publisher lookup — public, login-free; address → publishing domain
 		// (reads the global mirror, never exposes tenant_id/identity)
 		pathname === '/api/verify/lookup' ||
-		// Onboarding-email unsubscribe — public one-click opt-out (token-based)
-		pathname === '/api/email/unsubscribe' ||
 		// Record-proof signing public key — published so anyone can verify a record proof
 		pathname === '/.well-known/susufinance-signing-key.json' ||
 		// Public record verification — verify a proof bundle without an account
