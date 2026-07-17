@@ -56,6 +56,12 @@ export default function MemberAccount({ lang, initial }: Props) {
 	const [addrSaving, setAddrSaving] = useState(false);
 	const [addrErr, setAddrErr] = useState<string | null>(null);
 
+	// Self-send verification. `verifyOpen` reveals the instructions; `verifyMsg` shows
+	// the last result (not-found / unsupported / error).
+	const [verifyOpen, setVerifyOpen] = useState(false);
+	const [verifyBusy, setVerifyBusy] = useState(false);
+	const [verifyMsg, setVerifyMsg] = useState<string | null>(null);
+
 	const refetch = useCallback(async () => {
 		try {
 			const res = await fetch('/api/me/circles', { headers: { Accept: 'application/json' } });
@@ -141,6 +147,29 @@ export default function MemberAccount({ lang, initial }: Props) {
 		}
 	}, [addrDraft, refetch, t]);
 
+	const checkVerify = useCallback(async () => {
+		setVerifyMsg(null);
+		setVerifyBusy(true);
+		try {
+			const res = await fetch('/api/me/address/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+			const data = await res.json().catch(() => ({}));
+			if (data?.ok && data?.verified) {
+				setVerifyOpen(false);
+				await refetch(); // badge flips to verified
+			} else if (data?.reason === 'unsupported') {
+				setVerifyMsg(t.me.address.verify.unsupported);
+			} else if (data?.reason === 'not_found') {
+				setVerifyMsg(t.me.address.verify.notFound);
+			} else {
+				setVerifyMsg(t.me.address.verify.unavailable);
+			}
+		} catch {
+			setVerifyMsg(t.me.address.verify.unavailable);
+		} finally {
+			setVerifyBusy(false);
+		}
+	}, [refetch, t]);
+
 	// Not a member of any programme (an operator, or someone not yet joined). Her home
 	// is not for them — render nothing.
 	if (!member) return null;
@@ -173,9 +202,25 @@ export default function MemberAccount({ lang, initial }: Props) {
 									onClick={() => { setAddrDraft(member.payoutAddress ?? ''); setAddrErr(null); setAddrEditing(true); }}
 								>{t.me.address.edit}</button>
 							</div>
-							<span className={`ma__addrstatus ${member.addressVerified ? 'ma__addrstatus--ok' : ''}`}>
-								{member.addressVerified ? t.me.address.verified : t.me.address.unverified}
-							</span>
+							<div className="ma__addrverify">
+								<span className={`ma__addrstatus ${member.addressVerified ? 'ma__addrstatus--ok' : ''}`}>
+									{member.addressVerified ? t.me.address.verified : t.me.address.unverified}
+								</span>
+								{!member.addressVerified && !verifyOpen && (
+									<button type="button" className="ma__addrverifybtn" onClick={() => { setVerifyMsg(null); setVerifyOpen(true); }}>
+										{t.me.address.verify.cta}
+									</button>
+								)}
+							</div>
+							{!member.addressVerified && verifyOpen && (
+								<div className="ma__addrverifypanel">
+									<p className="ma__addrverifyhow">{t.me.address.verify.how}</p>
+									<button type="button" className="ma__addrverifycheck" disabled={verifyBusy} onClick={checkVerify}>
+										{verifyBusy ? t.me.address.verify.checking : t.me.address.verify.check}
+									</button>
+									{verifyMsg && <p className="ma__addrverifymsg">{verifyMsg}</p>}
+								</div>
+							)}
 						</>
 					) : (
 						<>

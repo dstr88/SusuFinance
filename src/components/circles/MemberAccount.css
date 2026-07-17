@@ -138,8 +138,44 @@
 	cursor: pointer;
 }
 .ma__addrsave:disabled { opacity: 0.5; cursor: default; }
+.ma__addrverify { display: flex; align-items: center; gap: 0.6rem; }
 .ma__addrstatus { font-size: 0.72rem; color: var(--text-muted); }
 .ma__addrstatus--ok { color: var(--gain); }
+.ma__addrverifybtn {
+	padding: 0.2rem 0.6rem;
+	border: 1px solid var(--accent-soft);
+	border-radius: 999px;
+	background: var(--accent-soft);
+	color: var(--accent);
+	font-size: 0.7rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.ma__addrverifybtn:hover { background: var(--accent-glow); }
+.ma__addrverifypanel {
+	margin-top: 0.15rem;
+	padding: 0.55rem 0.65rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 0.5rem;
+	background: var(--surface-card-2);
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+.ma__addrverifyhow { margin: 0; font-size: 0.74rem; line-height: 1.5; color: var(--text-secondary); }
+.ma__addrverifycheck {
+	align-self: flex-start;
+	padding: 0.4rem 0.85rem;
+	border: none;
+	border-radius: 0.5rem;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.78rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.ma__addrverifycheck:disabled { opacity: 0.5; cursor: default; }
+.ma__addrverifymsg { margin: 0; font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; }
 .ma__addrhint { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
 .ma__addrerr { font-size: 0.75rem; color: var(--loss); }
 

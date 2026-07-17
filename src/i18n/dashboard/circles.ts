@@ -184,6 +184,16 @@ export interface CirclesLocale {
 			badAddress: string;
 			taken: string;
 			genericErr: string;
+			/** Self-send proof of control (SusuData §3). */
+			verify: {
+				cta: string;
+				how: string;
+				check: string;
+				checking: string;
+				notFound: string;
+				unsupported: string;
+				unavailable: string;
+			};
 		};
 		/** The signed, printable record card — the artifact she carries to a lender. */
 		export: {
@@ -438,6 +448,15 @@ const EN: CirclesLocale = {
 			badAddress: 'That does not look like a wallet address.',
 			taken: 'That address is already used by another member.',
 			genericErr: 'Could not save. Try again.',
+			verify: {
+				cta: 'Verify',
+				how: 'Send a tiny amount from your wallet to your own address (a self-send). We watch for it on-chain to confirm the wallet is yours — we never touch your funds.',
+				check: 'I sent it — check',
+				checking: 'Checking the chain…',
+				notFound: 'No self-send seen yet. Send a tiny amount from your wallet to itself, then check again.',
+				unsupported: 'Verification works for Ethereum-style (0x) wallets right now.',
+				unavailable: 'Verification is not available right now — try again later.',
+			},
 		},
 		export: {
 			pageTitle: 'My record card',
@@ -668,6 +687,15 @@ const FR: CirclesLocale = {
 			badAddress: 'Cela ne ressemble pas à une adresse de portefeuille.',
 			taken: 'Cette adresse est déjà utilisée par une autre membre.',
 			genericErr: 'Enregistrement impossible. Réessayez.',
+			verify: {
+				cta: 'Vérifier',
+				how: 'Envoyez un tout petit montant de votre portefeuille vers votre propre adresse (un auto-envoi). Nous l’observons sur la chaîne pour confirmer que le portefeuille est le vôtre — nous ne touchons jamais à vos fonds.',
+				check: 'C’est envoyé — vérifier',
+				checking: 'Vérification sur la chaîne…',
+				notFound: 'Aucun auto-envoi vu pour l’instant. Envoyez un petit montant de votre portefeuille vers lui-même, puis réessayez.',
+				unsupported: 'La vérification fonctionne pour les portefeuilles de type Ethereum (0x) pour le moment.',
+				unavailable: 'La vérification n’est pas disponible pour le moment — réessayez plus tard.',
+			},
 		},
 		export: {
 			pageTitle: 'Ma carte de record',
@@ -866,6 +894,15 @@ const ES: CirclesLocale = {
 			badAddress: 'Eso no parece una dirección de billetera.',
 			taken: 'Esa dirección ya la usa otra integrante.',
 			genericErr: 'No se pudo guardar. Inténtalo de nuevo.',
+			verify: {
+				cta: 'Verificar',
+				how: 'Envía una cantidad mínima desde tu billetera a tu propia dirección (un auto-envío). Lo observamos en la cadena para confirmar que la billetera es tuya — nunca tocamos tus fondos.',
+				check: 'Ya lo envié — verificar',
+				checking: 'Consultando la cadena…',
+				notFound: 'Aún no vemos un auto-envío. Envía una cantidad mínima de tu billetera a sí misma y verifica de nuevo.',
+				unsupported: 'La verificación funciona con billeteras tipo Ethereum (0x) por ahora.',
+				unavailable: 'La verificación no está disponible ahora — inténtalo más tarde.',
+			},
 		},
 		export: {
 			pageTitle: 'Mi tarjeta de historial',
