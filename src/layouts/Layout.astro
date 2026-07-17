@@ -12,6 +12,7 @@ import kingSolomon from '@/assets/KingSolomon.png';
 import minerva from '@/assets/Minerva.png';
 import { getLang, isLang } from '@/lib/i18n/locale';
 import { getDashboardCommon } from '@/i18n/dashboard/common';
+import { getCirclesLocale } from '@/i18n/dashboard/circles';
 const GA_ID = import.meta.env.PUBLIC_GA_ID;
 
 const currentPath = Astro.url.pathname;
@@ -134,6 +135,9 @@ const {
 
 const navLang = isLang(lang) ? lang : 'en';
 const tNav = getDashboardCommon(navLang);
+// The operator nav reuses the circles locale's own strings (Circles / Programme),
+// already trilingual — no new nav vocabulary, and it can't drift from the pages.
+const tCircles = getCirclesLocale(navLang);
 
 const isTradfiDomain = ['tradifitins.com', 'www.tradifitins.com'].includes(
   Astro.request.headers.get('x-forwarded-host') ?? Astro.url.hostname
@@ -259,15 +263,7 @@ const memberSinceDisplay = memberSinceIso
 					<p class="brand">Titanium Hut</p>
 					{isAdmin
 					? <a class="dashboard-link" href="/admin">{tNav.chrome.adminDashboard}</a>
-					: <a class="dashboard-link" href={currentPath}>{
-						currentPath.includes('/bookkeeping') ? tNav.nav.bookkeeping :
-						currentPath.includes('memory-lane')  ? tNav.nav.history :
-						currentPath.includes('/wallets')     ? tNav.nav.addresses :
-						currentPath.includes('/billing')     ? tNav.nav.billing :
-						currentPath.includes('/wallet-checker') ? tNav.chrome.scamChecker :
-						currentPath.includes('/admin')       ? tNav.chrome.admin :
-						tNav.nav.vault
-					}</a>
+					: <a class="dashboard-link" href="/dashboard/circles">{tCircles.page.title}</a>
 				}
 				</div>
 				<button id="nav-toggle" class="nav-toggle" aria-label={tNav.chrome.ariaOpenMenu} aria-expanded="false" aria-controls="nav-drawer">☰</button>
@@ -280,14 +276,12 @@ const memberSinceDisplay = memberSinceIso
 						<a href="/dashboard/petro-tins/upgrade" class={`nav-link ${isActive('/dashboard/petro-tins/upgrade') ? 'active' : ''}`}>Upgrade</a>
 					</>
 				) : (
-					<!-- Full SusuFinance nav -->
+					<!-- SusuFinance operator nav — Circles (the vault) and the aggregate
+					     Programme view. The Almstins crypto strip (Vault/Portfolio/
+					     Bookkeeping/Addresses/Memory Lane/Alerts) was removed here. -->
 					<>
-						<a href="/dashboard/bookkeeping" class={`nav-link ${isActive('/dashboard/bookkeeping') ? 'active' : ''}`}>{tNav.nav.bookkeeping}</a>
-						<a href="/dashboard/vault" class={`nav-link ${isActive('/dashboard/vault') ? 'active' : ''}`}>{tNav.nav.vault}</a>
-						<a href="/dashboard/portfolio" class={`nav-link ${isActive('/dashboard/portfolio') ? 'active' : ''}`}>{tNav.nav.portfolio}</a>
-						<a href="/dashboard/wallets" class={`nav-link ${isActive('/dashboard/wallets') ? 'active' : ''}`}>{tNav.nav.addresses}</a>
-						<a href="/dashboard/yearEnd/memory-lane" class={`nav-link ${currentPath.includes('memory-lane') ? 'active' : ''}`}>{tNav.nav.history}</a>
-						<a href="/dashboard/alerts" class={`nav-link ${isActive('/dashboard/alerts') ? 'active' : ''}`}>{tNav.nav.alerts}</a>
+						<a href="/dashboard/circles" class={`nav-link ${currentPath.startsWith('/dashboard/circles') && !currentPath.startsWith('/dashboard/circles/stats') ? 'active' : ''}`}>{tCircles.page.title}</a>
+						<a href="/dashboard/circles/stats" class={`nav-link ${isActive('/dashboard/circles/stats') ? 'active' : ''}`}>{tCircles.stats.title}</a>
 					</>
 				)}
 				{!isTradfiDomain && isAdmin && (
@@ -296,7 +290,6 @@ const memberSinceDisplay = memberSinceIso
 						<a href="/admin/support" class={`nav-link nav-link--admin ${isActive('/admin/support') ? 'active' : ''}`}>
 							Support{adminSupportUnread > 0 ? ` (${adminSupportUnread})` : ''}
 						</a>
-						<a href="/aave-alisis" class={`nav-link nav-link--admin ${isActive('/aave-alisis') ? 'active' : ''}`}>AaveAlisis</a>
 					</>
 				)}
 
