@@ -12,7 +12,7 @@ export const prerender = false;
 
 const sess = await requireTenantSession(Astro.request);
 if (!sess) return Astro.redirect('/login', 302);
-if (!isOwner(sess.tenantId)) return Astro.redirect('/dashboard/vault', 302);
+if (!isOwner(sess.tenantId)) return Astro.redirect('/dashboard/lobby', 302);
 
 const limitParam = Number(Astro.url.searchParams.get('limit') ?? 100);
 const typeFilter = Astro.url.searchParams.get('type') ?? '';

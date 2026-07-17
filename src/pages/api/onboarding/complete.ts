@@ -91,5 +91,5 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 		return redirect('/onboarding/tenant-setup?error=setup-incomplete', 303);
 	}
 
-	return redirect('/dashboard/vault', 303);
+	return redirect('/dashboard/lobby', 303);
 };

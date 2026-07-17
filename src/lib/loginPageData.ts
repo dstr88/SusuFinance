@@ -21,7 +21,8 @@ export async function getLoginPageData(request: Request, url: URL): Promise<Logi
     null;
 
   const callbackUrl = getPostLoginRedirect(nextPath);
-  const safeCallbackUrl = callbackUrl.startsWith('/') ? callbackUrl : '/dashboard/vault';
+  // The lobby is this product's door (Almstins sent people to /dashboard/vault).
+  const safeCallbackUrl = callbackUrl.startsWith('/') ? callbackUrl : '/dashboard/lobby';
 
   const session = await getAuthSession(request);
 

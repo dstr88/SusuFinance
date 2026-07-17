@@ -69,8 +69,6 @@ export function isPublicPath(pathname: string): boolean {
 		// Demo mode — set/clear cookie without requiring an auth session
 		pathname === '/api/demo/start' ||
 		pathname === '/api/demo/end' ||
-		// AaveAlisis — public liquidity dashboard (admin-linked but no auth wall)
-		pathname === '/aave-alisis' ||
 		// PetroTins standalone login page — must be reachable without a session
 		pathname === '/petro-tins' ||
 		// PetroTins demo — clears session cookie then starts demo, no auth needed

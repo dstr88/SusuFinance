@@ -9,9 +9,9 @@ try {
 } catch (resp) {
 	if (resp instanceof Response) {
 		if (resp.status === 401) return Astro.redirect('/login', 303);
-		return Astro.redirect('/dashboard/vault', 303);
+		return Astro.redirect('/dashboard/lobby', 303);
 	}
-	return Astro.redirect('/dashboard/vault', 303);
+	return Astro.redirect('/dashboard/lobby', 303);
 }
 
 const q = async (sql: string, args: any[] = []) => {

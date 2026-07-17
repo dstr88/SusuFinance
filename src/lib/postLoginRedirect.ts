@@ -1,6 +1,3 @@
-const transitionPage = import.meta.glob('../pages/transition.astro');
-const hasTransitionPage = Object.keys(transitionPage).length > 0;
-
 function normalizeNextPath(nextValue: FormDataEntryValue | string | null | undefined) {
 	if (typeof nextValue !== 'string' || nextValue.length === 0) {
 		return null;

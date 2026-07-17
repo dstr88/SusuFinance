@@ -30,6 +30,6 @@ const ADMIN_EMAILS = new Set(
 		.split(',').map((e: string) => e.trim().toLowerCase()).filter(Boolean),
 );
 
-const dest = (email && ADMIN_EMAILS.has(email)) ? '/admin' : '/dashboard/vault';
+const dest = (email && ADMIN_EMAILS.has(email)) ? '/admin' : '/dashboard/lobby';
 return Astro.redirect(dest, 302);
 ---
