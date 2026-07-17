@@ -153,13 +153,116 @@
 
 .mc-msg { padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
+/* ── Operator setup (unclaimed members): payout wallet + claim link ────────────
+   Tokens only. */
+.mc-setup {
+	margin-top: 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--border-subtle);
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+.mc-addr { display: flex; flex-direction: column; gap: 0.3rem; }
+.mc-addr__label {
+	font-size: 0.66rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--text-muted);
+}
+.mc-addr__row { display: flex; align-items: center; gap: 0.4rem; }
+.mc-addr__val {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.76rem;
+	color: var(--text-primary);
+	background: var(--surface-card-2);
+	padding: 0.3rem 0.45rem;
+	border-radius: 0.35rem;
+}
+.mc-addr__input {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 0.35rem 0.5rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 0.35rem;
+	background: var(--surface-card-2);
+	color: var(--text-primary);
+	font-size: 0.76rem;
+	font-family: inherit;
+}
+.mc-addr__input::placeholder { color: var(--text-muted); }
+.mc-addr__input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.mc-addr__edit {
+	flex: 0 0 auto;
+	padding: 0.3rem 0.6rem;
+	border: 1px solid var(--border-bright);
+	border-radius: 0.35rem;
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: 0.72rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.mc-addr__edit:hover { background: var(--surface-hover); color: var(--text-primary); }
+.mc-addr__save {
+	flex: 0 0 auto;
+	padding: 0.35rem 0.7rem;
+	border: none;
+	border-radius: 0.35rem;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.74rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.mc-addr__save:disabled { opacity: 0.5; cursor: default; }
+.mc-addr__err { font-size: 0.72rem; color: var(--loss); }
+.mc-addr__verifybtn {
+	align-self: flex-start;
+	padding: 0.18rem 0.55rem;
+	border: 1px solid var(--accent-soft);
+	border-radius: 999px;
+	background: var(--accent-soft);
+	color: var(--accent);
+	font-size: 0.68rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.mc-addr__verifybtn:hover { background: var(--accent-glow); }
+.mc-addr__verify {
+	padding: 0.5rem 0.6rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 0.45rem;
+	background: var(--surface-card-2);
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+.mc-addr__how { margin: 0; font-size: 0.72rem; line-height: 1.5; color: var(--text-secondary); }
+.mc-addr__check {
+	align-self: flex-start;
+	padding: 0.35rem 0.75rem;
+	border: none;
+	border-radius: 0.4rem;
+	background: var(--accent);
+	color: var(--surface-bg);
+	font-size: 0.74rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+.mc-addr__check:disabled { opacity: 0.5; cursor: default; }
+.mc-addr__msg { margin: 0; font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; }
+
 /* ── Claim link (operator-only, unclaimed members) ─────────────────────────────
    The organizer mints a single-use link for a seeded member and copies it to send
    her. Tokens only. */
 .mc-claim-row {
-	margin-top: 0.75rem;
-	padding-top: 0.75rem;
-	border-top: 1px solid var(--border-subtle);
+	/* Separation is provided by the parent .mc-setup (gap + top border). */
 }
 .mc-claim__btn {
 	width: 100%;

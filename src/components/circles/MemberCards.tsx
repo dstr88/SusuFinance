@@ -33,6 +33,9 @@ interface Member {
 	leftAt: string | null;
 	turnOrder: number | null;
 	payoutVerified: boolean;
+	/** Where her turn pays. The operator sets it for a member who has not claimed a
+	 *  login yet; once she claims, she manages it herself. */
+	payoutAddress: string | null;
 	isRecipientOfOpenRound: boolean;
 	/** Has she bound a login? A seeded member (false) can be handed a claim link. */
 	claimed: boolean;
@@ -117,7 +120,89 @@ function ClaimLink({ memberId, name, t }: { memberId: string; name: string; t: R
 	);
 }
 
-function MemberCard({ m, t, cycleLength, isAdmin }: { m: Member; t: ReturnType<typeof getCirclesLocale>; cycleLength: number; isAdmin: boolean }) {
+/**
+ * The organizer sets a seeded member's payout wallet — where her turn pays — for a
+ * member who has not claimed a login yet and so cannot use her own account modal. He
+ * can also run the self-send verification on her behalf (she does the on-chain
+ * self-send from her wallet; he triggers the observation). Operational, not custodial.
+ */
+function PayoutAddressEditor({ memberId, current, verified, t, onChanged }: {
+	memberId: string; current: string | null; verified: boolean;
+	t: ReturnType<typeof getCirclesLocale>; onChanged: () => void;
+}) {
+	const a = t.drill.addr;
+	const [editing, setEditing] = useState(!current);
+	const [draft, setDraft] = useState(current ?? '');
+	const [saving, setSaving] = useState(false);
+	const [err, setErr] = useState<string | null>(null);
+	const [verifyOpen, setVerifyOpen] = useState(false);
+	const [verifyBusy, setVerifyBusy] = useState(false);
+	const [verifyMsg, setVerifyMsg] = useState<string | null>(null);
+
+	async function save() {
+		setErr(null); setSaving(true);
+		try {
+			const res = await fetch('/api/circles/member-address', {
+				method: 'POST', headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ memberId, address: draft.trim() }),
+			});
+			const j = await res.json().catch(() => ({}));
+			if (!res.ok || !j?.ok) {
+				setErr(j?.error === 'bad_address' ? a.badAddress : j?.error === 'address_taken' ? a.taken : a.err);
+			} else { setEditing(false); onChanged(); }
+		} catch { setErr(a.err); } finally { setSaving(false); }
+	}
+
+	async function check() {
+		setVerifyMsg(null); setVerifyBusy(true);
+		try {
+			const res = await fetch('/api/circles/member-address/verify', {
+				method: 'POST', headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ memberId }),
+			});
+			const j = await res.json().catch(() => ({}));
+			if (j?.ok && j?.verified) { setVerifyOpen(false); onChanged(); }
+			else if (j?.reason === 'unsupported') setVerifyMsg(a.unsupported);
+			else if (j?.reason === 'not_found') setVerifyMsg(a.notFound);
+			else setVerifyMsg(a.unavailable);
+		} catch { setVerifyMsg(a.unavailable); } finally { setVerifyBusy(false); }
+	}
+
+	return (
+		<div className="mc-addr">
+			<span className="mc-addr__label">{a.label}</span>
+			{current && !editing ? (
+				<div className="mc-addr__row">
+					<code className="mc-addr__val" title={current}>{current}</code>
+					<button type="button" className="mc-addr__edit" onClick={() => { setDraft(current); setErr(null); setEditing(true); }}>{a.edit}</button>
+				</div>
+			) : (
+				<div className="mc-addr__row">
+					<input
+						className="mc-addr__input" type="text" spellCheck={false} autoCapitalize="none" autoCorrect="off"
+						placeholder={a.placeholder} value={draft} disabled={saving}
+						onChange={(e) => setDraft(e.target.value)}
+						onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); save(); } }}
+					/>
+					<button type="button" className="mc-addr__save" disabled={saving} onClick={save}>{saving ? a.saving : a.save}</button>
+				</div>
+			)}
+			{err && <span className="mc-addr__err">{err}</span>}
+			{current && !editing && !verified && !verifyOpen && (
+				<button type="button" className="mc-addr__verifybtn" onClick={() => { setVerifyMsg(null); setVerifyOpen(true); }}>{a.verify}</button>
+			)}
+			{current && !editing && !verified && verifyOpen && (
+				<div className="mc-addr__verify">
+					<p className="mc-addr__how">{a.how}</p>
+					<button type="button" className="mc-addr__check" disabled={verifyBusy} onClick={check}>{verifyBusy ? a.checking : a.verify}</button>
+					{verifyMsg && <p className="mc-addr__msg">{verifyMsg}</p>}
+				</div>
+			)}
+		</div>
+	);
+}
+
+function MemberCard({ m, t, cycleLength, isAdmin, onChanged }: { m: Member; t: ReturnType<typeof getCirclesLocale>; cycleLength: number; isAdmin: boolean; onChanged: () => void }) {
 	const gone = Boolean(m.leftAt);
 	return (
 		<article className={`mc-card ${gone ? 'mc-card--left' : ''} ${m.isRecipientOfOpenRound ? 'mc-card--receiving' : ''}`}>
@@ -147,10 +232,14 @@ function MemberCard({ m, t, cycleLength, isAdmin }: { m: Member; t: ReturnType<t
 				{m.payoutVerified ? t.card.payoutVerified : t.card.payoutUnverified}
 			</footer>
 
-			{/* Operator-only, and only while she has no login of her own to reach the app. */}
+			{/* Operator-only, and only while she has no login of her own to reach the app:
+			    set (and verify) her payout wallet, and hand her a claim link. */}
 			{isAdmin && !gone && !m.claimed && (
-				<div className="mc-claim-row">
-					<ClaimLink memberId={m.id} name={label(m)} t={t} />
+				<div className="mc-setup">
+					<PayoutAddressEditor memberId={m.id} current={m.payoutAddress} verified={m.payoutVerified} t={t} onChanged={onChanged} />
+					<div className="mc-claim-row">
+						<ClaimLink memberId={m.id} name={label(m)} t={t} />
+					</div>
 				</div>
 			)}
 		</article>
@@ -218,7 +307,7 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 				</div>
 				<div className="mc-grid">
 					{members.map((m) => (
-						<MemberCard key={`${m.id}-${m.turnOrder}-${m.joinedAt}`} m={m} t={t} cycleLength={contract.cycleLength} isAdmin={isAdmin} />
+						<MemberCard key={`${m.id}-${m.turnOrder}-${m.joinedAt}`} m={m} t={t} cycleLength={contract.cycleLength} isAdmin={isAdmin} onChanged={load} />
 					))}
 				</div>
 			</section>

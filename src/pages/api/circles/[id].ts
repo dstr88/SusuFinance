@@ -73,7 +73,7 @@ export const GET: APIRoute = async ({ params, request }) => {
 		const mRes = await db.execute({
 			sql: `SELECT cm.member_id, cm.turn_order, cm.joined_at::text AS joined_at,
 			             cm.left_at::text AS left_at,
-			             m.display_name, m.address_verified_at::text AS address_verified_at,
+			             m.display_name, m.payout_address, m.address_verified_at::text AS address_verified_at,
 			             (m.user_id IS NOT NULL) AS claimed
 			        FROM contract_members cm
 			        JOIN members m ON m.id = cm.member_id AND m.tenant_id = cm.tenant_id
@@ -137,8 +137,11 @@ export const GET: APIRoute = async ({ params, request }) => {
 			leftAt: m.left_at ? String(m.left_at) : null,
 			turnOrder: m.turn_order === null ? null : Number(m.turn_order),
 			// §3: every payout address verified before a round opens — the one safety
-			// fact the operator must be able to act on.
+			// fact the operator must be able to act on. The address itself is circle-
+			// operational (the group sends the pot here on her turn), so the operator
+			// can see and — for a member who has not claimed a login — set it.
 			payoutVerified: Boolean(m.address_verified_at),
+			payoutAddress: m.payout_address ? String(m.payout_address) : null,
 			isRecipientOfOpenRound: Boolean(openRound && String(openRound.recipient_member_id) === String(m.member_id)),
 			// Has she a login? A seeded member (claimed=false) can be handed a claim
 			// link; one who has already bound her account (claimed=true) cannot.

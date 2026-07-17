@@ -275,6 +275,24 @@ export interface CirclesLocale {
 		eventsHeading: string;
 		eventsHint: string;
 		action: Record<string, string>;
+		/** Operator sets a seeded member's payout wallet (before she claims a login). */
+		addr: {
+			label: string;
+			set: string;
+			edit: string;
+			save: string;
+			saving: string;
+			placeholder: string;
+			badAddress: string;
+			taken: string;
+			err: string;
+			verify: string;
+			checking: string;
+			how: string;
+			notFound: string;
+			unsupported: string;
+			unavailable: string;
+		};
 	};
 }
 
@@ -379,6 +397,23 @@ const EN: CirclesLocale = {
 			member_departed: 'A member left',
 			member_replaced: 'Member replaced',
 			early_withdrawal: 'Early withdrawal',
+		},
+		addr: {
+			label: 'Payout wallet',
+			set: 'Set wallet',
+			edit: 'Edit',
+			save: 'Save',
+			saving: 'Saving…',
+			placeholder: 'Her wallet address',
+			badAddress: 'That does not look like a wallet address.',
+			taken: 'That address is already used by another member.',
+			err: 'Could not save. Try again.',
+			verify: 'Verify',
+			checking: 'Checking the chain…',
+			how: 'Ask her to send a tiny amount from her wallet to itself, then verify.',
+			notFound: 'No self-send seen yet. She sends a tiny amount to her own address, then verify again.',
+			unsupported: 'Verification works for Ethereum-style (0x) wallets right now.',
+			unavailable: 'Verification is not available right now — try again later.',
 		},
 	},
 	lobby: {
@@ -619,6 +654,23 @@ const FR: CirclesLocale = {
 			member_departed: 'Une membre est partie',
 			member_replaced: 'Membre remplacée',
 			early_withdrawal: 'Retrait anticipé',
+		},
+		addr: {
+			label: 'Portefeuille de versement',
+			set: 'Définir',
+			edit: 'Modifier',
+			save: 'Enregistrer',
+			saving: 'Enregistrement…',
+			placeholder: 'Son adresse de portefeuille',
+			badAddress: 'Cela ne ressemble pas à une adresse de portefeuille.',
+			taken: 'Cette adresse est déjà utilisée par une autre membre.',
+			err: 'Enregistrement impossible. Réessayez.',
+			verify: 'Vérifier',
+			checking: 'Vérification sur la chaîne…',
+			how: 'Demandez-lui d’envoyer un petit montant de son portefeuille vers lui-même, puis vérifiez.',
+			notFound: 'Aucun auto-envoi vu. Elle envoie un petit montant vers sa propre adresse, puis vérifiez à nouveau.',
+			unsupported: 'La vérification fonctionne pour les portefeuilles de type Ethereum (0x) pour le moment.',
+			unavailable: 'La vérification n’est pas disponible pour le moment — réessayez plus tard.',
 		},
 	},
 	lobby: {
@@ -951,6 +1003,23 @@ const ES: CirclesLocale = {
 			member_departed: 'Una integrante se fue',
 			member_replaced: 'Integrante reemplazada',
 			early_withdrawal: 'Retiro anticipado',
+		},
+		addr: {
+			label: 'Billetera de pago',
+			set: 'Definir',
+			edit: 'Editar',
+			save: 'Guardar',
+			saving: 'Guardando…',
+			placeholder: 'Su dirección de billetera',
+			badAddress: 'Eso no parece una dirección de billetera.',
+			taken: 'Esa dirección ya la usa otra integrante.',
+			err: 'No se pudo guardar. Inténtalo de nuevo.',
+			verify: 'Verificar',
+			checking: 'Consultando la cadena…',
+			how: 'Pídele que envíe una cantidad mínima de su billetera a sí misma, luego verifica.',
+			notFound: 'Aún no vemos un auto-envío. Ella envía una cantidad mínima a su propia dirección y verifica de nuevo.',
+			unsupported: 'La verificación funciona con billeteras tipo Ethereum (0x) por ahora.',
+			unavailable: 'La verificación no está disponible ahora — inténtalo más tarde.',
 		},
 	},
 	stats: {
