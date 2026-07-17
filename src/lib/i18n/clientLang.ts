@@ -2,7 +2,7 @@
 //
 // Most dashboard React components are `client:only`, so they render only in the
 // browser and can't use the server-side getLang(request). This reads the same
-// `almstins-lang` cookie on the client. Usage inside a component:
+// `susu-lang` cookie on the client. Usage inside a component:
 //
 //   import { getClientLang } from '@/lib/i18n/clientLang';
 //   import { getThing } from '@/i18n/components/thing';

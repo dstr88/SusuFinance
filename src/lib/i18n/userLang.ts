@@ -1,6 +1,6 @@
 // Stored per-user language preference (Phase 2 i18n).
 //
-// The dashboard resolves language from the `almstins-lang` cookie, but emails sent
+// The dashboard resolves language from the `susu-lang` cookie, but emails sent
 // outside a request (cron digests, price/health alerts, promo expiry, Stripe webhook
 // receipts) have no cookie. They read this stored value instead. It is persisted when
 // the user switches language (POST /api/account/lang) and on signup.

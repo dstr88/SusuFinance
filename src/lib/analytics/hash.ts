@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-const DEV_FALLBACK_SALT = 'almstins-dev-log-salt';
+const DEV_FALLBACK_SALT = 'susu-dev-log-salt';
 let warnedMissingSalt = false;
 
 function getSalt() {
@@ -19,7 +19,7 @@ function getSalt() {
 	}
 
 	if (isDev) return DEV_FALLBACK_SALT;
-	return process.env.AUTH_SECRET || 'almstins-prod-log-salt-missing';
+	return process.env.AUTH_SECRET || 'susu-prod-log-salt-missing';
 }
 
 export function hashWithSalt(value: string): string {

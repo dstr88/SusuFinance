@@ -26,7 +26,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
 	if (!isStaticAsset) {
 		// Origin lock (opt-in): when EDGE_SHARED_SECRET is set, every request must
-		// carry the matching `x-almstins-edge` header. A Cloudflare Transform Rule
+		// carry the matching `x-susu-edge` header. A Cloudflare Transform Rule
 		// adds it; a request that hits the Render origin directly (bypassing
 		// Cloudflare — and thus the trustworthy CF-Connecting-IP the geo-block relies
 		// on) cannot forge it, so it is refused. OFF until the secret is set, so it
@@ -37,7 +37,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		const edgeSecret =
 			(process.env as Record<string, string | undefined>).EDGE_SHARED_SECRET ??
 			(import.meta.env.EDGE_SHARED_SECRET as string | undefined);
-		if (edgeSecret && context.request.headers.get('x-almstins-edge') !== edgeSecret) {
+		if (edgeSecret && context.request.headers.get('x-susu-edge') !== edgeSecret) {
 			return new Response('Forbidden', { status: 403, headers: { 'Cache-Control': 'no-store' } });
 		}
 

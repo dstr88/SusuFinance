@@ -10,7 +10,7 @@ export type Lang = (typeof SUPPORTED_LANGS)[number];
 export const DEFAULT_LANG: Lang = 'en';
 
 /** Cookie that stores the user's app language preference. */
-export const LANG_COOKIE = 'almstins-lang';
+export const LANG_COOKIE = 'susu-lang';
 
 export function isLang(v: unknown): v is Lang {
   return typeof v === 'string' && (SUPPORTED_LANGS as readonly string[]).includes(v);

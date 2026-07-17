@@ -81,7 +81,7 @@ if (!window.TourEngine) {
 		/* Detect preferred lang from cookie, then browser */
 		function _detectLang() {
 			try {
-				var m = document.cookie.match(/almstins-demo-lang=([a-z]{2})/);
+				var m = document.cookie.match(/susu-demo-lang=([a-z]{2})/);
 				if (m) return m[1];
 			} catch(e) {}
 			try {
@@ -273,7 +273,7 @@ if (!window.TourEngine) {
 				if (!t || !t.bilingual) return;
 				t.lang = t.lang === 'en' ? 'es' : 'en';
 				/* Persist choice */
-				try { document.cookie = 'almstins-demo-lang=' + t.lang + '; Path=/; SameSite=Lax; Max-Age=31536000'; } catch(e) {}
+				try { document.cookie = 'susu-demo-lang=' + t.lang + '; Path=/; SameSite=Lax; Max-Age=31536000'; } catch(e) {}
 				_step(tourId, t.current);
 			});
 

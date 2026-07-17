@@ -693,7 +693,7 @@ ON CONFLICT (tenant_id, address) DO UPDATE SET verdict = excluded.verdict, revie
 	]).catch(() => {});
 
 	const lang = (request.headers.get('referer') ?? '').includes('/es') ? 'es' : 'en';
-	const langCookie = `almstins-demo-lang=${lang}; Path=/; SameSite=Lax; Max-Age=3600`;
+	const langCookie = `susu-demo-lang=${lang}; Path=/; SameSite=Lax; Max-Age=3600`;
 
 	// Respect ?next= param for PetroTins demo link; whitelist internal paths only
 	const nextParam = url.searchParams.get('next') ?? '';

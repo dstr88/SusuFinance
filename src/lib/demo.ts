@@ -1,13 +1,13 @@
 /**
  * demo.ts — Demo mode constants and helpers
  *
- * A visitor who clicks "Try Demo" gets a signed cookie (almstins-demo=1)
+ * A visitor who clicks "Try Demo" gets a signed cookie (susu-demo=1)
  * that makes the entire dashboard render with the pre-seeded demo tenant.
  * No auth session required.  All write operations are blocked at middleware.
  */
 
 export const DEMO_TENANT_ID = 'demo-00000000000000000000000000000001';
-export const DEMO_COOKIE_NAME = 'almstins-demo';
+export const DEMO_COOKIE_NAME = 'susu-demo';
 export const DEMO_COOKIE_VALUE = '1';
 
 /** Returns true when the request carries the demo session cookie. */

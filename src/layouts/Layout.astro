@@ -18,7 +18,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID;
 const currentPath = Astro.url.pathname;
 const isActive = (path: string) => currentPath === path;
 
-// Dashboard language follows the almstins-lang cookie (Phase-3 i18n).
+// Dashboard language follows the susu-lang cookie (Phase-3 i18n).
 const cookieLang = getLang(Astro.request);
 
 const session = await getAuthSession(Astro.request).catch(() => null);
@@ -124,8 +124,8 @@ export interface Props {
 }
 
 const {
-  title = 'SusuFinance — Crypto Portfolio Tracker & Bookkeeping Tool',
-  description = 'Track your crypto wallets, DeFi positions, and exchange accounts in one place. Calculate realized gains, download your Year Summary, and stay on top of your net worth.',
+  title = 'SusuFinance — savings circles, coordinated',
+  description = 'Non-custodial software for running community savings circles: members, turn order, contributions, and payouts, tracked in one place. Read-only, no custody.',
   canonical = Astro.url.href,
   image = 'https://susufinance.com/og-default.png',
   noindex = false,
@@ -748,12 +748,12 @@ window.__chromeI18n = chromeI18n;
 </script>
 
 <script>
-	// Dashboard language switcher — set the almstins-lang cookie and reload.
+	// Dashboard language switcher — set the susu-lang cookie and reload.
 	document.querySelectorAll('[data-setlang]').forEach((btn) => {
 		btn.addEventListener('click', () => {
 			const l = btn.getAttribute('data-setlang');
 			if (!l) return;
-			document.cookie = 'almstins-lang=' + l + '; path=/; max-age=31536000; samesite=lax';
+			document.cookie = 'susu-lang=' + l + '; path=/; max-age=31536000; samesite=lax';
 			// Persist to the account so emails (digests, alerts, receipts) match the chosen language.
 			try { fetch('/api/account/lang', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lang: l }), keepalive: true }); } catch (e) {}
 			location.reload();
