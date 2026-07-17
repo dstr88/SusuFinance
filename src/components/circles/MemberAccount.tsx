@@ -20,6 +20,7 @@ import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import type { Lang } from '@/lib/i18n/locale';
 import type { MemberCircle, MemberVote } from '@/lib/circles/memberAccount';
 import type { SusuCard } from '@/lib/circles/susuCard';
+import type { ActivityItem } from '@/lib/circles/almstinsActivity';
 import { SLOT_GLYPH } from '@/lib/circles/slotGlyph';
 import './MemberAccount.css';
 
@@ -60,6 +61,14 @@ export default function MemberAccount({ lang, initial }: Props) {
 	// "not proven yet" result.
 	const [verifyBusy, setVerifyBusy] = useState(false);
 	const [verifyMsg, setVerifyMsg] = useState<string | null>(null);
+
+	// Her wallet's funds in/out, read from the public chain via Almstins. Loaded on
+	// demand (a live chain read is slow) and shown only to her.
+	const [activityOpen, setActivityOpen] = useState(false);
+	const [activityLoading, setActivityLoading] = useState(false);
+	const [activity, setActivity] = useState<ActivityItem[] | null>(null);
+	const [activityReason, setActivityReason] = useState<string | null>(null);
+	const [activityTruncated, setActivityTruncated] = useState(false);
 
 	const refetch = useCallback(async () => {
 		try {
@@ -161,6 +170,29 @@ export default function MemberAccount({ lang, initial }: Props) {
 		}
 	}, [refetch, t]);
 
+	const loadActivity = useCallback(async () => {
+		setActivityLoading(true);
+		setActivityReason(null);
+		try {
+			const res = await fetch('/api/me/activity', { headers: { Accept: 'application/json' } });
+			const data = await res.json().catch(() => ({}));
+			if (data?.ok) {
+				setActivity(Array.isArray(data.activity) ? data.activity : []);
+				setActivityReason(typeof data.reason === 'string' ? data.reason : null);
+				setActivityTruncated(Boolean(data.truncated));
+			} else {
+				setActivity([]);
+				setActivityReason('unavailable');
+			}
+		} catch {
+			setActivity([]);
+			setActivityReason('unavailable');
+		} finally {
+			setActivityOpen(true);
+			setActivityLoading(false);
+		}
+	}, []);
+
 	// Not a member of any programme (an operator, or someone not yet joined). Her home
 	// is not for them — render nothing.
 	if (!member) return null;
@@ -204,6 +236,38 @@ export default function MemberAccount({ lang, initial }: Props) {
 								)}
 							</div>
 							{!member.addressVerified && verifyMsg && <p className="ma__addrverifymsg">{verifyMsg}</p>}
+
+							{/* Her wallet's funds in/out — her own record, read from the chain. */}
+							<div className="ma__activity">
+								<button
+									type="button"
+									className="ma__actbtn"
+									disabled={activityLoading}
+									onClick={activityOpen ? () => setActivityOpen(false) : loadActivity}
+								>
+									{activityOpen ? t.me.activity.hide : activityLoading ? t.me.activity.loading : t.me.activity.cta}
+								</button>
+								{activityOpen && (
+									<div className="ma__actbody">
+										<p className="ma__acthint">{t.me.activity.intro}</p>
+										{activity && activity.length > 0 ? (
+											<ul className="ma__actlist">
+												{activity.map((it, i) => (
+													<li className={`ma__act ma__act--${it.direction}`} key={`${it.hash}-${i}`}>
+														<span className="ma__actdir">{it.direction === 'in' ? t.me.activity.in : t.me.activity.out}</span>
+														<span className="ma__actamt">{it.direction === 'in' ? '+' : '−'}{it.amount} {it.asset}</span>
+														<span className="ma__actcp" title={it.counterparty || undefined}>{shortAddr(it.counterparty)}</span>
+														<span className="ma__actdate">{fmtDay(it.timestamp, lang)}</span>
+													</li>
+												))}
+											</ul>
+										) : (
+											<p className="ma__actempty">{activityMsg(activityReason, t)}</p>
+										)}
+										{activityTruncated && <p className="ma__acttrunc">{t.me.activity.truncated}</p>}
+									</div>
+								)}
+							</div>
 						</>
 					) : (
 						<>
@@ -398,6 +462,30 @@ function fmtMonthYear(iso: string, lang: Lang): string {
 function initialOf(name: string): string {
 	const ch = name.trim().charAt(0);
 	return ch ? ch.toUpperCase() : '•';
+}
+
+// A counterparty address, shortened for the row. UTXO chains may report none → '—'.
+function shortAddr(addr: string): string {
+	const a = (addr ?? '').trim();
+	if (!a) return '—';
+	return a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a;
+}
+
+// Activity timestamps are epoch seconds; 0 means unconfirmed/unknown → '—'.
+function fmtDay(epochSeconds: number, lang: Lang): string {
+	if (!epochSeconds) return '—';
+	const d = new Date(epochSeconds * 1000);
+	if (Number.isNaN(d.getTime())) return '—';
+	const loc = lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : 'en-US';
+	return d.toLocaleDateString(loc, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Which soft message to show when the list is empty — the chain wasn't reachable, the
+// chain isn't watched, or there simply is no activity yet.
+function activityMsg(reason: string | null, t: ReturnType<typeof getCirclesLocale>): string {
+	if (reason === 'unsupported') return t.me.activity.unsupported;
+	if (reason && reason !== 'no_address') return t.me.activity.unavailable;
+	return t.me.activity.none;
 }
 
 function voteTitle(v: MemberVote, t: ReturnType<typeof getCirclesLocale>): string {

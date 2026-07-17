@@ -457,3 +457,51 @@
 	cursor: pointer;
 }
 .ma__logoutbtn:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+/* ── Wallet activity — her own funds in/out, read from the chain via Almstins ── */
+.ma__activity { margin-top: 0.75rem; }
+.ma__actbtn {
+	width: 100%;
+	padding: 0.4rem 0.7rem;
+	border: 1px solid var(--border-bright);
+	border-radius: 0.4rem;
+	background: transparent;
+	color: var(--text-secondary);
+	font-size: 0.75rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.ma__actbtn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.ma__actbtn:disabled { opacity: 0.6; cursor: default; }
+.ma__actbody { margin-top: 0.55rem; }
+.ma__acthint { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.5rem; }
+.ma__actlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.ma__act {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	grid-template-areas: "dir amt date" "dir cp date";
+	align-items: center;
+	column-gap: 0.55rem;
+	row-gap: 0.1rem;
+	padding: 0.4rem 0.55rem;
+	border: 1px solid var(--border-subtle);
+	border-radius: 0.4rem;
+	background: var(--surface-card-2);
+}
+.ma__actdir {
+	grid-area: dir;
+	font-size: 0.6rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 0.15rem 0.4rem;
+	border-radius: 0.3rem;
+}
+.ma__act--in .ma__actdir { color: var(--gain); background: var(--gain-bg); }
+.ma__act--out .ma__actdir { color: var(--text-secondary); background: var(--surface-hover); }
+.ma__actamt { grid-area: amt; font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+.ma__act--in .ma__actamt { color: var(--gain); }
+.ma__actcp { grid-area: cp; font-size: 0.7rem; color: var(--text-muted); font-family: ui-monospace, monospace; }
+.ma__actdate { grid-area: date; font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+.ma__actempty { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+.ma__acttrunc { font-size: 0.68rem; color: var(--text-muted); margin: 0.45rem 0 0; font-style: italic; }

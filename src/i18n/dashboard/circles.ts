@@ -192,6 +192,20 @@ export interface CirclesLocale {
 				notFound: string;
 			};
 		};
+		/** Her wallet's funds in/out, read from the public chain via Almstins. Her own
+		 *  wallet, shown only to her (owner→owner) — bookkeeping, never surveillance. */
+		activity: {
+			intro: string;
+			cta: string;
+			hide: string;
+			loading: string;
+			in: string;
+			out: string;
+			none: string;
+			unavailable: string;
+			unsupported: string;
+			truncated: string;
+		};
 		/** The signed, printable record card — the artifact she carries to a lender. */
 		export: {
 			pageTitle: string;
@@ -518,6 +532,18 @@ const EN: CirclesLocale = {
 				notFound: 'Not proven with Verify yet. Prove your wallet with Verify, then check again.',
 			},
 		},
+		activity: {
+			intro: 'Funds in and out of your wallet, read straight from the public chain.',
+			cta: 'See wallet activity',
+			hide: 'Hide',
+			loading: 'Reading the chain…',
+			in: 'in',
+			out: 'out',
+			none: 'No activity yet on this wallet.',
+			unavailable: 'Could not reach the chain just now. Try again.',
+			unsupported: 'This wallet’s chain is not watched yet.',
+			truncated: 'Showing your most recent activity.',
+		},
 		export: {
 			pageTitle: 'My record card',
 			heading: 'Susu record',
@@ -785,6 +811,18 @@ const FR: CirclesLocale = {
 				notFound: 'Pas encore prouvé avec Verify. Prouvez votre portefeuille avec Verify, puis réessayez.',
 			},
 		},
+		activity: {
+			intro: 'Les fonds entrants et sortants de votre portefeuille, lus directement sur la chaîne publique.',
+			cta: 'Voir l’activité du portefeuille',
+			hide: 'Masquer',
+			loading: 'Lecture de la chaîne…',
+			in: 'reçu',
+			out: 'envoyé',
+			none: 'Aucune activité sur ce portefeuille pour le moment.',
+			unavailable: 'Impossible de joindre la chaîne pour le moment. Réessayez.',
+			unsupported: 'La chaîne de ce portefeuille n’est pas encore suivie.',
+			truncated: 'Affichage de votre activité la plus récente.',
+		},
 		export: {
 			pageTitle: 'Ma carte de record',
 			heading: 'Record susu',
@@ -987,6 +1025,18 @@ const ES: CirclesLocale = {
 				checking: 'Consultando con Verify…',
 				notFound: 'Aún no está probada con Verify. Prueba tu billetera con Verify y verifica de nuevo.',
 			},
+		},
+		activity: {
+			intro: 'Los fondos que entran y salen de tu billetera, leídos directamente de la cadena pública.',
+			cta: 'Ver actividad de la billetera',
+			hide: 'Ocultar',
+			loading: 'Leyendo la cadena…',
+			in: 'recibido',
+			out: 'enviado',
+			none: 'Aún no hay actividad en esta billetera.',
+			unavailable: 'No se pudo conectar con la cadena ahora. Inténtalo de nuevo.',
+			unsupported: 'La cadena de esta billetera aún no se monitorea.',
+			truncated: 'Mostrando tu actividad más reciente.',
 		},
 		export: {
 			pageTitle: 'Mi tarjeta de historial',
