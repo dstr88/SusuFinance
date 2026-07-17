@@ -332,10 +332,13 @@ export async function closeExpiredVotes(tenantId?: string): Promise<{ resolved: 
 		const verdict = await evaluateAtClose(v, v.id);
 
 		// Guarded: only the pass that flips 'open' → verdict does the side effect.
+		// tenant_id is redundant given the UUID id, but every write carries it — the
+		// tenant-isolation discipline is "no query omits the scope," not "omit it when
+		// you can prove it's safe."
 		const upd = await db.execute({
 			sql: `UPDATE circle_votes SET status = ?, outcome_at = now()
-			       WHERE id = ? AND status = 'open'`,
-			args: [verdict, v.id],
+			       WHERE id = ? AND tenant_id = ? AND status = 'open'`,
+			args: [verdict, v.id, v.tenant_id],
 		});
 		if ((upd.rowsAffected ?? 0) === 0) continue; // another pass got it
 
