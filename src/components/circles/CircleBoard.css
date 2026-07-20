@@ -18,7 +18,7 @@
 }
 .cb__title {
 	margin: 0;
-	font-size: 0.82rem;
+	font-size: 14px;
 	font-weight: 600;
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
@@ -28,14 +28,14 @@
 	background: var(--surface-card-2, rgba(255,255,255,0.06));
 	border-radius: 999px;
 	padding: 0 0.45rem;
-	font-size: 0.72rem;
+	font-size: 12px;
 	color: var(--text-muted);
 }
 .cb__spacer { flex: 1; }
 
 .cb__btn {
 	font: inherit;
-	font-size: 0.74rem;
+	font-size: 13px;
 	padding: 0.25rem 0.6rem;
 	border-radius: 7px;
 	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
@@ -51,7 +51,7 @@
 }
 
 .cb__note {
-	font-size: 0.78rem;
+	font-size: 13px;
 	margin: 0 0 0.5rem;
 	padding: 0.35rem 0.55rem;
 	border-radius: 7px;
@@ -81,7 +81,7 @@
 	background: var(--surface-bg, rgba(0,0,0,0.25));
 	color: var(--text-primary, inherit);
 	font: inherit;
-	font-size: 0.8rem;
+	font-size: 14px;
 }
 .cb__in--sm { flex: 0 0 120px; }
 
@@ -102,7 +102,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.35rem;
-	font-size: 0.76rem;
+	font-size: 14px;
 	padding: 0.22rem 0.55rem;
 	border-radius: 999px;
 	border: 1px solid var(--border-subtle, rgba(255,255,255,0.14));
@@ -119,13 +119,13 @@
 .cb__chip--drag { opacity: 0.45; }
 .cb__chip--pending { opacity: 0.75; }
 .cb__pending {
-	font-size: 0.64rem;
+	font-size: 11px;
 	text-transform: uppercase;
 	letter-spacing: 0.03em;
 	color: var(--text-muted);
 }
 .cb__empty {
-	font-size: 0.78rem;
+	font-size: 13px;
 	color: var(--text-muted);
 	margin: 0;
 }
@@ -159,9 +159,9 @@
 	justify-content: space-between;
 	gap: 0.4rem;
 }
-.cb__tinname { font-weight: 600; font-size: 0.86rem; }
+.cb__tinname { font-weight: 600; font-size: 15px; }
 .cb__status {
-	font-size: 0.62rem;
+	font-size: 11px;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	padding: 0 0.35rem;
@@ -173,20 +173,20 @@
 	color: var(--gain, #34d399);
 	border-color: var(--gain-border, rgba(52,211,153,0.3));
 }
-.cb__tinmeta { font-size: 0.74rem; color: var(--text-muted); }
+.cb__tinmeta { font-size: 13px; color: var(--text-muted); }
 .cb__tinfoot {
 	margin-top: auto;
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: 0.4rem;
-	font-size: 0.74rem;
+	font-size: 13px;
 	color: var(--text-secondary, inherit);
 }
-.cb__hint { font-size: 0.68rem; color: var(--accent, #6366f1); }
+.cb__hint { font-size: 12px; color: var(--accent, #6366f1); }
 
 .cb__foot {
-	font-size: 0.72rem;
+	font-size: 12px;
 	color: var(--text-muted);
 	margin: 0.6rem 0 0;
 	line-height: 1.5;

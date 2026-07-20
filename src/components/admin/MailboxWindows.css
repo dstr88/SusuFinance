@@ -15,7 +15,7 @@
 	.mailhero { width: 100%; }
 }
 .mailhero__note {
-	font-size: 0.82rem;
+	font-size: 13px;
 	color: var(--text-muted);
 }
 
@@ -31,27 +31,27 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	height: 34px;
+	height: 36px;
 	padding: 0 0.7rem;
 	cursor: pointer;
 	user-select: none;
-	font-size: 0.92rem;
+	font-size: 15px;
 }
 .mh__bar:focus-visible { outline: 2px solid var(--accent, #6366f1); outline-offset: -2px; }
-.mh__chev { font-size: 0.7rem; opacity: 0.5; transition: transform 0.15s; }
+.mh__chev { font-size: 12px; opacity: 0.5; transition: transform 0.15s; }
 .mh--open .mh__chev { transform: rotate(90deg); }
 .mh__label { font-weight: 600; }
-.mh__addr { color: var(--text-muted); font-size: 0.84rem; }
+.mh__addr { color: var(--text-muted); font-size: 14px; }
 .mh__badge {
 	background: var(--accent, #6366f1);
 	color: #fff;
 	border-radius: 999px;
 	padding: 0 0.4rem;
-	font-size: 0.76rem;
+	font-size: 12px;
 	line-height: 1.55;
 }
 .mh__ro {
-	font-size: 0.64rem;
+	font-size: 11px;
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
@@ -60,11 +60,11 @@
 	color: var(--text-muted);
 }
 .mh__spacer { flex: 1; }
-.mh__status { font-size: 0.82rem; color: var(--text-muted); }
+.mh__status { font-size: 13px; color: var(--text-muted); }
 
 .mh__btn {
 	font: inherit;
-	font-size: 0.82rem;
+	font-size: 13px;
 	padding: 0.22rem 0.6rem;
 	border-radius: 6px;
 	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
@@ -99,7 +99,7 @@
 }
 .mh__rf {
 	font: inherit;
-	font-size: 0.86rem;
+	font-size: 14px;
 	text-align: left;
 	padding: 0.28rem 0.5rem;
 	border-radius: 6px;
@@ -178,8 +178,8 @@
 	gap: 0.5rem;
 	margin-bottom: 0.15rem;
 }
-.mh__dlgtitle { font-weight: 600; font-size: 0.9rem; }
-.mh__dlgfrom { font-size: 0.74rem; color: var(--text-muted); }
+.mh__dlgtitle { font-weight: 600; font-size: 14px; }
+.mh__dlgfrom { font-size: 12px; color: var(--text-muted); }
 
 .mh__in {
 	width: 100%;
@@ -189,7 +189,7 @@
 	background: var(--surface-card, rgba(255,255,255,0.03));
 	color: var(--text-primary, inherit);
 	font: inherit;
-	font-size: 0.84rem;
+	font-size: 14px;
 	box-sizing: border-box;
 }
 /* The message field takes whatever height is left, so the modal fills its space
@@ -200,7 +200,7 @@ textarea.mh__in {
 	resize: none;
 }
 .mh__formrow { display: flex; align-items: center; gap: 0.4rem; flex: 0 0 auto; }
-.mh__formstatus { font-size: 0.74rem; color: var(--text-muted); }
+.mh__formstatus { font-size: 12px; color: var(--text-muted); }
 
 .mh__grip {
 	height: 8px;
@@ -231,7 +231,7 @@ textarea.mh__in {
 	display: flex;
 	align-items: baseline;
 	gap: 0.6rem;
-	font-size: 0.9rem;
+	font-size: 14px;
 	min-width: 0;
 }
 .mhc__who {
@@ -252,32 +252,32 @@ textarea.mh__in {
 .mhc__snip { color: var(--text-muted); font-weight: 400; }
 .mhc__when {
 	flex: 0 0 auto;
-	font-size: 0.82rem;
+	font-size: 13px;
 	color: var(--text-muted);
 	white-space: nowrap;
 }
-.mhc__clip { flex: 0 0 auto; font-size: 0.7rem; opacity: 0.7; }
+.mhc__clip { flex: 0 0 auto; font-size: 12px; opacity: 0.7; }
 
 /* Expanded reading pane for the selected row. */
 .mhc__open { display: none; padding: 0.4rem 0 0.2rem; }
 .mhc--sel .mhc__open { display: block; }
 .mhc--sel { background: var(--surface-card-2, rgba(255,255,255,0.04)); cursor: default; }
 .mhc__body {
-	font-size: 0.92rem;
+	font-size: 15px;
 	line-height: 1.6;
 	white-space: pre-wrap;
 	margin: 0 0 0.35rem;
 	max-height: 22rem;
 	overflow-y: auto;
 }
-.mhc__err { font-size: 0.74rem; color: var(--loss, #f87171); margin: 0 0 0.3rem; }
+.mhc__err { font-size: 12px; color: var(--loss, #f87171); margin: 0 0 0.3rem; }
 .mhc__acts { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .mhc__atts { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0 0 0.35rem; }
 .mhc__att {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.25rem;
-	font-size: 0.72rem;
+	font-size: 12px;
 	padding: 0.15rem 0.45rem;
 	border-radius: 999px;
 	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
@@ -286,7 +286,7 @@ textarea.mh__in {
 }
 .mhc__att:hover { background: var(--surface-hover, rgba(255,255,255,0.06)); }
 .mhc__att--skip { opacity: 0.55; }
-.mh__empty { font-size: 0.88rem; color: var(--text-muted); padding: 0.6rem; }
+.mh__empty { font-size: 14px; color: var(--text-muted); padding: 0.6rem; }
 
 /* ── Server spam verdict ────────────────────────────────────────────────────
    Not our judgment — SpamAssassin's, carried through from the headers. Loud on
@@ -300,7 +300,7 @@ textarea.mh__in {
 .mhc--spam .mhc__who { color: var(--loss, #ef4444); }
 .mhc__scam {
 	flex: 0 0 auto;
-	font-size: 0.72rem;
+	font-size: 12px;
 	font-weight: 700;
 	letter-spacing: 0.04em;
 	padding: 0.1rem 0.4rem;
@@ -319,7 +319,7 @@ textarea.mh__in {
 .mhc--caution { border-left-color: var(--warning, #f59e0b); }
 .mhc__caution {
 	flex: 0 0 auto;
-	font-size: 0.72rem;
+	font-size: 12px;
 	font-weight: 700;
 	letter-spacing: 0.04em;
 	padding: 0.1rem 0.4rem;
@@ -337,7 +337,7 @@ textarea.mh__in {
 	background: var(--loss-bg, rgba(239,68,68,0.08));
 }
 .mhc__threathead {
-	font-size: 0.78rem;
+	font-size: 13px;
 	font-weight: 600;
 	color: var(--loss, #ef4444);
 	margin-bottom: 0.3rem;
@@ -347,14 +347,14 @@ textarea.mh__in {
 	flex-wrap: wrap;
 	gap: 0.4rem;
 	align-items: baseline;
-	font-size: 0.8rem;
+	font-size: 13px;
 	padding: 0.15rem 0;
 }
 .mhc__threat code {
 	/* Break anywhere: a wallet address has no spaces and would otherwise force the
 	   whole panel to scroll sideways. */
 	word-break: break-all;
-	font-size: 0.78rem;
+	font-size: 13px;
 	color: var(--text-primary, inherit);
 }
 .mhc__threat span { color: var(--text-secondary, inherit); }
