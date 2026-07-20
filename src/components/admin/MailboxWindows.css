@@ -31,24 +31,24 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	height: 30px;
-	padding: 0 0.6rem;
+	height: 34px;
+	padding: 0 0.7rem;
 	cursor: pointer;
 	user-select: none;
-	font-size: 0.78rem;
+	font-size: 0.92rem;
 }
 .mh__bar:focus-visible { outline: 2px solid var(--accent, #6366f1); outline-offset: -2px; }
 .mh__chev { font-size: 0.7rem; opacity: 0.5; transition: transform 0.15s; }
 .mh--open .mh__chev { transform: rotate(90deg); }
 .mh__label { font-weight: 600; }
-.mh__addr { color: var(--text-muted); }
+.mh__addr { color: var(--text-muted); font-size: 0.84rem; }
 .mh__badge {
 	background: var(--accent, #6366f1);
 	color: #fff;
 	border-radius: 999px;
 	padding: 0 0.4rem;
-	font-size: 0.68rem;
-	line-height: 1.5;
+	font-size: 0.76rem;
+	line-height: 1.55;
 }
 .mh__ro {
 	font-size: 0.64rem;
@@ -60,12 +60,12 @@
 	color: var(--text-muted);
 }
 .mh__spacer { flex: 1; }
-.mh__status { font-size: 0.72rem; color: var(--text-muted); }
+.mh__status { font-size: 0.82rem; color: var(--text-muted); }
 
 .mh__btn {
 	font: inherit;
-	font-size: 0.72rem;
-	padding: 0.15rem 0.5rem;
+	font-size: 0.82rem;
+	padding: 0.22rem 0.6rem;
 	border-radius: 6px;
 	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
 	background: transparent;
@@ -99,7 +99,7 @@
 }
 .mh__rf {
 	font: inherit;
-	font-size: 0.74rem;
+	font-size: 0.86rem;
 	text-align: left;
 	padding: 0.28rem 0.5rem;
 	border-radius: 6px;
@@ -129,12 +129,12 @@
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
-	/* Contrasting outline so the inbox reads as its own surface rather than
-	   bleeding into the panel around it. */
-	margin: 0.4rem 0.5rem 0.5rem;
-	border: 1px solid var(--border-bright, rgba(255,255,255,0.16));
-	border-radius: 8px;
-	background: var(--surface-bg, rgba(0,0,0,0.22));
+	/* The inbox is its own object: a visible border, and an interior darker than the
+	   panel around it so the boundary reads without needing a heavy rule. */
+	margin: 0.5rem 0.6rem 0.6rem;
+	border: 2px solid var(--border-bright, rgba(255,255,255,0.18));
+	border-radius: 9px;
+	background: var(--surface-bg, #0a0f1a);
 }
 
 /* ── Compose modal ──────────────────────────────────────────────────────────
@@ -216,10 +216,11 @@ textarea.mh__in {
    date. The body is hidden until the row is clicked, so a full screen of
    mail is scannable instead of three messages filling the panel. */
 .mhc {
-	border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.05));
+	border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
 	border-left: 3px solid transparent;
-	padding: 0.35rem 0.6rem;
+	padding: 0.5rem 0.7rem;
 	cursor: pointer;
+	background: var(--surface-card, rgba(255,255,255,0.03));
 }
 .mhc:hover { background: var(--surface-hover, rgba(255,255,255,0.035)); }
 .mhc--unread { border-left-color: var(--accent, #6366f1); }
@@ -230,7 +231,7 @@ textarea.mh__in {
 	display: flex;
 	align-items: baseline;
 	gap: 0.6rem;
-	font-size: 0.78rem;
+	font-size: 0.9rem;
 	min-width: 0;
 }
 .mhc__who {
@@ -251,7 +252,7 @@ textarea.mh__in {
 .mhc__snip { color: var(--text-muted); font-weight: 400; }
 .mhc__when {
 	flex: 0 0 auto;
-	font-size: 0.72rem;
+	font-size: 0.82rem;
 	color: var(--text-muted);
 	white-space: nowrap;
 }
@@ -262,8 +263,8 @@ textarea.mh__in {
 .mhc--sel .mhc__open { display: block; }
 .mhc--sel { background: var(--surface-card-2, rgba(255,255,255,0.04)); cursor: default; }
 .mhc__body {
-	font-size: 0.8rem;
-	line-height: 1.55;
+	font-size: 0.92rem;
+	line-height: 1.6;
 	white-space: pre-wrap;
 	margin: 0 0 0.35rem;
 	max-height: 22rem;
@@ -285,4 +286,27 @@ textarea.mh__in {
 }
 .mhc__att:hover { background: var(--surface-hover, rgba(255,255,255,0.06)); }
 .mhc__att--skip { opacity: 0.55; }
-.mh__empty { font-size: 0.78rem; color: var(--text-muted); padding: 0.6rem; }
+.mh__empty { font-size: 0.88rem; color: var(--text-muted); padding: 0.6rem; }
+
+/* ── Server spam verdict ────────────────────────────────────────────────────
+   Not our judgment — SpamAssassin's, carried through from the headers. Loud on
+   purpose: for the operator who reaches his mail only here, this panel is the
+   only screen where the warning can appear. */
+.mhc--spam {
+	border-left-color: var(--loss, #ef4444);
+	background: var(--loss-bg, rgba(239,68,68,0.08));
+}
+.mhc--spam .mhc__subj,
+.mhc--spam .mhc__who { color: var(--loss, #ef4444); }
+.mhc__scam {
+	flex: 0 0 auto;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	padding: 0.1rem 0.4rem;
+	border-radius: 5px;
+	color: var(--loss, #ef4444);
+	background: var(--loss-bg, rgba(239,68,68,0.14));
+	border: 1px solid var(--loss-border, rgba(239,68,68,0.35));
+	white-space: nowrap;
+}

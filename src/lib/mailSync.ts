@@ -149,6 +149,44 @@ async function saveCursor(
 	});
 }
 
+/**
+ * The mail server's own spam verdict, read back out of the headers.
+ *
+ * SpamAssassin (what cPanel runs) writes some combination of:
+ *   X-Spam-Flag:   YES
+ *   X-Spam-Status: Yes, score=12.4 required=5.0 tests=...
+ *   X-Spam-Score:  12.4
+ *
+ * Which of the three appear varies by configuration, so all three are checked and any
+ * one saying yes is enough. We deliberately do NOT apply our own threshold to the
+ * score: the server's required= value is the operator's configured policy, and second
+ * -guessing it here would mean the panel disagrees with the mailbox.
+ */
+function readSpamVerdict(headers: Map<string, unknown> | undefined): { flag: boolean; score: number | null } {
+	if (!headers) return { flag: false, score: null };
+
+	const raw = (k: string): string => {
+		const v = headers.get(k);
+		if (v == null) return '';
+		if (typeof v === 'string') return v;
+		// mailparser hands back a structured object for some headers.
+		return String((v as { value?: unknown }).value ?? v);
+	};
+
+	const flagHeader = raw('x-spam-flag').trim().toLowerCase();
+	const status = raw('x-spam-status').trim();
+	const scoreHeader = raw('x-spam-score').trim();
+
+	// score= inside X-Spam-Status, or the standalone X-Spam-Score header.
+	const fromStatus = status.match(/score=(-?\d+(?:\.\d+)?)/i)?.[1];
+	const parsed = Number(fromStatus ?? scoreHeader);
+	const score = Number.isFinite(parsed) ? parsed : null;
+
+	const flag = flagHeader === 'yes' || /^yes\b/i.test(status);
+
+	return { flag, score };
+}
+
 /** Poll one folder. Returns counts; throws only on a connection-level failure. */
 async function pollFolder(
 	imap: ImapFlow, box: Mailbox, folder: MailFolder,
@@ -184,6 +222,8 @@ async function pollFolder(
 				? parsed.references.join(' ')
 				: (parsed.references ?? null);
 
+			const spam = readSpamVerdict(parsed.headers as Map<string, unknown> | undefined);
+
 			// Converge with the placeholder row written at send time.
 			//
 			// sendFromMailbox records a row immediately so a sent message appears in the
@@ -206,8 +246,8 @@ async function pollFolder(
 				        (id, mailbox, folder, special_use, direction, uid, uid_validity,
 				         message_id, in_reply_to, refs,
 				         from_addr, from_name, to_addrs, cc_addrs,
-				         subject, body_text, body_html, sent_at)
-				      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				         subject, body_text, body_html, sent_at, spam_flag, spam_score)
+				      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 				      ON CONFLICT (mailbox, folder, uid_validity, uid)
 				        WHERE uid IS NOT NULL
 				      DO NOTHING`,
@@ -230,6 +270,8 @@ async function pollFolder(
 					parsed.text ?? '',
 					parsed.html || null,
 					parsed.date ? parsed.date.toISOString() : null,
+					spam.flag,
+					spam.score,
 				],
 			});
 
