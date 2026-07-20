@@ -1,0 +1,38 @@
+# Polls the operator mailboxes over IMAP and stores new messages for the /admin
+# mailbox windows.
+#
+# Scheduled workflows run from the repository's DEFAULT branch. For this repo that
+# is `main`, which is also what deploys — so a change here takes effect once merged
+# to main, not merely once deployed.
+#
+# curl runs with --fail so an HTTP error becomes a red run. Without it curl exits 0
+# on a 500 and the job reports success while nothing has synced, which is exactly
+# how a sibling cron sat broken for months on the Almstins side.
+
+name: sync-mail
+
+on:
+  schedule:
+    # Every 15 minutes. GitHub may delay scheduled runs under load; mail is not
+    # time-critical enough to care, and a missed slot is picked up by the next one
+    # because the poll is incremental by IMAP UID rather than by time window.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Poll mailboxes
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "CRON_SECRET is not set as a repository secret"; exit 1
+          fi
+          BASE="${APP_URL:-https://susufinance.com}"
+          curl -sS --fail --max-time 300 \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${BASE}/api/cron/sync-mail"

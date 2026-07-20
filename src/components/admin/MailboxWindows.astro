@@ -1,0 +1,605 @@
+---
+/**
+ * MailboxWindows.astro — the mailbox panels on /admin.
+ *
+ * One collapsible window per configured mailbox, closed by default so the admin page
+ * keeps its current shape until you actually want mail. Each window lists messages
+ * newest-first and, when the mailbox allows sending, offers Compose and Reply.
+ *
+ * Drops into both products unchanged — the mailbox list comes from env, so the same
+ * component renders admin@/afrikanus@ here and donnie@/hello@ on Almstins.
+ *
+ * ── Escaping ────────────────────────────────────────────────────────────────
+ * Everything below is attacker-controlled: subject, sender name, and body all arrive
+ * from whoever emailed you. The server-rendered pass uses Astro's {} interpolation,
+ * which escapes. The client re-render after a send passes every interpolated value
+ * through escapeHtml. Both paths matter — one unescaped subject line is stored XSS in
+ * the admin panel, which is the worst place in the app to have it.
+ */
+import { getMailboxesForAdmin, mailConfigStatus } from '@/lib/mailboxes';
+import { db } from '@/lib/db';
+
+interface Props { adminEmail: string }
+const { adminEmail } = Astro.props;
+
+const status = mailConfigStatus();
+const boxes = getMailboxesForAdmin(adminEmail);
+
+/** Never let a mail failure take down the whole admin dashboard. */
+const safeQ = async (sql: string, args: any[] = []): Promise<Record<string, any>[]> => {
+	try { return (await db.execute({ sql, args })).rows as Record<string, any>[]; }
+	catch { return []; }
+};
+
+const windows = await Promise.all(
+	boxes.map(async (box) => {
+		const messages = await safeQ(
+			`SELECT id, direction, from_addr, from_name, to_addrs,
+			        subject, body_text, sent_at, read_at, send_error
+			 FROM mail_messages
+			 WHERE mailbox = ?
+			 ORDER BY COALESCE(sent_at, fetched_at) DESC
+			 LIMIT 50`,
+			[box.address],
+		);
+		const atts = await safeQ(
+			`SELECT a.id, a.message_id, a.filename, a.size_bytes, a.skipped
+			 FROM mail_attachments a
+			 JOIN mail_messages m ON m.id = a.message_id
+			 WHERE m.mailbox = ?`,
+			[box.address],
+		);
+		const attByMsg = new Map<string, Record<string, any>[]>();
+		for (const a of atts) {
+			const k = String(a.message_id);
+			if (!attByMsg.has(k)) attByMsg.set(k, []);
+			attByMsg.get(k)!.push(a);
+		}
+		for (const m of messages) m.attachments = attByMsg.get(String(m.id)) ?? [];
+
+		const unread = messages.filter((m) => m.direction === 'in' && !m.read_at).length;
+		return { box, messages, unread };
+	}),
+);
+
+/** Badge on the closed launcher — the only signal that there is anything to open for. */
+const totalUnread = windows.reduce((n, w) => n + w.unread, 0);
+
+const fmtSize = (n: number) =>
+	n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB`
+	: n >= 1024 ? `${Math.round(n / 1024)} KB`
+	: `${n} B`;
+
+const fmt = (v: unknown) =>
+	v ? new Date(String(v)).toLocaleString('en-US', {
+		month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+	}) : '';
+---
+
+{/*
+	Launcher — the only thing on the page most of the time. Mail lives behind it in a
+	modal so /admin keeps its shape and the inbox is opened deliberately rather than
+	sitting open competing for attention.
+*/}
+<div class="section" id="mail-section">
+	<div class="mail-launcher-row">
+		<button id="mail-open" class="mail-launcher" type="button" disabled={!status.configured || windows.length === 0}>
+			<span aria-hidden="true">✉</span>
+			<span>Mail</span>
+			{totalUnread > 0 && <span class="inbox-count">{totalUnread}</span>}
+		</button>
+		{!status.configured && <span class="mail-setup-note">Not configured — {status.reason}</span>}
+		{status.configured && windows.length === 0 && (
+			<span class="mail-setup-note">No mailboxes are assigned to {adminEmail}.</span>
+		)}
+	</div>
+</div>
+
+<dialog id="mail-modal" class="mail-modal">
+	<div class="mail-modal-head">
+		<span class="section-title">Mailboxes</span>
+		<span class="mail-head-actions">
+			<span id="mail-refresh-status" class="mail-form-status"></span>
+			<button id="mail-refresh" class="mail-btn" type="button">Check now</button>
+			<button id="mail-close" class="mail-btn" type="button">Close</button>
+		</span>
+	</div>
+	<div class="mail-modal-body">
+
+	{!status.configured && (
+		<p class="mail-setup-note">
+			Not configured yet — {status.reason} Once the mailboxes exist and the
+			<code>MAIL_IMAP_HOST</code> / <code>MAILBOX_n_*</code> env vars are set, the windows appear here.
+		</p>
+	)}
+
+	{status.configured && windows.length === 0 && (
+		<p class="mail-setup-note">No mailboxes are assigned to {adminEmail}.</p>
+	)}
+
+	{windows.map(({ box, messages, unread }) => (
+		<details class="mail-window" data-mailbox={box.address}>
+			<summary class="mail-summary">
+				<span class="mail-label">{box.label}</span>
+				<span class="mail-address">{box.address}</span>
+				{unread > 0 && <span class="inbox-count">{unread} unread</span>}
+				{!box.canSend && <span class="mail-readonly">read-only</span>}
+			</summary>
+
+			{box.canSend && (
+				<div class="mail-compose-bar">
+					<button class="mail-btn mail-compose-btn" data-mailbox={box.address}>Create email</button>
+				</div>
+			)}
+
+			<form class="mail-form" data-mailbox={box.address} hidden>
+				<input class="mail-input mail-to" type="text" placeholder="To" autocomplete="off" />
+				<input class="mail-input mail-cc" type="text" placeholder="Cc (optional)" autocomplete="off" />
+				<input class="mail-input mail-subject" type="text" placeholder="Subject" autocomplete="off" />
+				<textarea class="mail-input mail-body" rows="7" placeholder="Message"></textarea>
+				<input type="hidden" class="mail-reply-to" />
+				<div class="mail-form-actions">
+					<button type="submit" class="mail-btn mail-send-btn">Send</button>
+					<button type="button" class="mail-btn mail-cancel-btn">Cancel</button>
+					<span class="mail-form-status"></span>
+				</div>
+			</form>
+
+			<div class="mail-list">
+				{messages.length === 0 ? (
+					<p class="mail-empty">Nothing here yet. Mail appears after the sync runs.</p>
+				) : messages.map((m) => (
+					<div
+						class:list={['mail-card', { 'mail-card--unread': m.direction === 'in' && !m.read_at, 'mail-card--out': m.direction === 'out' }]}
+						data-id={m.id}
+					>
+						<div class="mail-card-head">
+							<span class="mail-from">
+								{m.direction === 'out' ? `To: ${m.to_addrs}` : (m.from_name ? `${m.from_name} <${m.from_addr}>` : m.from_addr)}
+							</span>
+							<span class="inbox-date">{fmt(m.sent_at)}</span>
+						</div>
+						<div class="mail-card-subject">{m.subject}</div>
+						<p class="mail-card-body">{m.body_text}</p>
+						{(m.attachments as any[])?.length > 0 && (
+							<div class="mail-atts">
+								{(m.attachments as any[]).map((a) => (
+									a.skipped ? (
+										<span class="mail-att mail-att--skipped" title="Too large to store — open it in webmail">
+											📎 {a.filename} (too large)
+										</span>
+									) : (
+										<a class="mail-att" href={`/api/admin/mail/attachment?id=${a.id}`} download>
+											📎 {a.filename} <span class="mail-att-size">{fmtSize(Number(a.size_bytes ?? 0))}</span>
+										</a>
+									)
+								))}
+							</div>
+						)}
+						{m.send_error && <p class="mail-error">Not sent: {m.send_error}</p>}
+						<div class="mail-card-actions">
+							{box.canSend && m.direction === 'in' && (
+								<button class="mail-btn mail-reply-btn" data-id={m.id} data-mailbox={box.address}>Reply</button>
+							)}
+							{m.direction === 'in' && !m.read_at && (
+								<button class="mail-btn mail-read-btn" data-id={m.id} data-mailbox={box.address}>Mark read</button>
+							)}
+						</div>
+					</div>
+				))}
+			</div>
+		</details>
+	))}
+	</div>
+</dialog>
+
+<style>
+	/* ── Launcher ─────────────────────────────────────────────────────────── */
+	.mail-launcher-row {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		flex-wrap: wrap;
+	}
+	.mail-launcher {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		font: inherit;
+		font-size: 0.85rem;
+		padding: 0.45rem 0.85rem;
+		border-radius: 8px;
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+		background: var(--surface-card, rgba(255,255,255,0.03));
+		color: var(--text-primary, inherit);
+		cursor: pointer;
+	}
+	.mail-launcher:hover:not(:disabled) { background: var(--surface-hover, rgba(255,255,255,0.07)); }
+	.mail-launcher:disabled { opacity: 0.4; cursor: not-allowed; }
+
+	/* ── Modal ────────────────────────────────────────────────────────────── */
+	.mail-modal {
+		width: min(860px, 94vw);
+		max-height: 88vh;
+		padding: 0;
+		border: 1px solid var(--border-bright, rgba(255,255,255,0.12));
+		border-radius: 12px;
+		background: var(--surface-bg, #0a0f1a);
+		color: var(--text-primary, inherit);
+		overflow: hidden;
+	}
+	.mail-modal::backdrop { background: rgba(0,0,0,0.6); }
+	.mail-modal-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.85rem 1rem;
+		border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+		position: sticky;
+		top: 0;
+		background: inherit;
+	}
+	/* The scroll container — the modal itself stays fixed so Close is always reachable. */
+	.mail-modal-body {
+		max-height: calc(88vh - 3.5rem);
+		overflow-y: auto;
+		padding: 0.9rem 1rem 1rem;
+	}
+
+	.mail-setup-note {
+		font-size: 0.82rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+	}
+	.mail-setup-note code {
+		background: var(--surface-card-2, rgba(255,255,255,0.06));
+		padding: 0.1rem 0.3rem;
+		border-radius: 4px;
+	}
+	.mail-window {
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+		border-radius: 10px;
+		margin-bottom: 0.75rem;
+		background: var(--surface-card, rgba(255,255,255,0.02));
+	}
+	.mail-summary {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.75rem 0.9rem;
+		cursor: pointer;
+		user-select: none;
+		list-style: none;
+	}
+	.mail-summary::-webkit-details-marker { display: none; }
+	.mail-summary::before {
+		content: '▸';
+		font-size: 0.8rem;
+		opacity: 0.5;
+		transition: transform 0.15s;
+	}
+	.mail-window[open] .mail-summary::before { transform: rotate(90deg); }
+	.mail-label { font-weight: 600; }
+	.mail-address { font-size: 0.78rem; color: var(--text-muted); }
+	.mail-readonly {
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		padding: 0.1rem 0.4rem;
+		border-radius: 999px;
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+		color: var(--text-muted);
+	}
+	.mail-compose-bar { padding: 0 0.9rem 0.6rem; }
+	.mail-form {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+		padding: 0 0.9rem 0.85rem;
+	}
+	.mail-input {
+		width: 100%;
+		padding: 0.5rem 0.6rem;
+		border-radius: 7px;
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+		background: var(--surface-bg, rgba(0,0,0,0.25));
+		color: var(--text-primary, inherit);
+		font: inherit;
+		font-size: 0.85rem;
+	}
+	textarea.mail-input { resize: vertical; }
+	.mail-form-actions { display: flex; align-items: center; gap: 0.5rem; }
+	.mail-form-status { font-size: 0.78rem; color: var(--text-muted); }
+	.mail-btn {
+		font: inherit;
+		font-size: 0.78rem;
+		padding: 0.35rem 0.7rem;
+		border-radius: 7px;
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+		background: transparent;
+		color: var(--text-secondary, inherit);
+		cursor: pointer;
+	}
+	.mail-btn:hover:not(:disabled) { background: var(--surface-hover, rgba(255,255,255,0.06)); }
+	.mail-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+	.mail-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		padding: 0 0.9rem 0.9rem;
+	}
+	.mail-empty { font-size: 0.82rem; color: var(--text-muted); }
+	.mail-card {
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+		border-left-width: 3px;
+		border-radius: 8px;
+		padding: 0.6rem 0.75rem;
+		background: var(--surface-card-2, rgba(255,255,255,0.03));
+	}
+	.mail-card--unread { border-left-color: var(--accent, #6366f1); }
+	.mail-card--out { opacity: 0.75; }
+	.mail-card-head {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		font-size: 0.78rem;
+		color: var(--text-muted);
+	}
+	.mail-from { font-weight: 500; }
+	.mail-card-subject { font-weight: 600; font-size: 0.88rem; margin: 0.25rem 0; }
+	.mail-card-body {
+		font-size: 0.83rem;
+		line-height: 1.55;
+		white-space: pre-wrap;
+		margin: 0 0 0.4rem;
+		max-height: 16rem;
+		overflow-y: auto;
+	}
+	.mail-error { font-size: 0.78rem; color: var(--loss, #f87171); margin: 0 0 0.4rem; }
+	.mail-head-actions { display: flex; align-items: center; gap: 0.5rem; }
+	.mail-atts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.5rem; }
+	.mail-att {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-size: 0.76rem;
+		padding: 0.25rem 0.55rem;
+		border-radius: 999px;
+		border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+		color: var(--text-secondary, inherit);
+		text-decoration: none;
+	}
+	.mail-att:hover { background: var(--surface-hover, rgba(255,255,255,0.06)); }
+	.mail-att--skipped { opacity: 0.55; cursor: default; }
+	.mail-att-size { color: var(--text-muted); }
+	.mail-card-actions { display: flex; gap: 0.4rem; }
+</style>
+
+<script>
+	import { escapeHtml } from '@/lib/escapeHtml';
+
+	const q = <T extends Element>(root: ParentNode, sel: string) => root.querySelector<T>(sel);
+
+	// ── Modal open / close ────────────────────────────────────────────────────
+	// showModal() rather than an .open class so the browser handles focus trapping,
+	// inert background, and Escape for free.
+	const modal = document.getElementById('mail-modal') as HTMLDialogElement | null;
+	document.getElementById('mail-open')?.addEventListener('click', () => modal?.showModal());
+	document.getElementById('mail-close')?.addEventListener('click', () => modal?.close());
+
+	// Click the backdrop to dismiss. The dialog element itself fills only its box, so a
+	// click whose target IS the dialog landed outside the content.
+	modal?.addEventListener('click', (e) => {
+		if (e.target === modal) modal.close();
+	});
+
+	// ── Check now — poll IMAP on demand rather than waiting for the cron ───────
+	document.getElementById('mail-refresh')?.addEventListener('click', async () => {
+		const btn = document.getElementById('mail-refresh') as HTMLButtonElement;
+		const statusEl = document.getElementById('mail-refresh-status');
+		btn.disabled = true;
+		if (statusEl) statusEl.textContent = 'Checking…';
+
+		try {
+			const res = await fetch('/api/admin/mail/refresh', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: '{}',
+			});
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+
+			// Surface per-mailbox IMAP errors rather than reporting a blanket success —
+			// a wrong password would otherwise look identical to an empty inbox.
+			const failed = (data.results ?? []).filter((r: any) => r.error);
+			if (failed.length) {
+				if (statusEl) statusEl.textContent = `${failed[0].mailbox}: ${failed[0].error}`;
+			} else if (data.throttled?.length && !data.results?.length) {
+				if (statusEl) statusEl.textContent = 'Just checked — try again shortly.';
+			} else {
+				if (statusEl) statusEl.textContent = data.inserted > 0 ? `${data.inserted} new` : 'Up to date.';
+			}
+
+			for (const win of document.querySelectorAll<HTMLElement>('.mail-window')) {
+				if (win.dataset.mailbox) await refresh(win.dataset.mailbox);
+			}
+		} catch (err) {
+			if (statusEl) statusEl.textContent = err instanceof Error ? err.message : 'Check failed.';
+		} finally {
+			btn.disabled = false;
+		}
+	});
+
+	const fmtSize = (n: number) =>
+		n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB`
+		: n >= 1024 ? `${Math.round(n / 1024)} KB`
+		: `${n} B`;
+
+	function formFor(mailbox: string): HTMLFormElement | null {
+		return document.querySelector<HTMLFormElement>(`.mail-form[data-mailbox="${CSS.escape(mailbox)}"]`);
+	}
+
+	function openForm(mailbox: string, opts: { to?: string; subject?: string; replyToId?: string } = {}) {
+		const form = formFor(mailbox);
+		if (!form) return;
+		form.hidden = false;
+		q<HTMLInputElement>(form, '.mail-to')!.value = opts.to ?? '';
+		q<HTMLInputElement>(form, '.mail-subject')!.value = opts.subject ?? '';
+		q<HTMLInputElement>(form, '.mail-reply-to')!.value = opts.replyToId ?? '';
+		q<HTMLTextAreaElement>(form, '.mail-body')!.value = '';
+		q<HTMLElement>(form, '.mail-form-status')!.textContent = '';
+		q<HTMLTextAreaElement>(form, '.mail-body')!.focus();
+	}
+
+	// ── Compose ───────────────────────────────────────────────────────────────
+	document.addEventListener('click', (e) => {
+		const btn = (e.target as Element).closest<HTMLButtonElement>('.mail-compose-btn');
+		if (!btn?.dataset.mailbox) return;
+		openForm(btn.dataset.mailbox);
+	});
+
+	// ── Reply — prefills recipient and subject from the card being answered ────
+	document.addEventListener('click', (e) => {
+		const btn = (e.target as Element).closest<HTMLButtonElement>('.mail-reply-btn');
+		if (!btn?.dataset.mailbox || !btn.dataset.id) return;
+
+		const card = btn.closest<HTMLElement>('.mail-card');
+		const from = q<HTMLElement>(card!, '.mail-from')?.textContent?.trim() ?? '';
+		const subject = q<HTMLElement>(card!, '.mail-card-subject')?.textContent?.trim() ?? '';
+
+		// The header renders as `Name <addr>` — send to the address alone when present.
+		const addr = from.match(/<([^>]+)>/)?.[1] ?? from;
+
+		openForm(btn.dataset.mailbox, {
+			to: addr,
+			subject: /^re:/i.test(subject) ? subject : `Re: ${subject}`,
+			replyToId: btn.dataset.id,
+		});
+	});
+
+	document.addEventListener('click', (e) => {
+		const btn = (e.target as Element).closest<HTMLButtonElement>('.mail-cancel-btn');
+		if (!btn) return;
+		const form = btn.closest<HTMLFormElement>('.mail-form');
+		if (form) form.hidden = true;
+	});
+
+	// ── Mark read ─────────────────────────────────────────────────────────────
+	document.addEventListener('click', async (e) => {
+		const btn = (e.target as Element).closest<HTMLButtonElement>('.mail-read-btn');
+		if (!btn?.dataset.id || !btn.dataset.mailbox) return;
+
+		btn.disabled = true;
+		try {
+			const res = await fetch('/api/admin/mail', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ id: btn.dataset.id, mailbox: btn.dataset.mailbox }),
+			});
+			if (!res.ok) throw new Error(String(res.status));
+			btn.closest('.mail-card')?.classList.remove('mail-card--unread');
+			btn.remove();
+		} catch {
+			btn.disabled = false;
+			alert('Could not mark as read.');
+		}
+	});
+
+	// ── Send ──────────────────────────────────────────────────────────────────
+	document.addEventListener('submit', async (e) => {
+		const form = (e.target as Element).closest<HTMLFormElement>('.mail-form');
+		if (!form) return;
+		e.preventDefault();
+
+		const mailbox = form.dataset.mailbox!;
+		const statusEl = q<HTMLElement>(form, '.mail-form-status')!;
+		const sendBtn = q<HTMLButtonElement>(form, '.mail-send-btn')!;
+
+		const payload = {
+			mailbox,
+			to: q<HTMLInputElement>(form, '.mail-to')!.value.trim(),
+			cc: q<HTMLInputElement>(form, '.mail-cc')!.value.trim(),
+			subject: q<HTMLInputElement>(form, '.mail-subject')!.value.trim(),
+			body: q<HTMLTextAreaElement>(form, '.mail-body')!.value.trim(),
+			replyToId: q<HTMLInputElement>(form, '.mail-reply-to')!.value || undefined,
+		};
+
+		if (!payload.to) { statusEl.textContent = 'Add a recipient.'; return; }
+		if (!payload.body) { statusEl.textContent = 'Message is empty.'; return; }
+
+		sendBtn.disabled = true;
+		statusEl.textContent = 'Sending…';
+
+		try {
+			const res = await fetch('/api/admin/mail', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload),
+			});
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+
+			statusEl.textContent = 'Sent.';
+			form.hidden = true;
+			await refresh(mailbox);
+		} catch (err) {
+			statusEl.textContent = err instanceof Error ? err.message : 'Send failed.';
+		} finally {
+			sendBtn.disabled = false;
+		}
+	});
+
+	/**
+	 * Re-render one window after a send.
+	 *
+	 * Every interpolated value here is attacker-controlled — subject, sender name and
+	 * body come from whoever wrote to you. escapeHtml on all of them, in text and
+	 * attribute position alike.
+	 */
+	async function refresh(mailbox: string) {
+		const win = document.querySelector<HTMLElement>(`.mail-window[data-mailbox="${CSS.escape(mailbox)}"]`);
+		const list = win ? q<HTMLElement>(win, '.mail-list') : null;
+		if (!list) return;
+
+		try {
+			const res = await fetch(`/api/admin/mail?mailbox=${encodeURIComponent(mailbox)}`);
+			const data = await res.json();
+			if (!data.ok) return;
+
+			const fmt = (v: unknown) =>
+				v ? new Date(String(v)).toLocaleString('en-US', {
+					month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+				}) : '';
+
+			list.innerHTML = (data.messages as Record<string, any>[]).map((m) => {
+				const out = m.direction === 'out';
+				const who = out
+					? `To: ${escapeHtml(m.to_addrs)}`
+					: escapeHtml(m.from_name ? `${m.from_name} <${m.from_addr}>` : m.from_addr);
+				const unread = !out && !m.read_at;
+				return `
+					<div class="mail-card${unread ? ' mail-card--unread' : ''}${out ? ' mail-card--out' : ''}" data-id="${escapeHtml(m.id)}">
+						<div class="mail-card-head">
+							<span class="mail-from">${who}</span>
+							<span class="inbox-date">${escapeHtml(fmt(m.sent_at))}</span>
+						</div>
+						<div class="mail-card-subject">${escapeHtml(m.subject)}</div>
+						<p class="mail-card-body">${escapeHtml(m.body_text)}</p>
+						${(m.attachments ?? []).length ? `<div class="mail-atts">${(m.attachments as any[]).map((a) =>
+							a.skipped
+								? `<span class="mail-att mail-att--skipped">📎 ${escapeHtml(a.filename)} (too large)</span>`
+								: `<a class="mail-att" href="/api/admin/mail/attachment?id=${encodeURIComponent(String(a.id))}" download>📎 ${escapeHtml(a.filename)} <span class="mail-att-size">${escapeHtml(fmtSize(Number(a.size_bytes ?? 0)))}</span></a>`
+						).join('')}</div>` : ''}
+						${m.send_error ? `<p class="mail-error">Not sent: ${escapeHtml(m.send_error)}</p>` : ''}
+						<div class="mail-card-actions">
+							${data.canSend && !out ? `<button class="mail-btn mail-reply-btn" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Reply</button>` : ''}
+							${unread ? `<button class="mail-btn mail-read-btn" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>` : ''}
+						</div>
+					</div>`;
+			}).join('');
+		} catch {
+			/* leave the existing list in place */
+		}
+	}
+</script>

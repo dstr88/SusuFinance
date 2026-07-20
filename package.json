@@ -42,9 +42,11 @@
     "chart.js": "^4.5.1",
     "dotenv": "^17.2.4",
     "geoip-lite": "^1.4.10",
+    "imapflow": "^1.4.7",
     "jsqr": "^1.4.0",
     "jszip": "^3.10.1",
     "lucide-react": "^0.554.0",
+    "mailparser": "^3.9.14",
     "nodemailer": "^7.0.13",
     "pdf-parse": "^2.4.5",
     "pdfkit": "^0.18.0",
@@ -59,11 +61,12 @@
     "@astrojs/check": "^0.9.9",
     "@astrojs/sitemap": "^3.7.3",
     "@playwright/test": "^1.58.2",
+    "@types/mailparser": "^3.4.6",
     "@types/node": "^24.5.2",
     "@types/nodemailer": "^7.0.12",
     "@types/pdf-parse": "^1.1.5",
     "typescript": "^5.9.3",
     "vitest": "^2.1.9"
   },
-  "description": "Grenier — the community storehouse. Non-custodial susu/tontine savings circles: the app sees the circle, it never holds the pot."
+  "description": "SSF (SusuFinance) — the community storehouse. Non-custodial susu/tontine savings circles: the app sees the circle, it never holds the pot."
 }

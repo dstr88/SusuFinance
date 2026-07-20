@@ -59,7 +59,7 @@ MARKETING-READINESS-PLAN.md
 *.docx
 *.pdf
 
-# Almstins-era leftovers — not part of Grenier
+# Almstins-era leftovers — not part of SSF
 stripe.md
 ping.php
 public_html/
@@ -76,4 +76,3 @@ context/
 
 # Private working docs — never commit
 SusuData.html
-GRENIER.md
