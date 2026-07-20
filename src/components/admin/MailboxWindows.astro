@@ -21,6 +21,7 @@
  */
 import { getMailboxesForAdmin, mailConfigStatus } from '@/lib/mailboxes';
 import { db } from '@/lib/db';
+import { isHiddenFolder } from '@/lib/mailSync';
 import './MailboxWindows.css';
 
 interface Props { adminEmail: string; adminUserId?: string }
@@ -60,6 +61,7 @@ const panels = await Promise.all(
 				path: String(f.folder),
 				specialUse: f.special_use ? String(f.special_use) : null,
 			}))
+			.filter((f) => !isHiddenFolder(f.path, f.specialUse))
 			.filter((f) => f.specialUse !== '\\Drafts' && !/^(inbox[./])?drafts?$/i.test(f.path));
 
 		// Friendly tab labels. The raw IMAP path ('INBOX.Sent') is not something to put

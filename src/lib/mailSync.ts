@@ -63,13 +63,25 @@ const SKIP_SPECIAL_USE = new Set(['\\Junk', '\\Trash', '\\All']);
  */
 const SKIP_NAME = /^(inbox[./])?(junk|spam|trash|deleted items?|bulk mail)$/i;
 
+/**
+ * Should this folder be hidden from the operator?
+ *
+ * Exported because the RAIL and the POLL must agree. They read different sources —
+ * the rail lists mail_folder_state, the poll lists IMAP — so a cursor row written
+ * before a folder was skipped would otherwise keep its tab alive forever. One
+ * predicate, both callers.
+ */
+export function isHiddenFolder(path: string, specialUse: string | null): boolean {
+	if (specialUse && SKIP_SPECIAL_USE.has(specialUse)) return true;
+	return SKIP_NAME.test(path);
+}
+
 export async function listFolders(imap: ImapFlow): Promise<MailFolder[]> {
 	const raw = await imap.list();
 	const out: MailFolder[] = [];
 	for (const f of raw) {
 		const specialUse = (f as { specialUse?: string }).specialUse ?? null;
-		if (specialUse && SKIP_SPECIAL_USE.has(specialUse)) continue;
-		if (SKIP_NAME.test(f.path)) continue;
+		if (isHiddenFolder(f.path, specialUse)) continue;
 		out.push({ path: f.path, name: f.name ?? f.path, specialUse });
 	}
 	// INBOX first, then Sent, Drafts, then the rest alphabetically — the order the
