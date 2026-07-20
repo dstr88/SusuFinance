@@ -692,6 +692,64 @@ function fillBulkMove(panel: HTMLElement, data: any): void {
 	}
 }
 
+/**
+ * After filing mail, offer to make it a standing rule.
+ *
+ * Asked from the gesture rather than from a settings screen: you have just dragged
+ * three messages from someone into Nairobi, so the intent is obvious and the question
+ * costs one click. Rules built this way describe what you actually did, instead of what
+ * you predicted you would want.
+ *
+ * Only offered when every moved message came from ONE sender. Two senders means no
+ * single rule is implied, and guessing at one would file mail you never meant to bind.
+ */
+function offerRule(panel: HTMLElement, senders: string[], folder: string): void {
+	const bar = q<HTMLElement>(panel, '.mh__ruleoffer');
+	if (!bar) return;
+
+	const unique = [...new Set(senders.filter(Boolean))];
+	if (unique.length !== 1) { bar.hidden = true; return; }
+
+	const addr = unique[0];
+	const domain = addr.split('@')[1] ?? '';
+	const name = folder.split(/[./]/).pop() || folder;
+
+	bar.hidden = false;
+	bar.innerHTML = '';
+
+	const label = document.createElement('span');
+	// textContent throughout: the address is attacker-supplied and this is the admin origin.
+	label.textContent = `Always file mail from ${addr} in ${name}?`;
+	bar.appendChild(label);
+
+	const make = (text: string, matchType: 'address' | 'domain', match: string) => {
+		const b = document.createElement('button');
+		b.className = 'mh__btn';
+		b.type = 'button';
+		b.textContent = text;
+		b.addEventListener('click', async () => {
+			bar.hidden = true;
+			await fetch('/api/admin/mail/organize', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ mailbox: panel.dataset.mailbox, action: 'create-rule', match, matchType, folder }),
+			}).catch(() => {});
+			setStatus(panel, `Rule saved — ${match} → ${name}`);
+		});
+		return b;
+	};
+
+	bar.appendChild(make('This sender', 'address', addr));
+	if (domain) bar.appendChild(make(`Everyone at @${domain}`, 'domain', domain));
+
+	const no = document.createElement('button');
+	no.className = 'mh__btn';
+	no.type = 'button';
+	no.textContent = 'No';
+	no.addEventListener('click', () => { bar.hidden = true; });
+	bar.appendChild(no);
+}
+
 function checkedIds(panel: HTMLElement): string[] {
 	return Array.from(panel.querySelectorAll<HTMLInputElement>('.mhc__chk:checked'))
 		.map((c) => c.dataset.id!)
@@ -771,12 +829,16 @@ document.addEventListener('change', async (e) => {
 			});
 			const data = await res.json().catch(() => ({}));
 			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+			const senders: string[] = [];
 			for (const id of data.done ?? []) {
-				panel.querySelector(`.mhc[data-id="${CSS.escape(String(id))}"]`)?.remove();
+				const row = panel.querySelector<HTMLElement>(`.mhc[data-id="${CSS.escape(String(id))}"]`);
+				if (row?.dataset.from) senders.push(row.dataset.from);
+				row?.remove();
 			}
 			setStatus(panel, (data.failed ?? []).length
 				? `${data.done.length} moved, ${data.failed.length} failed`
 				: `${data.done.length} moved`);
+			offerRule(panel, senders, target);
 			const all = q<HTMLInputElement>(panel, '.mh__bulkall');
 			if (all) all.checked = false;
 			syncBulkBar(panel);
@@ -885,12 +947,16 @@ document.addEventListener('drop', async (e) => {
 		});
 		const data = await res.json().catch(() => ({}));
 		if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+		const senders: string[] = [];
 		for (const id of data.done ?? []) {
-			panel.querySelector(`.mhc[data-id="${CSS.escape(String(id))}"]`)?.remove();
+			const row = panel.querySelector<HTMLElement>(`.mhc[data-id="${CSS.escape(String(id))}"]`);
+			if (row?.dataset.from) senders.push(row.dataset.from);
+			row?.remove();
 		}
 		setStatus(panel, (data.failed ?? []).length
 			? `${data.done.length} moved, ${data.failed.length} failed`
 			: `${data.done.length} moved`);
+		offerRule(panel, senders, folder);
 		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
 		if (all) all.checked = false;
 		syncBulkBar(panel);

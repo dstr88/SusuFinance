@@ -5,6 +5,9 @@
  *   { mailbox, action: 'destroy',       id | ids[] }         → permanent, Trash only
  *   { mailbox, action: 'move',          id | ids[], folder } → file it elsewhere
  *   { mailbox, action: 'create-folder', name }               → new folder
+ *   { mailbox, action: 'create-rule',   match, matchType, folder }
+ *                                                           → always file this sender
+ *   { mailbox, action: 'delete-rule',   match, matchType }   → stop doing that
  *
  * Delete moves to Trash and never expunges. A small button beside a message must not
  * be able to destroy it — Trash is polled like any other folder, so a deleted message
@@ -18,6 +21,7 @@
 
 import type { APIRoute } from 'astro';
 import { requireAdminSession } from '@/lib/adminGuard';
+import { randomUUID } from 'node:crypto';
 import { db } from '@/lib/db';
 import { findMailboxForAdmin } from '@/lib/mailboxes';
 import { createMailFolder, deleteMessage, destroyMessage, moveMessage } from '@/lib/mailSync';
@@ -49,6 +53,38 @@ export const POST: APIRoute = async ({ request }) => {
 	if (action === 'create-folder') {
 		const result = await createMailFolder(box, String(body.name ?? ''));
 		return result.ok ? json({ ok: true, path: result.path }) : json(result, 400);
+	}
+
+	// ── Filing rules ─────────────────────────────────────────────────────────
+	if (action === 'create-rule' || action === 'delete-rule') {
+		const matchType = String(body.matchType ?? 'address');
+		if (matchType !== 'address' && matchType !== 'domain') {
+			return json({ ok: false, error: 'matchType must be address or domain' }, 400);
+		}
+		const match = String(body.match ?? '').trim().toLowerCase();
+		if (!match) return json({ ok: false, error: 'match is required' }, 400);
+
+		if (action === 'delete-rule') {
+			await db.execute({
+				sql: `DELETE FROM mail_rules WHERE mailbox = ? AND match_type = ? AND match_value = ?`,
+				args: [box.address, matchType, match],
+			});
+			return json({ ok: true });
+		}
+
+		const folder = String(body.folder ?? '').trim();
+		if (!folder) return json({ ok: false, error: 'folder is required' }, 400);
+
+		// Re-filing the same sender REPLACES the rule. Two rules for one sender would
+		// mean a message with two right answers, and whichever won would look arbitrary.
+		await db.execute({
+			sql: `INSERT INTO mail_rules (id, mailbox, match_type, match_value, folder)
+			      VALUES (?, ?, ?, ?, ?)
+			      ON CONFLICT (mailbox, match_type, match_value)
+			      DO UPDATE SET folder = EXCLUDED.folder, created_at = now()`,
+			args: [randomUUID(), box.address, matchType, match, folder],
+		});
+		return json({ ok: true });
 	}
 
 	// ── Delete / destroy / move — all operate on one or many ─────────────────

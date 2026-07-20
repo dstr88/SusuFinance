@@ -450,3 +450,19 @@ select.mh__bulkmove { font: inherit; font-size: 12px; padding: 0.2rem 0.35rem; m
 	background: var(--accent, #6366f1);
 	color: #fff;
 }
+
+/* Offered right after a move, where the intent is fresh — not parked in a settings
+   screen the operator would have to go looking for. */
+.mh__ruleoffer {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+	margin: 0.4rem 0.6rem 0;
+	padding: 0.4rem 0.55rem;
+	border-radius: 7px;
+	border: 1px solid var(--accent-glow, rgba(99,102,241,0.35));
+	background: var(--accent-soft, rgba(99,102,241,0.12));
+	font-size: 13px;
+	flex: 0 0 auto;
+}

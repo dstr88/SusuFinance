@@ -247,6 +247,37 @@ async function threadFolder(
 	return null;
 }
 
+/**
+ * A folder bound to this sender, if any.
+ *
+ * The exact address wins over the domain: a rule naming one person is a more
+ * deliberate statement than one naming everybody at their company.
+ *
+ * Matching is equality on both, never a substring. A partial domain match is how mail
+ * from evil-nairobi-scam.com gets filed alongside a trusted partner.
+ */
+async function senderFolder(mailbox: string, fromAddr: string): Promise<string | null> {
+	const addr = (fromAddr ?? '').trim().toLowerCase();
+	if (!addr.includes('@')) return null;
+	const domain = addr.split('@')[1] ?? '';
+
+	try {
+		const r = await db.execute({
+			sql: `SELECT folder, match_type FROM mail_rules
+			      WHERE mailbox = ?
+			        AND ((match_type = 'address' AND match_value = ?)
+			          OR (match_type = 'domain'  AND match_value = ?))
+			      ORDER BY CASE match_type WHEN 'address' THEN 0 ELSE 1 END
+			      LIMIT 1`,
+			args: [mailbox, addr, domain],
+		});
+		const row = r.rows[0] as Record<string, unknown> | undefined;
+		return row ? String(row.folder) : null;
+	} catch {
+		return null;
+	}
+}
+
 /** Poll one folder. Returns counts; throws only on a connection-level failure. */
 async function pollFolder(
 	imap: ImapFlow, box: Mailbox, folder: MailFolder,
@@ -347,7 +378,11 @@ async function pollFolder(
 				// earlier messages live in. Only for mail arriving in INBOX — moving a
 				// message that the server already filed would fight the server's rules.
 				if (direction === 'in' && folder.path.toUpperCase() === 'INBOX') {
-					const target = await threadFolder(box.address, parsed.inReplyTo ?? null, refs);
+					// Thread first, sender second. A reply belongs with its conversation
+					// even when its author is bound to a different folder.
+					const target =
+						(await threadFolder(box.address, parsed.inReplyTo ?? null, refs)) ??
+						(await senderFolder(box.address, parsed.from?.value?.[0]?.address ?? ''));
 					if (target) {
 						const moved = await moveMessage(box, folder.path, uid, target);
 						if (!moved.ok) {
