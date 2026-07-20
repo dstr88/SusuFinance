@@ -472,7 +472,24 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 	let raw: string | Buffer | null = null;
 
 	try {
-		const info = await transport.sendMail({
+		// Build the RFC822 bytes ourselves, then send THOSE, rather than handing fields
+		// to sendMail and hoping to get the bytes back.
+		//
+		// The previous version read info.message, which nodemailer only populates for
+		// stream and json transports — over SMTP it is undefined. So `raw` was always
+		// null, the Sent-folder append below never executed, and every message sent from
+		// this panel was delivered to the recipient and recorded nowhere the operator
+		// could see it. Composing first makes the copy we file byte-identical to the
+		// copy we sent, which is also what keeps the Message-ID converge in pollFolder
+		// working.
+		const MailComposer = (await import('nodemailer/lib/mail-composer')).default;
+
+		// Our own Message-ID rather than a generated one, so the header we file, the
+		// header we store, and the header the recipient sees are the same string.
+		const domain = box.address.split('@')[1] ?? 'localhost';
+		const ownMessageId = `<${randomUUID()}@${domain}>`;
+
+		const built: Buffer = await new MailComposer({
 			from: `${box.label} <${box.address}>`,
 			to,
 			cc: cc || undefined,
@@ -480,9 +497,22 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 			text: bodyText,
 			inReplyTo: inReplyTo ?? undefined,
 			references: references ?? undefined,
+			messageId: ownMessageId,
+		}).compile().build();
+
+		// An explicit envelope: with `raw`, nodemailer does not re-derive recipients from
+		// the headers, and a Cc that is not in the envelope silently never gets the mail.
+		const rcpt = [to, ...(cc ? cc.split(',') : [])]
+			.map((a) => a.trim())
+			.filter(Boolean);
+
+		await transport.sendMail({
+			envelope: { from: box.address, to: rcpt },
+			raw: built,
 		});
-		messageId = info.messageId ?? null;
-		raw = (info as { message?: string | Buffer }).message ?? null;
+
+		messageId = ownMessageId;
+		raw = built;
 	} catch (err) {
 		sendError = err instanceof Error ? err.message : String(err);
 	}
@@ -525,8 +555,13 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 			await imap.connect();
 			const target = await findSentFolder(imap);
 			if (target) await imap.append(target, raw, ['\\Seen']);
-		} catch {
-			/* delivered; local copy is a convenience */
+		} catch (err) {
+			// Delivered either way, so this is not a send failure — but it IS the thing
+			// that hid a bug for a day, so it gets logged rather than swallowed.
+			console.warn(
+				`[mailSync] ${box.address}: sent but could not file a Sent copy:`,
+				err instanceof Error ? err.message : err,
+			);
 		} finally {
 			try { await imap?.logout(); } catch { /* already gone */ }
 		}
