@@ -46,7 +46,12 @@ function draw(points: Array<{ bucket: string; hits: number; errors: number }>, v
 		svg.appendChild(label);
 	}
 
-	const bw = innerW / Math.max(points.length, 1);
+	// Cap the slot width. Dividing the full width by the point count means a single
+	// day's data draws one bar across the whole chart, which reads as a filled panel
+	// rather than a measurement — the shape says "everything" when the number is one.
+	const MAX_SLOT = 48;
+	const bw = Math.min(innerW / Math.max(points.length, 1), MAX_SLOT);
+
 	points.forEach((p, i) => {
 		const x = PAD.l + i * bw;
 		const h = (p.hits / max) * innerH;
@@ -81,6 +86,19 @@ function draw(points: Array<{ bucket: string; hits: number; errors: number }>, v
 			svg.appendChild(t);
 		}
 	});
+
+	// Below a handful of points the axis alone does not make the scale obvious, so say
+	// it outright. A chart with two bars and no context invites reading a doubling as a
+	// trend when it is two requests.
+	if (points.length < 5) {
+		const note = el('text', {
+			class: 'tc__axis',
+			x: PAD.l + points.length * bw + 12,
+			y: PAD.t + innerH / 2,
+		});
+		note.textContent = points.length === 1 ? 'first day of data' : 'building up';
+		svg.appendChild(note);
+	}
 
 	return svg;
 }
