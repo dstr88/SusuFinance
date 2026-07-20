@@ -86,7 +86,7 @@ export const GET: APIRoute = async ({ request }) => {
 		sql: `SELECT id, direction, folder, special_use, message_id, in_reply_to,
 		             from_addr, from_name, to_addrs, cc_addrs,
 		             subject, body_text, sent_at, read_at, send_error,
-		             spam_flag, spam_score
+		             spam_flag, spam_score, threat_level, scanned_at
 		      FROM mail_messages
 		      WHERE mailbox = ? AND (? = '' OR folder = ?)
 		      ORDER BY COALESCE(sent_at, fetched_at) DESC
@@ -111,6 +111,21 @@ export const GET: APIRoute = async ({ request }) => {
 		args: [box.address],
 	});
 
+	// Threat findings for the same window of messages.
+	const threats = await db.execute({
+		sql: `SELECT t.message_id, t.kind, t.value, t.severity, t.reason
+		      FROM mail_threats t
+		      JOIN mail_messages m ON m.id = t.message_id
+		      WHERE m.mailbox = ?`,
+		args: [box.address],
+	});
+	const threatsByMessage = new Map<string, Record<string, unknown>[]>();
+	for (const t of threats.rows as Record<string, unknown>[]) {
+		const key = String(t.message_id);
+		if (!threatsByMessage.has(key)) threatsByMessage.set(key, []);
+		threatsByMessage.get(key)!.push(t);
+	}
+
 	const byMessage = new Map<string, Record<string, unknown>[]>();
 	for (const a of atts.rows as Record<string, unknown>[]) {
 		const key = String(a.message_id);
@@ -121,6 +136,7 @@ export const GET: APIRoute = async ({ request }) => {
 	const messages = (r.rows as Record<string, unknown>[]).map((m) => ({
 		...m,
 		attachments: byMessage.get(String(m.id)) ?? [],
+		threats: threatsByMessage.get(String(m.id)) ?? [],
 	}));
 
 	return json({

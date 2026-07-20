@@ -18,6 +18,7 @@ import nodemailer from 'nodemailer';
 import { randomUUID } from 'node:crypto';
 import { db } from './db';
 import { getMailServerConfig, type Mailbox } from './mailboxes';
+import { newScanBudget, scanAndRecord } from './mailThreats';
 
 /** Newest-first cap per poll, so a long-dormant mailbox cannot stall the cron. */
 const MAX_PER_POLL = 200;
@@ -200,6 +201,7 @@ function readSpamVerdict(headers: Map<string, unknown> | undefined): { flag: boo
 /** Poll one folder. Returns counts; throws only on a connection-level failure. */
 async function pollFolder(
 	imap: ImapFlow, box: Mailbox, folder: MailFolder,
+	budget: { addressChecksLeft: number },
 ): Promise<{ fetched: number; inserted: number }> {
 	let fetched = 0;
 	let inserted = 0;
@@ -290,6 +292,14 @@ async function pollFolder(
 			if (Number(res.rowsAffected ?? 0) > 0) {
 				inserted++;
 				await storeAttachments(rowId, parsed.attachments ?? []);
+
+				// Only inbound mail is scanned. Checking our own outgoing messages would
+				// flag the operator's own payout addresses back at him, training him to
+				// dismiss the warning that matters.
+				if (direction === 'in') {
+					const scanText = `${parsed.subject ?? ''}\n${parsed.text ?? ''}\n${parsed.html ?? ''}`;
+					await scanAndRecord(rowId, scanText, budget);
+				}
 			}
 		}
 
@@ -323,9 +333,13 @@ export async function pollMailbox(box: Mailbox): Promise<PollResult> {
 		const folders = await listFolders(imap);
 		out.folders = folders.length;
 
+		// One budget for the whole mailbox, so a burst of mail in one folder cannot
+		// exhaust the address-check quota for the others.
+		const budget = newScanBudget();
+
 		for (const folder of folders) {
 			try {
-				const r = await pollFolder(imap, box, folder);
+				const r = await pollFolder(imap, box, folder, budget);
 				out.fetched += r.fetched;
 				out.inserted += r.inserted;
 			} catch (err) {

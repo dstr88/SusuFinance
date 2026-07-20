@@ -310,3 +310,52 @@ textarea.mh__in {
 	border: 1px solid var(--loss-border, rgba(239,68,68,0.35));
 	white-space: nowrap;
 }
+
+/* ── Wallet-checker findings ────────────────────────────────────────────────
+   Addresses and links inside a message, run through the same lists the public
+   checker uses. The row is marked, and the expanded view names exactly WHAT was
+   flagged — a warning that will not say what it is warning about teaches the
+   reader to dismiss warnings. */
+.mhc--caution { border-left-color: var(--warning, #f59e0b); }
+.mhc__caution {
+	flex: 0 0 auto;
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	padding: 0.1rem 0.4rem;
+	border-radius: 5px;
+	color: var(--warning, #f59e0b);
+	background: var(--warning-bg, rgba(245,158,11,0.14));
+	border: 1px solid var(--warning-border, rgba(245,158,11,0.35));
+	white-space: nowrap;
+}
+.mhc__threats {
+	margin: 0 0 0.5rem;
+	padding: 0.5rem 0.6rem;
+	border-radius: 7px;
+	border: 1px solid var(--loss-border, rgba(239,68,68,0.35));
+	background: var(--loss-bg, rgba(239,68,68,0.08));
+}
+.mhc__threathead {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--loss, #ef4444);
+	margin-bottom: 0.3rem;
+}
+.mhc__threat {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	align-items: baseline;
+	font-size: 0.8rem;
+	padding: 0.15rem 0;
+}
+.mhc__threat code {
+	/* Break anywhere: a wallet address has no spaces and would otherwise force the
+	   whole panel to scroll sideways. */
+	word-break: break-all;
+	font-size: 0.78rem;
+	color: var(--text-primary, inherit);
+}
+.mhc__threat span { color: var(--text-secondary, inherit); }
+.mhc__threat--warning code, .mhc__threat--warning span { color: var(--warning, #f59e0b); }
