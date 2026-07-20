@@ -99,20 +99,7 @@ const panels = await Promise.all(
 			</header>
 
 			<div class="mh__body">
-				<nav class="mh__tabs">
-					{tabs.map((t, i) => (
-						<button
-							class:list={['mh__tab', { 'mh__tab--on': i === 0 }]}
-							type="button"
-							data-folder={t.path}
-						>{t.label}</button>
-					))}
-					{box.canSend && (
-						<button class="mh__tab mh__tab--drafts" type="button" data-folder="__drafts__">
-							Drafts{drafts > 0 ? ` (${drafts})` : ''}
-						</button>
-					)}
-				</nav>
+				<div class="mh__main">
 
 				<form class="mh__form" hidden>
 					<input class="mh__in mh__to" type="text" placeholder="To" autocomplete="off" />
@@ -129,7 +116,25 @@ const panels = await Promise.all(
 					</div>
 				</form>
 
-				<div class="mh__list" aria-busy="false"></div>
+					<div class="mh__list" aria-busy="false"></div>
+				</div>
+
+				{/* Folder rail on the right, the way a mail client puts it. Vertical so
+				    long folder names stay readable instead of wrapping into a tab row. */}
+				<nav class="mh__rail">
+					{tabs.map((t, i) => (
+						<button
+							class:list={['mh__rf', { 'mh__rf--on': i === 0 }]}
+							type="button"
+							data-folder={t.path}
+						>{t.label}</button>
+					))}
+					{box.canSend && (
+						<button class="mh__rf mh__rf--drafts" type="button" data-folder="__drafts__">
+							Drafts{drafts > 0 ? ` (${drafts})` : ''}
+						</button>
+					)}
+				</nav>
 			</div>
 
 			{/* Drag down to grow, up to shrink. Keyboard-resizable too, since a grip that
@@ -220,41 +225,57 @@ const panels = await Promise.all(
 
 	/* Closed by default; height is set inline by the drag handler when opened. */
 	.mh__body { display: none; border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.06)); }
-	.mh--open .mh__body { display: flex; flex-direction: column; }
+	/* Row, not column: message list on the left, folder rail on the right. */
+	.mh--open .mh__body { display: flex; flex-direction: row; }
 
-	.mh__tabs {
+	.mh__main {
+		flex: 1 1 auto;
 		display: flex;
-		gap: 0.25rem;
-		padding: 0.4rem 0.6rem 0;
-		flex-wrap: wrap;
-		flex: 0 0 auto;
+		flex-direction: column;
+		min-width: 0;
+		min-height: 0;
 	}
-	.mh__tab {
+
+	.mh__rail {
+		flex: 0 0 132px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+		padding: 0.45rem 0.4rem;
+		border-left: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+		overflow-y: auto;
+	}
+	.mh__rf {
 		font: inherit;
-		font-size: 0.72rem;
-		padding: 0.2rem 0.55rem;
-		border-radius: 6px 6px 0 0;
+		font-size: 0.74rem;
+		text-align: left;
+		padding: 0.28rem 0.5rem;
+		border-radius: 6px;
 		border: 1px solid transparent;
 		background: transparent;
 		color: var(--text-muted);
 		cursor: pointer;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
-	.mh__tab:hover { color: var(--text-primary, inherit); }
-	.mh__tab--on {
+	.mh__rf:hover { color: var(--text-primary, inherit); background: var(--surface-hover, rgba(255,255,255,0.05)); }
+	.mh__rf--on {
 		color: var(--text-primary, inherit);
+		background: var(--surface-card-2, rgba(255,255,255,0.06));
 		border-color: var(--border-subtle, rgba(255,255,255,0.1));
-		border-bottom-color: transparent;
-		background: var(--surface-card-2, rgba(255,255,255,0.04));
+	}
+	@media (max-width: 700px) {
+		.mh__rail { flex-basis: 96px; }
 	}
 
 	/* The scrolling region — this is what the drag handle resizes. */
 	.mh__list {
 		flex: 1 1 auto;
 		overflow-y: auto;
-		padding: 0.5rem 0.6rem 0.6rem;
+		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.45rem;
 		min-height: 0;
 	}
 
@@ -289,31 +310,62 @@ const panels = await Promise.all(
 	.mh--open .mh__grip { display: block; }
 	.mh__grip:focus-visible { outline: 2px solid var(--accent, #6366f1); outline-offset: -2px; }
 
-	/* ── Message cards ─────────────────────────────────────────────────────── */
+	/* ── Inbox rows ────────────────────────────────────────────────────────
+	   One line per message the way a mail client shows it: sender, subject,
+	   date. The body is hidden until the row is clicked, so a full screen of
+	   mail is scannable instead of three messages filling the panel. */
 	.mhc {
-		border: 1px solid var(--border-subtle, rgba(255,255,255,0.07));
-		border-left-width: 3px;
-		border-radius: 7px;
-		padding: 0.45rem 0.6rem;
-		background: var(--surface-card-2, rgba(255,255,255,0.03));
+		border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.05));
+		border-left: 3px solid transparent;
+		padding: 0.35rem 0.6rem;
+		cursor: pointer;
 	}
+	.mhc:hover { background: var(--surface-hover, rgba(255,255,255,0.035)); }
 	.mhc--unread { border-left-color: var(--accent, #6366f1); }
-	.mhc--out { opacity: 0.78; }
-	.mhc__head {
+	.mhc--unread .mhc__subj { font-weight: 700; }
+	.mhc--out { opacity: 0.82; }
+
+	.mhc__row {
 		display: flex;
-		justify-content: space-between;
+		align-items: baseline;
 		gap: 0.6rem;
+		font-size: 0.78rem;
+		min-width: 0;
+	}
+	.mhc__who {
+		flex: 0 0 30%;
+		max-width: 30%;
+		font-weight: 500;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.mhc__subj {
+		flex: 1 1 auto;
+		min-width: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.mhc__snip { color: var(--text-muted); font-weight: 400; }
+	.mhc__when {
+		flex: 0 0 auto;
 		font-size: 0.72rem;
 		color: var(--text-muted);
+		white-space: nowrap;
 	}
-	.mhc__who { font-weight: 500; }
-	.mhc__subj { font-weight: 600; font-size: 0.84rem; margin: 0.15rem 0; }
+	.mhc__clip { flex: 0 0 auto; font-size: 0.7rem; opacity: 0.7; }
+
+	/* Expanded reading pane for the selected row. */
+	.mhc__open { display: none; padding: 0.4rem 0 0.2rem; }
+	.mhc--sel .mhc__open { display: block; }
+	.mhc--sel { background: var(--surface-card-2, rgba(255,255,255,0.04)); cursor: default; }
 	.mhc__body {
 		font-size: 0.8rem;
-		line-height: 1.5;
+		line-height: 1.55;
 		white-space: pre-wrap;
-		margin: 0 0 0.3rem;
-		max-height: 14rem;
+		margin: 0 0 0.35rem;
+		max-height: 22rem;
 		overflow-y: auto;
 	}
 	.mhc__err { font-size: 0.74rem; color: var(--loss, #f87171); margin: 0 0 0.3rem; }
@@ -332,7 +384,7 @@ const panels = await Promise.all(
 	}
 	.mhc__att:hover { background: var(--surface-hover, rgba(255,255,255,0.06)); }
 	.mhc__att--skip { opacity: 0.55; }
-	.mh__empty { font-size: 0.78rem; color: var(--text-muted); padding: 0.3rem 0; }
+	.mh__empty { font-size: 0.78rem; color: var(--text-muted); padding: 0.6rem; }
 </style>
 
 <script>
@@ -357,7 +409,7 @@ const panels = await Promise.all(
 
 	const mailboxOf = (el: Element) => el.closest<HTMLElement>('.mh')!.dataset.mailbox!;
 	const activeFolder = (panel: HTMLElement) =>
-		q<HTMLElement>(panel, '.mh__tab--on')?.dataset.folder ?? '';
+		q<HTMLElement>(panel, '.mh__rf--on')?.dataset.folder ?? '';
 
 	function setStatus(panel: HTMLElement, msg: string) {
 		const el = q<HTMLElement>(panel, '.mh__status');
@@ -435,11 +487,11 @@ const panels = await Promise.all(
 
 	// ── Tabs ──────────────────────────────────────────────────────────────────
 	document.addEventListener('click', (e) => {
-		const tab = (e.target as Element).closest<HTMLElement>('.mh__tab');
+		const tab = (e.target as Element).closest<HTMLElement>('.mh__rf');
 		if (!tab) return;
 		const panel = tab.closest<HTMLElement>('.mh')!;
-		panel.querySelectorAll('.mh__tab').forEach((t) => t.classList.remove('mh__tab--on'));
-		tab.classList.add('mh__tab--on');
+		panel.querySelectorAll('.mh__rf').forEach((t) => t.classList.remove('mh__rf--on'));
+		tab.classList.add('mh__rf--on');
 		load(panel);
 	});
 
@@ -466,31 +518,42 @@ const panels = await Promise.all(
 		}
 	}
 
+	/** First line of the body, for the one-line preview next to the subject. */
+	const snippet = (t: string) => {
+		const line = String(t ?? '').replace(/\s+/g, ' ').trim();
+		return line.length > 90 ? `${line.slice(0, 90)}…` : line;
+	};
+
 	function renderMessages(data: any, mailbox: string): string {
 		return (data.messages as any[]).map((m) => {
 			const out = m.direction === 'out';
 			const who = out
 				? `To: ${escapeHtml(m.to_addrs)}`
-				: escapeHtml(m.from_name ? `${m.from_name} <${m.from_addr}>` : m.from_addr);
+				: escapeHtml(m.from_name || m.from_addr);
 			const unread = !out && !m.read_at;
 			const atts = (m.attachments ?? []) as any[];
 			return `
-				<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}" data-id="${escapeHtml(m.id)}">
-					<div class="mhc__head">
+				<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}">
+					<div class="mhc__row">
 						<span class="mhc__who">${who}</span>
-						<span>${escapeHtml(fmt(m.sent_at))}</span>
+						<span class="mhc__subj">${escapeHtml(m.subject || '(no subject)')}${
+							m.body_text ? ` <span class="mhc__snip">— ${escapeHtml(snippet(m.body_text))}</span>` : ''
+						}</span>
+						${atts.length ? '<span class="mhc__clip">📎</span>' : ''}
+						<span class="mhc__when">${escapeHtml(fmt(m.sent_at))}</span>
 					</div>
-					<div class="mhc__subj">${escapeHtml(m.subject)}</div>
-					<p class="mhc__body">${escapeHtml(m.body_text)}</p>
-					${atts.length ? `<div class="mhc__atts">${atts.map((a) =>
-						a.skipped
-							? `<span class="mhc__att mhc__att--skip">📎 ${escapeHtml(a.filename)} (too large)</span>`
-							: `<a class="mhc__att" href="/api/admin/mail/attachment?id=${encodeURIComponent(String(a.id))}" download>📎 ${escapeHtml(a.filename)} <span>${escapeHtml(fmtSize(Number(a.size_bytes ?? 0)))}</span></a>`
-					).join('')}</div>` : ''}
-					${m.send_error ? `<p class="mhc__err">Not sent: ${escapeHtml(m.send_error)}</p>` : ''}
-					<div class="mhc__acts">
-						${data.canSend && !out ? `<button class="mh__btn mhc__reply" type="button" data-id="${escapeHtml(m.id)}">Reply</button>` : ''}
-						${unread ? `<button class="mh__btn mhc__read" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>` : ''}
+					<div class="mhc__open">
+						<p class="mhc__body">${escapeHtml(m.body_text)}</p>
+						${atts.length ? `<div class="mhc__atts">${atts.map((a) =>
+							a.skipped
+								? `<span class="mhc__att mhc__att--skip">📎 ${escapeHtml(a.filename)} (too large)</span>`
+								: `<a class="mhc__att" href="/api/admin/mail/attachment?id=${encodeURIComponent(String(a.id))}" download>📎 ${escapeHtml(a.filename)} <span>${escapeHtml(fmtSize(Number(a.size_bytes ?? 0)))}</span></a>`
+						).join('')}</div>` : ''}
+						${m.send_error ? `<p class="mhc__err">Not sent: ${escapeHtml(m.send_error)}</p>` : ''}
+						<div class="mhc__acts">
+							${data.canSend && !out ? `<button class="mh__btn mhc__reply" type="button" data-id="${escapeHtml(m.id)}">Reply</button>` : ''}
+							${unread ? `<button class="mh__btn mhc__read" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>` : ''}
+						</div>
 					</div>
 				</div>`;
 		}).join('');
@@ -499,18 +562,32 @@ const panels = await Promise.all(
 	function renderDrafts(data: any): string {
 		return (data.drafts as any[]).map((d) => `
 			<div class="mhc mhc--out" data-draft="${escapeHtml(d.id)}">
-				<div class="mhc__head">
+				<div class="mhc__row">
 					<span class="mhc__who">To: ${escapeHtml(d.to_addrs || '(no recipient)')}</span>
-					<span>${escapeHtml(fmt(d.updated_at))}</span>
+					<span class="mhc__subj">${escapeHtml(d.subject || '(no subject)')}${
+						d.body_text ? ` <span class="mhc__snip">— ${escapeHtml(snippet(d.body_text))}</span>` : ''
+					}</span>
+					<span class="mhc__when">${escapeHtml(fmt(d.updated_at))}</span>
 				</div>
-				<div class="mhc__subj">${escapeHtml(d.subject || '(no subject)')}</div>
-				<p class="mhc__body">${escapeHtml(d.body_text)}</p>
-				<div class="mhc__acts">
-					<button class="mh__btn mhc__editdraft" type="button" data-draft="${escapeHtml(d.id)}">Edit</button>
-					<button class="mh__btn mhc__deldraft" type="button" data-draft="${escapeHtml(d.id)}">Discard</button>
+				<div class="mhc__open">
+					<p class="mhc__body">${escapeHtml(d.body_text)}</p>
+					<div class="mhc__acts">
+						<button class="mh__btn mhc__editdraft" type="button" data-draft="${escapeHtml(d.id)}">Edit</button>
+						<button class="mh__btn mhc__deldraft" type="button" data-draft="${escapeHtml(d.id)}">Discard</button>
+					</div>
 				</div>
 			</div>`).join('');
 	}
+
+	// Click a row to open it; clicking the open one again closes it. Buttons inside the
+	// expanded area act on their own and must not toggle the row shut underneath them.
+	document.addEventListener('click', (e) => {
+		const row = (e.target as Element).closest<HTMLElement>('.mhc');
+		if (!row || (e.target as Element).closest('.mh__btn, .mhc__att')) return;
+		const wasOpen = row.classList.contains('mhc--sel');
+		row.closest('.mh__list')?.querySelectorAll('.mhc--sel').forEach((r) => r.classList.remove('mhc--sel'));
+		if (!wasOpen) row.classList.add('mhc--sel');
+	});
 
 	// ── Compose / reply / drafts ──────────────────────────────────────────────
 	function openForm(panel: HTMLElement, v: { to?: string; subject?: string; body?: string; replyToId?: string; draftId?: string } = {}) {
@@ -547,11 +624,13 @@ const panels = await Promise.all(
 		if (reply) {
 			const panel = reply.closest<HTMLElement>('.mh')!;
 			const card = reply.closest<HTMLElement>('.mhc')!;
-			const who = q<HTMLElement>(card, '.mhc__who')?.textContent?.trim() ?? '';
-			const subj = q<HTMLElement>(card, '.mhc__subj')?.textContent?.trim() ?? '';
+			const subjEl = q<HTMLElement>(card, '.mhc__subj');
+			// Subject only — strip the preview snippet that shares the element.
+			const snip = q<HTMLElement>(card, '.mhc__snip')?.textContent ?? '';
+			const subj = (subjEl?.textContent ?? '').replace(snip, '').trim();
 			openForm(panel, {
-				// The header renders as `Name <addr>` — send to the bare address when present.
-				to: who.match(/<([^>]+)>/)?.[1] ?? who,
+				// data-from carries the real address; the visible row shows a display name.
+				to: card.dataset.from || '',
 				subject: /^re:/i.test(subj) ? subj : `Re: ${subj}`,
 				replyToId: reply.dataset.id,
 			});
@@ -564,7 +643,8 @@ const panels = await Promise.all(
 			const card = edit.closest<HTMLElement>('.mhc')!;
 			openForm(panel, {
 				to: (q<HTMLElement>(card, '.mhc__who')?.textContent ?? '').replace(/^To:\s*/, '').trim(),
-				subject: q<HTMLElement>(card, '.mhc__subj')?.textContent?.trim(),
+				subject: (q<HTMLElement>(card, '.mhc__subj')?.textContent ?? '')
+					.replace(q<HTMLElement>(card, '.mhc__snip')?.textContent ?? '', '').trim(),
 				body: q<HTMLElement>(card, '.mhc__body')?.textContent ?? '',
 				draftId: edit.dataset.draft,
 			});
@@ -725,8 +805,10 @@ const panels = await Promise.all(
 	});
 
 	// Restore any panel the operator left open.
+	// Open on first visit — a mail panel that shows nothing until it is discovered and
+	// clicked reads as broken. After that the operator's own choice is remembered.
 	for (const panel of panels()) {
-		if (localStorage.getItem(`mh:open:${panel.dataset.mailbox}`) === '1') setOpen(panel, true);
+		if (localStorage.getItem(`mh:open:${panel.dataset.mailbox}`) !== '0') setOpen(panel, true);
 	}
 	document.addEventListener('click', (e) => {
 		const bar = (e.target as Element).closest<HTMLElement>('.mh__bar');
