@@ -55,16 +55,42 @@ export const GET: APIRoute = async ({ request }) => {
 	if (!box) return json({ ok: false, error: 'Unknown mailbox' }, 404);
 
 	const limit = Math.min(Number(url.searchParams.get('limit')) || DEFAULT_LIMIT, MAX_LIMIT);
+	const folder = url.searchParams.get('folder') ?? '';
+
+	// The tab strip. Read from mail_folder_state (written by the poll) rather than by
+	// asking IMAP, so opening the page costs no network round trip to the mail server.
+	const folderRows = await db.execute({
+		sql: `SELECT folder, special_use FROM mail_folder_state WHERE mailbox = ?`,
+		args: [box.address],
+	});
+	const folders = (folderRows.rows as Record<string, unknown>[]).map((f) => ({
+		path: String(f.folder),
+		specialUse: f.special_use ? String(f.special_use) : null,
+	}));
+
+	// Drafts are a synthetic tab: the rows come from mail_drafts, not mail_messages,
+	// because a draft being composed has no server copy until it is saved.
+	if (folder === '__drafts__') {
+		const d = await db.execute({
+			sql: `SELECT id, to_addrs, cc_addrs, subject, body_text, reply_to_id, updated_at
+			      FROM mail_drafts WHERE mailbox = ? ORDER BY updated_at DESC LIMIT ?`,
+			args: [box.address, limit],
+		});
+		return json({
+			ok: true, mailbox: box.address, label: box.label, canSend: box.canSend,
+			folder, folders, unread: 0, drafts: d.rows, messages: [],
+		});
+	}
 
 	const r = await db.execute({
-		sql: `SELECT id, direction, message_id, in_reply_to,
+		sql: `SELECT id, direction, folder, special_use, message_id, in_reply_to,
 		             from_addr, from_name, to_addrs, cc_addrs,
 		             subject, body_text, sent_at, read_at, send_error
 		      FROM mail_messages
-		      WHERE mailbox = ?
+		      WHERE mailbox = ? AND (? = '' OR folder = ?)
 		      ORDER BY COALESCE(sent_at, fetched_at) DESC
 		      LIMIT ?`,
-		args: [box.address, limit],
+		args: [box.address, folder, folder, limit],
 	});
 
 	const unread = await db.execute({
@@ -101,6 +127,8 @@ export const GET: APIRoute = async ({ request }) => {
 		mailbox: box.address,
 		label: box.label,
 		canSend: box.canSend,
+		folder,
+		folders,
 		unread: Number((unread.rows[0] as Record<string, unknown>)?.n ?? 0),
 		messages,
 	});

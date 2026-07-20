@@ -34,7 +34,43 @@ export interface PollResult {
 	mailbox: string;
 	fetched: number;
 	inserted: number;
+	folders?: number;
 	error?: string;
+}
+
+export interface MailFolder {
+	path: string;
+	name: string;
+	/** '\Sent', '\Drafts', '\Junk', '\Archive', or null for an ordinary folder. */
+	specialUse: string | null;
+}
+
+/**
+ * Folders worth polling, in display order.
+ *
+ * Ordinary folders are included too (the user asked for "any others"), but Junk and
+ * Trash are skipped: they are high-volume, low-value, and pulling a spam folder into
+ * Postgres costs storage to show the operator things the mail server already decided
+ * were not worth their attention.
+ */
+const SKIP_SPECIAL_USE = new Set(['\\Junk', '\\Trash', '\\All']);
+
+export async function listFolders(imap: ImapFlow): Promise<MailFolder[]> {
+	const raw = await imap.list();
+	const out: MailFolder[] = [];
+	for (const f of raw) {
+		const specialUse = (f as { specialUse?: string }).specialUse ?? null;
+		if (specialUse && SKIP_SPECIAL_USE.has(specialUse)) continue;
+		out.push({ path: f.path, name: f.name ?? f.path, specialUse });
+	}
+	// INBOX first, then Sent, Drafts, then the rest alphabetically — the order the
+	// tabs appear in, decided here so every caller agrees.
+	const rank = (f: MailFolder) =>
+		f.path.toUpperCase() === 'INBOX' ? 0
+		: f.specialUse === '\\Sent' ? 1
+		: f.specialUse === '\\Drafts' ? 2
+		: 3;
+	return out.sort((a, b) => rank(a) - rank(b) || a.path.localeCompare(b.path));
 }
 
 function client(box: Mailbox): ImapFlow {
@@ -51,106 +87,185 @@ function client(box: Mailbox): ImapFlow {
 	});
 }
 
-/** Highest IMAP UID already stored for this mailbox within the current epoch. */
-async function lastSeenUid(mailbox: string, uidValidity: number): Promise<number> {
+/**
+ * The sync cursor for one folder: the highest UID already stored, and the UIDVALIDITY
+ * epoch it belongs to.
+ *
+ * Kept in mail_folder_state rather than derived with MAX(uid), because a folder that
+ * has been emptied would derive back to 0 and re-fetch its whole history on the next
+ * run. A cursor remembers where we got to even when the evidence is deleted.
+ *
+ * If the server reports a DIFFERENT uid_validity than we stored, the epoch has been
+ * reset and every old UID is meaningless. The only safe response is to start over from
+ * zero, which the caller does by treating the cursor as 0.
+ */
+async function folderCursor(mailbox: string, folder: string, uidValidity: number): Promise<number> {
 	const r = await db.execute({
-		sql: `SELECT COALESCE(MAX(uid), 0) AS max_uid
-		      FROM mail_messages
-		      WHERE mailbox = ? AND uid_validity = ? AND direction = 'in'`,
-		args: [mailbox, uidValidity],
+		sql: `SELECT last_uid, uid_validity FROM mail_folder_state
+		      WHERE mailbox = ? AND folder = ? LIMIT 1`,
+		args: [mailbox, folder],
 	});
-	return Number((r.rows[0] as Record<string, unknown>)?.max_uid ?? 0);
+	const row = r.rows[0] as Record<string, unknown> | undefined;
+	if (!row) return 0;
+	if (Number(row.uid_validity) !== uidValidity) return 0;
+	return Number(row.last_uid ?? 0);
+}
+
+async function saveCursor(
+	mailbox: string, folder: string, uidValidity: number, lastUid: number, specialUse: string | null,
+): Promise<void> {
+	await db.execute({
+		sql: `INSERT INTO mail_folder_state (mailbox, folder, uid_validity, last_uid, special_use, updated_at)
+		      VALUES (?, ?, ?, ?, ?, now())
+		      ON CONFLICT (mailbox, folder) DO UPDATE
+		        SET uid_validity = EXCLUDED.uid_validity,
+		            -- GREATEST so an out-of-order or partial run never rewinds the cursor
+		            -- and causes the next poll to re-fetch what it already has.
+		            last_uid = GREATEST(mail_folder_state.last_uid, EXCLUDED.last_uid),
+		            special_use = EXCLUDED.special_use,
+		            updated_at = now()`,
+		args: [mailbox, folder, uidValidity, lastUid, specialUse],
+	});
+}
+
+/** Poll one folder. Returns counts; throws only on a connection-level failure. */
+async function pollFolder(
+	imap: ImapFlow, box: Mailbox, folder: MailFolder,
+): Promise<{ fetched: number; inserted: number }> {
+	let fetched = 0;
+	let inserted = 0;
+
+	const lock = await imap.getMailboxLock(folder.path);
+	try {
+		const mb = imap.mailbox;
+		if (!mb || typeof mb === 'boolean') throw new Error(`${folder.path} did not open`);
+
+		const uidValidity = Number(mb.uidValidity);
+		const since = await folderCursor(box.address, folder.path, uidValidity);
+
+		// A message we authored lives in Sent and Drafts; one that arrived lives
+		// everywhere else. This is what makes the panel able to render a conversation
+		// rather than two disconnected lists.
+		const direction = folder.specialUse === '\\Sent' || folder.specialUse === '\\Drafts' ? 'out' : 'in';
+
+		// `n:*` always returns at least the newest message even when nothing is new —
+		// an IMAP quirk, not a bug. The unique index absorbs the duplicate.
+		let highest = since;
+		for await (const msg of imap.fetch(`${since + 1}:*`, { uid: true, source: true }, { uid: true })) {
+			if (fetched >= MAX_PER_POLL) break;
+			fetched++;
+			const uid = Number(msg.uid);
+			if (uid > highest) highest = uid;
+
+			const parsed = await simpleParser(msg.source as Buffer);
+
+			const refs = Array.isArray(parsed.references)
+				? parsed.references.join(' ')
+				: (parsed.references ?? null);
+
+			// Converge with the placeholder row written at send time.
+			//
+			// sendFromMailbox records a row immediately so a sent message appears in the
+			// panel at once rather than after the next poll. That row has no UID. When the
+			// server's own copy arrives here it carries the same Message-ID, so without
+			// this the panel would show the message twice — once from us, once from Sent.
+			// Drop the placeholder and let the server copy stand, since it is the one with
+			// a UID and therefore the one that dedupes correctly on later polls.
+			if (direction === 'out' && parsed.messageId) {
+				await db.execute({
+					sql: `DELETE FROM mail_messages
+					      WHERE mailbox = ? AND message_id = ? AND uid IS NULL`,
+					args: [box.address, parsed.messageId],
+				});
+			}
+
+			const rowId = randomUUID();
+			const res = await db.execute({
+				sql: `INSERT INTO mail_messages
+				        (id, mailbox, folder, special_use, direction, uid, uid_validity,
+				         message_id, in_reply_to, refs,
+				         from_addr, from_name, to_addrs, cc_addrs,
+				         subject, body_text, body_html, sent_at)
+				      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				      ON CONFLICT (mailbox, folder, uid_validity, uid)
+				        WHERE uid IS NOT NULL
+				      DO NOTHING`,
+				args: [
+					rowId,
+					box.address,
+					folder.path,
+					folder.specialUse,
+					direction,
+					uid,
+					uidValidity,
+					parsed.messageId ?? null,
+					parsed.inReplyTo ?? null,
+					refs,
+					parsed.from?.value?.[0]?.address ?? '',
+					parsed.from?.value?.[0]?.name ?? null,
+					(parsed.to as any)?.text ?? '',
+					(parsed.cc as any)?.text ?? null,
+					parsed.subject ?? '',
+					parsed.text ?? '',
+					parsed.html || null,
+					parsed.date ? parsed.date.toISOString() : null,
+				],
+			});
+
+			// Attachments only on a genuinely new row — on a duplicate they already
+			// exist and re-inserting would double them.
+			if (Number(res.rowsAffected ?? 0) > 0) {
+				inserted++;
+				await storeAttachments(rowId, parsed.attachments ?? []);
+			}
+		}
+
+		await saveCursor(box.address, folder.path, uidValidity, highest, folder.specialUse);
+	} finally {
+		lock.release();
+	}
+
+	return { fetched, inserted };
 }
 
 /**
- * Pull new mail for one mailbox into mail_messages.
+ * Pull new mail for one mailbox, across every folder worth polling.
  *
- * Incremental by UID rather than by date: dates lie (clock skew, delayed relays) and
- * a date window would re-scan or skip. UIDs are monotonic within a UIDVALIDITY epoch,
- * so "everything above the highest we hold" is exact.
+ * Incremental by UID rather than by date: dates lie (clock skew, delayed relays) and a
+ * date window would re-scan or skip. UIDs are monotonic within a UIDVALIDITY epoch, so
+ * "everything above the cursor" is exact.
+ *
+ * Folders are polled in sequence, not in parallel — a single IMAP connection can only
+ * have one folder selected at a time, and opening several connections per mailbox is
+ * how you get throttled by a shared-hosting server.
  */
 export async function pollMailbox(box: Mailbox): Promise<PollResult> {
-	const out: PollResult = { mailbox: box.address, fetched: 0, inserted: 0 };
+	const out: PollResult = { mailbox: box.address, fetched: 0, inserted: 0, folders: 0 };
 	let imap: ImapFlow | null = null;
 
 	try {
 		imap = client(box);
 		await imap.connect();
 
-		const lock = await imap.getMailboxLock('INBOX');
-		try {
-			const mb = imap.mailbox;
-			if (!mb || typeof mb === 'boolean') throw new Error('INBOX did not open');
+		const folders = await listFolders(imap);
+		out.folders = folders.length;
 
-			const uidValidity = Number(mb.uidValidity);
-			const since = await lastSeenUid(box.address, uidValidity);
-
-			// `n:*` always returns at least the newest message even when nothing is new —
-			// that is an IMAP quirk, not a bug. The unique index absorbs the duplicate.
-			const range = `${since + 1}:*`;
-
-			const seen: number[] = [];
-			for await (const msg of imap.fetch(range, { uid: true, source: true }, { uid: true })) {
-				if (seen.length >= MAX_PER_POLL) break;
-				seen.push(Number(msg.uid));
-				out.fetched++;
-
-				const parsed = await simpleParser(msg.source as Buffer);
-
-				const fromAddr = parsed.from?.value?.[0]?.address ?? '';
-				const fromName = parsed.from?.value?.[0]?.name ?? null;
-				const toAddrs = (parsed.to as any)?.text ?? '';
-				const ccAddrs = (parsed.cc as any)?.text ?? null;
-
-				// References arrives as string | string[] depending on the sender.
-				const refs = Array.isArray(parsed.references)
-					? parsed.references.join(' ')
-					: (parsed.references ?? null);
-
-				const rowId = randomUUID();
-				const res = await db.execute({
-					sql: `INSERT INTO mail_messages
-					        (id, mailbox, direction, uid, uid_validity,
-					         message_id, in_reply_to, refs,
-					         from_addr, from_name, to_addrs, cc_addrs,
-					         subject, body_text, body_html, sent_at)
-					      VALUES (?, ?, 'in', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-					      ON CONFLICT (mailbox, uid_validity, uid)
-					        WHERE direction = 'in'
-					      DO NOTHING`,
-					args: [
-						rowId,
-						box.address,
-						Number(msg.uid),
-						uidValidity,
-						parsed.messageId ?? null,
-						parsed.inReplyTo ?? null,
-						refs,
-						fromAddr,
-						fromName,
-						toAddrs,
-						ccAddrs,
-						parsed.subject ?? '',
-						parsed.text ?? '',
-						parsed.html || null,
-						parsed.date ? parsed.date.toISOString() : null,
-					],
-				});
-
-				// Only store files when the message itself was newly inserted. On a
-				// duplicate (the `n:*` quirk, or a re-poll) the attachments already exist
-				// and re-inserting would double them.
-				if (Number(res.rowsAffected ?? 0) > 0) {
-					out.inserted++;
-					await storeAttachments(rowId, parsed.attachments ?? []);
-				}
+		for (const folder of folders) {
+			try {
+				const r = await pollFolder(imap, box, folder);
+				out.fetched += r.fetched;
+				out.inserted += r.inserted;
+			} catch (err) {
+				// One bad folder must not abandon the rest. A server that refuses SELECT on
+				// a shared or broken folder is common and not worth failing the mailbox for.
+				console.warn(
+					`[mailSync] ${box.address} folder ${folder.path}:`,
+					err instanceof Error ? err.message : err,
+				);
 			}
-		} finally {
-			lock.release();
 		}
 	} catch (err) {
-		// Non-fatal by design: one unreachable mailbox must not stop the others. The
-		// cron reports it and the panel keeps showing whatever was already stored.
+		// Non-fatal by design: one unreachable mailbox must not stop the others.
 		out.error = err instanceof Error ? err.message : String(err);
 	} finally {
 		try { await imap?.logout(); } catch { /* already gone */ }
@@ -277,12 +392,15 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 
 	// Record either way. A failed send that leaves no trace is the worst outcome —
 	// you would not know whether it went.
+	// folder='Sent' so it files under the Sent tab immediately. This row is a
+	// placeholder with no UID; the server's own copy replaces it on the next poll
+	// (see the Message-ID converge step in pollFolder).
 	await db.execute({
 		sql: `INSERT INTO mail_messages
-		        (id, mailbox, direction, message_id, in_reply_to, refs,
+		        (id, mailbox, folder, special_use, direction, message_id, in_reply_to, refs,
 		         from_addr, from_name, to_addrs, cc_addrs,
 		         subject, body_text, sent_at, read_at, send_error)
-		      VALUES (?, ?, 'out', ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(), ?)`,
+		      VALUES (?, ?, 'Sent', '\\Sent', 'out', ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(), ?)`,
 		args: [
 			id,
 			box.address,
@@ -318,6 +436,161 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 	}
 
 	return { ok: true, id };
+}
+
+export interface DraftInput {
+	box: Mailbox;
+	/** Existing draft id to replace. Omit to create a new one. */
+	draftId?: string;
+	to: string;
+	cc?: string;
+	subject: string;
+	bodyText: string;
+	replyToId?: string;
+}
+
+/**
+ * Save a draft to the mailbox's IMAP Drafts folder, and remember which server message
+ * it became.
+ *
+ * IMAP has no concept of editing a message in place — a "changed draft" is an append
+ * of the new version plus a delete of the old one. Without the delete, every keystroke
+ * batch would leave another copy behind and the Drafts folder would fill with near
+ * duplicates. mail_drafts.imap_uid is what makes the delete possible.
+ *
+ * Order matters: append first, delete second. If the append fails, the previous
+ * version is still there. Deleting first would risk losing the draft entirely on a
+ * dropped connection, and a lost draft is worse than a duplicated one.
+ */
+export async function saveDraft(input: DraftInput): Promise<{ ok: boolean; id?: string; error?: string }> {
+	const { box, draftId, to, cc, subject, bodyText, replyToId } = input;
+
+	const cfg = getMailServerConfig();
+	if (!cfg) return { ok: false, error: 'MAIL_IMAP_HOST is not set.' };
+
+	// Previous server copy, if this is an edit.
+	let prevUid: number | null = null;
+	let prevFolder: string | null = null;
+	if (draftId) {
+		const r = await db.execute({
+			sql: `SELECT imap_uid, imap_folder FROM mail_drafts WHERE id = ? AND mailbox = ? LIMIT 1`,
+			args: [draftId, box.address],
+		});
+		const row = r.rows[0] as Record<string, unknown> | undefined;
+		prevUid = row?.imap_uid != null ? Number(row.imap_uid) : null;
+		prevFolder = row?.imap_folder ? String(row.imap_folder) : null;
+	}
+
+	const id = draftId ?? randomUUID();
+	let imap: ImapFlow | null = null;
+	let newUid: number | null = null;
+	let targetFolder: string | null = null;
+
+	try {
+		// Build the RFC822 bytes without sending. MailComposer is nodemailer's own
+		// message builder, so a draft is byte-identical in shape to what sending
+		// would produce.
+		const MailComposer = (await import('nodemailer/lib/mail-composer')).default;
+		const raw: Buffer = await new MailComposer({
+			from: `${box.label} <${box.address}>`,
+			to,
+			cc: cc || undefined,
+			subject: subject || '(no subject)',
+			text: bodyText,
+		}).compile().build();
+
+		imap = client(box);
+		await imap.connect();
+
+		targetFolder = await findFolderBySpecialUse(imap, '\\Drafts', /^(inbox[./])?drafts?$/i);
+		if (!targetFolder) throw new Error('No Drafts folder on this mailbox');
+
+		const appended = await imap.append(targetFolder, raw, ['\\Draft', '\\Seen']);
+		newUid = (appended as { uid?: number } | undefined)?.uid ?? null;
+
+		// Remove the superseded copy only after the new one is safely stored.
+		if (prevUid && prevFolder) {
+			try {
+				const lock = await imap.getMailboxLock(prevFolder);
+				try { await imap.messageDelete({ uid: String(prevUid) }, { uid: true }); }
+				finally { lock.release(); }
+			} catch {
+				// A leftover duplicate is untidy but harmless; losing the draft is not.
+			}
+		}
+	} catch (err) {
+		return { ok: false, error: err instanceof Error ? err.message : String(err) };
+	} finally {
+		try { await imap?.logout(); } catch { /* already gone */ }
+	}
+
+	await db.execute({
+		sql: `INSERT INTO mail_drafts
+		        (id, mailbox, imap_uid, imap_folder, to_addrs, cc_addrs, subject, body_text, reply_to_id, updated_at)
+		      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, now())
+		      ON CONFLICT (id) DO UPDATE
+		        SET imap_uid = EXCLUDED.imap_uid,
+		            imap_folder = EXCLUDED.imap_folder,
+		            to_addrs = EXCLUDED.to_addrs,
+		            cc_addrs = EXCLUDED.cc_addrs,
+		            subject = EXCLUDED.subject,
+		            body_text = EXCLUDED.body_text,
+		            reply_to_id = EXCLUDED.reply_to_id,
+		            updated_at = now()`,
+		args: [id, box.address, newUid, targetFolder, to, cc || null, subject, bodyText, replyToId ?? null],
+	});
+
+	return { ok: true, id };
+}
+
+/** Discard a draft locally and on the server. */
+export async function deleteDraft(box: Mailbox, draftId: string): Promise<void> {
+	const r = await db.execute({
+		sql: `SELECT imap_uid, imap_folder FROM mail_drafts WHERE id = ? AND mailbox = ? LIMIT 1`,
+		args: [draftId, box.address],
+	});
+	const row = r.rows[0] as Record<string, unknown> | undefined;
+
+	if (row?.imap_uid && row?.imap_folder) {
+		let imap: ImapFlow | null = null;
+		try {
+			imap = client(box);
+			await imap.connect();
+			const lock = await imap.getMailboxLock(String(row.imap_folder));
+			try { await imap.messageDelete({ uid: String(row.imap_uid) }, { uid: true }); }
+			finally { lock.release(); }
+		} catch {
+			// Local delete still proceeds — the panel should not keep showing a draft
+			// the operator discarded just because the server was unreachable.
+		} finally {
+			try { await imap?.logout(); } catch { /* already gone */ }
+		}
+	}
+
+	await db.execute({
+		sql: `DELETE FROM mail_drafts WHERE id = ? AND mailbox = ?`,
+		args: [draftId, box.address],
+	});
+}
+
+/**
+ * Find a folder by its SPECIAL-USE flag, falling back to a name pattern.
+ *
+ * Servers disagree on names — 'Sent' vs 'Sent Items' vs 'INBOX.Sent' — so the flag is
+ * authoritative where it exists and the regex is the fallback for servers that don't
+ * advertise SPECIAL-USE at all.
+ */
+async function findFolderBySpecialUse(
+	imap: ImapFlow, flag: string, namePattern: RegExp,
+): Promise<string | null> {
+	try {
+		const list = await imap.list();
+		const flagged = list.find((f) => (f as { specialUse?: string }).specialUse === flag);
+		if (flagged) return flagged.path;
+		return list.find((f) => namePattern.test(f.path))?.path ?? null;
+	} catch {
+		return null;
+	}
 }
 
 /**
