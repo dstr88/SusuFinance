@@ -383,3 +383,11 @@ select.mhc__move {
 	padding-top: 0.4rem;
 	color: var(--text-muted);
 }
+
+/* Destroy is the only irreversible action in the panel and is styled to say so.
+   It appears solely on messages already in Trash, so it never sits beside Delete. */
+.mhc__destroy {
+	color: var(--loss, #ef4444);
+	border-color: var(--loss-border, rgba(239,68,68,0.35));
+}
+.mhc__destroy:hover:not(:disabled) { background: var(--loss-bg, rgba(239,68,68,0.14)); }

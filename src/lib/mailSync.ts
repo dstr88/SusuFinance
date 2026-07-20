@@ -792,6 +792,50 @@ export async function deleteMessage(
 	}
 }
 
+/**
+ * Permanently destroy one message: flag \Deleted, then expunge that UID.
+ *
+ * This is the only operation in this file that ends something. Deliberately narrow:
+ *
+ *  - The caller must already have established that the message is in Trash. Destroying
+ *    from an ordinary folder would make a single mis-click unrecoverable, which is the
+ *    exact thing Delete-to-Trash exists to prevent.
+ *  - One UID at a time. There is no bulk form and there should not be one — the cost of
+ *    a wrong click must stay proportional to one message.
+ *  - expunge is scoped with `uid`, so it removes THAT message rather than every message
+ *    in the folder carrying a \Deleted flag. An unscoped expunge would destroy mail the
+ *    operator never selected, including anything a previous failed delete had flagged.
+ *
+ * The local row is removed too; mail_attachments and mail_threats cascade from it.
+ */
+export async function destroyMessage(
+	box: Mailbox, folder: string, uid: number,
+): Promise<{ ok: boolean; error?: string }> {
+	let imap: ImapFlow | null = null;
+	try {
+		imap = client(box);
+		await imap.connect();
+
+		const lock = await imap.getMailboxLock(folder);
+		try {
+			await imap.messageDelete({ uid: String(uid) }, { uid: true });
+		} finally {
+			lock.release();
+		}
+
+		await db.execute({
+			sql: `DELETE FROM mail_messages WHERE mailbox = ? AND folder = ? AND uid = ?`,
+			args: [box.address, folder, uid],
+		});
+
+		return { ok: true };
+	} catch (err) {
+		return { ok: false, error: err instanceof Error ? err.message : String(err) };
+	} finally {
+		try { await imap?.logout(); } catch { /* already gone */ }
+	}
+}
+
 /** Create a folder the operator can file mail into. */
 export async function createMailFolder(
 	box: Mailbox, name: string,

@@ -2,6 +2,7 @@
  * POST /api/admin/mail/organize
  *
  *   { mailbox, action: 'delete',        id }                 → move to Trash
+ *   { mailbox, action: 'destroy',       id }                 → permanent, Trash only
  *   { mailbox, action: 'move',          id, folder }         → file it elsewhere
  *   { mailbox, action: 'create-folder', name }               → new folder
  *
@@ -19,7 +20,7 @@ import type { APIRoute } from 'astro';
 import { requireAdminSession } from '@/lib/adminGuard';
 import { db } from '@/lib/db';
 import { findMailboxForAdmin } from '@/lib/mailboxes';
-import { createMailFolder, deleteMessage, moveMessage } from '@/lib/mailSync';
+import { createMailFolder, deleteMessage, destroyMessage, moveMessage } from '@/lib/mailSync';
 
 export const prerender = false;
 
@@ -72,6 +73,23 @@ export const POST: APIRoute = async ({ request }) => {
 
 	if (action === 'delete') {
 		const result = await deleteMessage(box, folder, uid);
+		return result.ok ? json({ ok: true }) : json(result, 502);
+	}
+
+	if (action === 'destroy') {
+		// Trash-only, checked HERE rather than trusted from the UI. The button is hidden
+		// outside Trash, but a hidden button is not a boundary — this is the one action
+		// in the mail API with no undo, so the restriction has to hold against a
+		// hand-rolled request too.
+		const isTrash = /^(inbox[./])?(trash|deleted items?)$/i.test(folder);
+		if (!isTrash) {
+			return json({
+				ok: false,
+				error: 'Only messages already in Trash can be permanently deleted. Delete it first.',
+			}, 409);
+		}
+
+		const result = await destroyMessage(box, folder, uid);
 		return result.ok ? json({ ok: true }) : json(result, 502);
 	}
 

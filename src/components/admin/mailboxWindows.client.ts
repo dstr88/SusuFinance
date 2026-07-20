@@ -183,6 +183,17 @@ const snippet = (t: string) => {
  * excluded from its own list — offering "move to where it already is" is a no-op that
  * reads as a broken action.
  */
+/**
+ * Is this message already in Trash?
+ *
+ * Decides which of the two removal buttons a row gets: Delete (reversible, files it in
+ * Trash) everywhere else, Destroy (permanent) only here. One button per row, so there
+ * is never an irreversible action sitting next to a reversible one that looks like it.
+ */
+function inTrash(m: any): boolean {
+	return /^(inbox[./])?(trash|deleted items?)$/i.test(String(m.folder ?? ''));
+}
+
 function folderOptions(data: any, m: any): string {
 	const folders = (data.folders ?? []) as Array<{ path: string; specialUse: string | null }>;
 	const others = folders.filter((f) => f.path !== m.folder);
@@ -256,7 +267,9 @@ function renderMessages(data: any, mailbox: string): string {
 						${data.canSend && !out ? `<button class="mh__btn mhc__reply" type="button" data-id="${escapeHtml(m.id)}">Reply</button>` : ''}
 						${unread ? `<button class="mh__btn mhc__read" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>` : ''}
 						${folderOptions(data, m)}
-						<button class="mh__btn mhc__del" type="button" data-id="${escapeHtml(m.id)}" title="Move to Trash">Delete</button>
+						${inTrash(m)
+							? `<button class="mh__btn mhc__destroy" type="button" data-id="${escapeHtml(m.id)}" data-subject="${escapeHtml(m.subject || '(no subject)')}" title="Delete permanently — cannot be undone">Destroy</button>`
+							: `<button class="mh__btn mhc__del" type="button" data-id="${escapeHtml(m.id)}" title="Move to Trash">Delete</button>`}
 					</div>
 				</div>
 			</div>`;
@@ -576,6 +589,26 @@ document.addEventListener('click', async (e) => {
 
 	btn.disabled = true;
 	if (await organize(panel, { action: 'delete', id: btn.dataset.id })) {
+		btn.closest('.mhc')?.remove();
+	} else {
+		btn.disabled = false;
+	}
+});
+
+document.addEventListener('click', async (e) => {
+	const btn = (e.target as Element).closest<HTMLButtonElement>('.mhc__destroy');
+	if (!btn?.dataset.id) return;
+	const panel = btn.closest<HTMLElement>('.mh')!;
+
+	// Named, and typed. Delete gets a one-click confirm because it is reversible; this
+	// one is not, so it asks for a deliberate act rather than a reflex. Naming the
+	// subject means the operator confirms THIS message, not "a message".
+	const subject = btn.dataset.subject ?? 'this message';
+	const typed = prompt(`Permanently delete "${subject}"? This cannot be undone.\n\nType DELETE to confirm.`);
+	if (typed !== 'DELETE') return;
+
+	btn.disabled = true;
+	if (await organize(panel, { action: 'destroy', id: btn.dataset.id })) {
 		btn.closest('.mhc')?.remove();
 	} else {
 		btn.disabled = false;
