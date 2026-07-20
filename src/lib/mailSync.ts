@@ -48,20 +48,24 @@ export interface MailFolder {
 /**
  * Folders worth polling, in display order.
  *
- * Ordinary folders are included too (the user asked for "any others"), but Junk and
- * Trash are skipped: they are high-volume, low-value, and pulling a spam folder into
- * Postgres costs storage to show the operator things the mail server already decided
- * were not worth their attention.
+ * EVERYTHING is polled — Junk and Trash included. An earlier version skipped them to
+ * save storage, which was the wrong trade for this product: one operator reaches his
+ * mail ONLY through this panel, so a folder the panel does not sync is mail he cannot
+ * find at all. Legitimate messages land in Junk regularly, and "check webmail instead"
+ * is not an answer when the panel is the mail client.
+ *
+ * The one exception is \All (Gmail's All Mail and its equivalents), which is a view
+ * over every other folder rather than a folder of its own. Polling it would store a
+ * second copy of every message under a different UID, which the dedupe index cannot
+ * catch because the UID genuinely differs.
  */
-const SKIP_SPECIAL_USE = new Set(['\\Junk', '\\Trash', '\\All']);
+const SKIP_SPECIAL_USE = new Set(['\\All']);
 
 /**
- * Name fallback for servers that do not advertise SPECIAL-USE.
- *
- * cPanel/Dovecot here returns a plain 'Junk' folder with no \\Junk flag, so the flag
- * check alone lets spam through into the panel and into Postgres.
+ * Name fallback for servers that do not advertise SPECIAL-USE, matching the same
+ * all-mail idea by name.
  */
-const SKIP_NAME = /^(inbox[./])?(junk|spam|trash|deleted items?|bulk mail)$/i;
+const SKIP_NAME = /^(inbox[./])?(all mail|all)$/i;
 
 /**
  * Should this folder be hidden from the operator?
@@ -86,10 +90,16 @@ export async function listFolders(imap: ImapFlow): Promise<MailFolder[]> {
 	}
 	// INBOX first, then Sent, Drafts, then the rest alphabetically — the order the
 	// tabs appear in, decided here so every caller agrees.
+	const isJunkish = (f: MailFolder) =>
+		f.specialUse === '\\Junk' || f.specialUse === '\\Trash' ||
+		/^(inbox[./])?(junk|spam|trash|deleted items?)$/i.test(f.path);
+
 	const rank = (f: MailFolder) =>
 		f.path.toUpperCase() === 'INBOX' ? 0
 		: f.specialUse === '\\Sent' ? 1
 		: f.specialUse === '\\Drafts' ? 2
+		// Junk and Trash last: findable, but not competing with the folders he uses.
+		: isJunkish(f) ? 4
 		: 3;
 	return out.sort((a, b) => rank(a) - rank(b) || a.path.localeCompare(b.path));
 }
