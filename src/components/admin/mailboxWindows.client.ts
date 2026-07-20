@@ -1,5 +1,5 @@
 /**
- * mailboxWindows.client.ts — behaviour for the /admin mail hero.
+ * mailboxWindows.client.ts — behavior for the /admin mail hero.
  *
  * Markup lives in MailboxWindows.astro, presentation in MailboxWindows.css. This
  * file touches the DOM only through classes and data attributes, with one

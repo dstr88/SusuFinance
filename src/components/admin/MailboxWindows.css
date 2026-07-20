@@ -1,5 +1,5 @@
 /* MailboxWindows — presentation only.
-   Markup lives in MailboxWindows.astro, behaviour in mailboxWindows.client.ts.
+   Markup lives in MailboxWindows.astro, behavior in mailboxWindows.client.ts.
    Nothing here should encode logic: if a rule depends on state, the state is a
    class the client script toggles, never a style the script writes inline. */
 
