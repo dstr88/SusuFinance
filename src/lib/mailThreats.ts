@@ -29,6 +29,79 @@ const MAX_ADDRESS_CHECKS_PER_RUN = 25;
 /** URLs are cheap, but a message with a thousand links is not worth unbounded work. */
 const MAX_URLS_PER_MESSAGE = 25;
 
+/**
+ * How long a verdict is trusted, by how bad it is.
+ *
+ * A danger verdict is durable — a sanctioned or blacklisted address does not become
+ * clean — so re-checking it only burns quota. A clean verdict is perishable: today's
+ * unknown address is tomorrow's reported drainer, and a stale clean is the dangerous
+ * direction to be wrong in.
+ */
+const TTL_DAYS = { danger: 30, caution: 7, clean: 3 } as const;
+
+interface CachedVerdict {
+	scamLevel: 'clean' | 'caution' | 'danger';
+	scamScore: number;
+	flags: Record<string, boolean>;
+	partialCoverage: boolean;
+}
+
+/** A verdict from Postgres, or null if absent or expired. */
+async function readCachedVerdict(address: string): Promise<CachedVerdict | null> {
+	try {
+		const r = await db.execute({
+			sql: `SELECT scam_level, scam_score, flags_json, partial
+			      FROM wallet_verdict_cache
+			      WHERE address = ? AND expires_at > now()
+			      LIMIT 1`,
+			args: [address.toLowerCase()],
+		});
+		const row = r.rows[0] as Record<string, unknown> | undefined;
+		if (!row) return null;
+		return {
+			scamLevel: String(row.scam_level) as CachedVerdict['scamLevel'],
+			scamScore: Number(row.scam_score ?? 0),
+			flags: JSON.parse(String(row.flags_json ?? '{}')),
+			partialCoverage: Boolean(row.partial),
+		};
+	} catch {
+		// A cache miss and a cache failure are the same thing to the caller: check live.
+		return null;
+	}
+}
+
+async function writeCachedVerdict(address: string, chain: string | null, v: CachedVerdict): Promise<void> {
+	try {
+		const days = TTL_DAYS[v.scamLevel] ?? TTL_DAYS.clean;
+		await db.execute({
+			sql: `INSERT INTO wallet_verdict_cache
+			        (address, chain, scam_level, scam_score, flags_json, partial, checked_at, expires_at)
+			      VALUES (?, ?, ?, ?, ?, ?, now(), now() + (? || ' days')::interval)
+			      ON CONFLICT (address) DO UPDATE
+			        SET chain = EXCLUDED.chain,
+			            scam_level = EXCLUDED.scam_level,
+			            scam_score = EXCLUDED.scam_score,
+			            flags_json = EXCLUDED.flags_json,
+			            partial = EXCLUDED.partial,
+			            checked_at = now(),
+			            expires_at = EXCLUDED.expires_at`,
+			args: [
+				address.toLowerCase(), chain, v.scamLevel, Math.round(v.scamScore),
+				JSON.stringify(v.flags ?? {}), v.partialCoverage, String(days),
+			],
+		});
+	} catch (err) {
+		console.warn('[mailThreats] verdict cache write failed:', err instanceof Error ? err.message : err);
+	}
+}
+
+/** Housekeeping — called by the poll so the table cannot grow without bound. */
+export async function sweepVerdictCache(): Promise<void> {
+	try {
+		await db.execute({ sql: `DELETE FROM wallet_verdict_cache WHERE expires_at < now()` });
+	} catch { /* non-fatal */ }
+}
+
 export interface Finding {
 	kind: 'address' | 'url';
 	value: string;
@@ -73,6 +146,7 @@ export function extractDomains(text: string): string[] {
 export async function scanMessage(
 	text: string,
 	budget: { addressChecksLeft: number },
+	opts: { dangerOnly?: boolean } = {},
 ): Promise<Finding[]> {
 	const findings: Finding[] = [];
 
@@ -112,15 +186,28 @@ export async function scanMessage(
 	const addresses = extractAddresses(text).slice(0, MAX_ADDRESSES_PER_MESSAGE);
 	for (const address of addresses) {
 		try {
-			// The cache first — one scam address repeated across many messages should
-			// cost one API call, not one per message.
-			let result = getCached(address);
-			if (!result) {
-				if (budget.addressChecksLeft <= 0) continue;
-				budget.addressChecksLeft--;
-				result = await checkWallet(address);
+			// Three tiers, cheapest first. Postgres outlives the process and is shared
+			// across mailboxes, so a scam address circulating in twenty messages over a
+			// week costs one API call rather than twenty.
+			let verdict: CachedVerdict | null = await readCachedVerdict(address);
+
+			if (!verdict) {
+				const live = getCached(address) ?? (
+					budget.addressChecksLeft > 0
+						? (budget.addressChecksLeft--, await checkWallet(address))
+						: null
+				);
+				if (!live) continue;
+				verdict = {
+					scamLevel: live.scamLevel,
+					scamScore: live.scamScore,
+					flags: live.flags as unknown as Record<string, boolean>,
+					partialCoverage: live.partialCoverage,
+				};
+				await writeCachedVerdict(address, live.chain ?? null, verdict);
 			}
-			if (!result) continue;
+
+			const result = verdict;
 
 			// partialCoverage means no primary scam source ran for this chain, so a
 			// "clean" result is not a confident one. The checker itself flags this; the
@@ -148,7 +235,7 @@ export async function scanMessage(
 						? `Wallet ${reasons.join(', ')}`
 						: `Wallet scored ${result.scamScore}/100 by the checker`,
 				});
-			} else if (result.scamLevel === 'caution') {
+			} else if (result.scamLevel === 'caution' && !opts.dangerOnly) {
 				findings.push({
 					kind: 'address',
 					value: address,
@@ -175,10 +262,11 @@ export async function scanAndRecord(
 	messageId: string,
 	text: string,
 	budget: { addressChecksLeft: number },
+	opts: { dangerOnly?: boolean } = {},
 ): Promise<Finding[]> {
 	let findings: Finding[] = [];
 	try {
-		findings = await scanMessage(text, budget);
+		findings = await scanMessage(text, budget, opts);
 	} catch {
 		findings = [];
 	}

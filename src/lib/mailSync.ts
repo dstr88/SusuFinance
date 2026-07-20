@@ -18,7 +18,7 @@ import nodemailer from 'nodemailer';
 import { randomUUID } from 'node:crypto';
 import { db } from './db';
 import { getMailServerConfig, type Mailbox } from './mailboxes';
-import { newScanBudget, scanAndRecord } from './mailThreats';
+import { newScanBudget, scanAndRecord, sweepVerdictCache } from './mailThreats';
 
 /** Newest-first cap per poll, so a long-dormant mailbox cannot stall the cron. */
 const MAX_PER_POLL = 200;
@@ -293,13 +293,16 @@ async function pollFolder(
 				inserted++;
 				await storeAttachments(rowId, parsed.attachments ?? []);
 
-				// Only inbound mail is scanned. Checking our own outgoing messages would
-				// flag the operator's own payout addresses back at him, training him to
-				// dismiss the warning that matters.
-				if (direction === 'in') {
-					const scanText = `${parsed.subject ?? ''}\n${parsed.text ?? ''}\n${parsed.html ?? ''}`;
-					await scanAndRecord(rowId, scanText, budget);
-				}
+				// Outbound is scanned too, but reports DANGER only.
+				//
+				// Inbound is the obvious case. Outbound matters for a different reason: if
+				// an organizer pastes an address a scammer gave him into a reply, or
+				// forwards a drainer link he was sent, this is the last place to catch it
+				// before it reaches members. What outbound must NOT do is surface caution
+				// -level noise about the operator's own known payout addresses — a warning
+				// that fires on his normal behavior is one he learns to dismiss.
+				const scanText = `${parsed.subject ?? ''}\n${parsed.text ?? ''}\n${parsed.html ?? ''}`;
+				await scanAndRecord(rowId, scanText, budget, { dangerOnly: direction === 'out' });
 			}
 		}
 
@@ -336,6 +339,10 @@ export async function pollMailbox(box: Mailbox): Promise<PollResult> {
 		// One budget for the whole mailbox, so a burst of mail in one folder cannot
 		// exhaust the address-check quota for the others.
 		const budget = newScanBudget();
+
+		// Drop expired verdicts while we are here, so the cache cannot grow forever
+		// without needing a cron of its own.
+		await sweepVerdictCache();
 
 		for (const folder of folders) {
 			try {
