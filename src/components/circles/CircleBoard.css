@@ -1,0 +1,193 @@
+/* CircleBoard — signup task bar + circle tins.
+   Tin proportions and the forming/active colour split follow ContractTinsGrid so the
+   two surfaces read as the same object seen twice, not two different features. */
+
+.cb {
+	width: 80%;
+	margin: 0 auto 1.5rem;
+}
+@media (max-width: 900px) {
+	.cb { width: 100%; }
+}
+
+.cb__head {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+.cb__title {
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--text-secondary, rgba(255,255,255,0.7));
+}
+.cb__count {
+	background: var(--surface-card-2, rgba(255,255,255,0.06));
+	border-radius: 999px;
+	padding: 0 0.45rem;
+	font-size: 0.72rem;
+	color: var(--text-muted);
+}
+.cb__spacer { flex: 1; }
+
+.cb__btn {
+	font: inherit;
+	font-size: 0.74rem;
+	padding: 0.25rem 0.6rem;
+	border-radius: 7px;
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+	background: transparent;
+	color: var(--text-secondary, inherit);
+	cursor: pointer;
+}
+.cb__btn:hover:not(:disabled) { background: var(--surface-hover, rgba(255,255,255,0.07)); }
+.cb__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cb__btn--go {
+	border-color: var(--accent-glow, rgba(99,102,241,0.4));
+	color: var(--text-primary, inherit);
+}
+
+.cb__note {
+	font-size: 0.78rem;
+	margin: 0 0 0.5rem;
+	padding: 0.35rem 0.55rem;
+	border-radius: 7px;
+}
+.cb__note--ok {
+	color: var(--gain, #34d399);
+	background: var(--gain-bg, rgba(52,211,153,0.1));
+	border: 1px solid var(--gain-border, rgba(52,211,153,0.22));
+}
+.cb__note--err {
+	color: var(--loss, #ef4444);
+	background: var(--loss-bg, rgba(239,68,68,0.1));
+	border: 1px solid var(--loss-border, rgba(239,68,68,0.22));
+}
+
+.cb__form {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-bottom: 0.6rem;
+}
+.cb__in {
+	flex: 1 1 160px;
+	padding: 0.35rem 0.5rem;
+	border-radius: 7px;
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.12));
+	background: var(--surface-bg, rgba(0,0,0,0.25));
+	color: var(--text-primary, inherit);
+	font: inherit;
+	font-size: 0.8rem;
+}
+.cb__in--sm { flex: 0 0 120px; }
+
+/* ── Task bar ─────────────────────────────────────────────────────────────── */
+.cb__bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	min-height: 42px;
+	align-items: center;
+	padding: 0.45rem 0.55rem;
+	border: 1px dashed var(--border-subtle, rgba(255,255,255,0.14));
+	border-radius: 9px;
+	background: var(--surface-card, rgba(255,255,255,0.02));
+	margin-bottom: 0.75rem;
+}
+.cb__chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.76rem;
+	padding: 0.22rem 0.55rem;
+	border-radius: 999px;
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.14));
+	background: var(--surface-card-2, rgba(255,255,255,0.05));
+	color: var(--text-primary, inherit);
+	cursor: grab;
+	user-select: none;
+}
+.cb__chip:active { cursor: grabbing; }
+.cb__chip--sel {
+	border-color: var(--accent, #6366f1);
+	background: var(--accent-soft, rgba(99,102,241,0.18));
+}
+.cb__chip--drag { opacity: 0.45; }
+.cb__chip--pending { opacity: 0.75; }
+.cb__pending {
+	font-size: 0.64rem;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: var(--text-muted);
+}
+.cb__empty {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	margin: 0;
+}
+
+/* ── Tins ─────────────────────────────────────────────────────────────────── */
+.cb__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 0.6rem;
+}
+.cb__tin {
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.1));
+	border-radius: 10px;
+	padding: 0.6rem 0.7rem;
+	background: var(--surface-card, rgba(255,255,255,0.025));
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	min-height: 92px;
+	transition: border-color 0.12s, background 0.12s;
+}
+/* Forming reads as open — it is the state that accepts people directly. */
+.cb__tin--forming { border-style: dashed; }
+.cb__tin--over {
+	border-color: var(--accent, #6366f1);
+	background: var(--accent-soft, rgba(99,102,241,0.14));
+}
+.cb__tinhead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.4rem;
+}
+.cb__tinname { font-weight: 600; font-size: 0.86rem; }
+.cb__status {
+	font-size: 0.62rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 0 0.35rem;
+	border-radius: 999px;
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.14));
+	color: var(--text-muted);
+}
+.cb__status--active {
+	color: var(--gain, #34d399);
+	border-color: var(--gain-border, rgba(52,211,153,0.3));
+}
+.cb__tinmeta { font-size: 0.74rem; color: var(--text-muted); }
+.cb__tinfoot {
+	margin-top: auto;
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.4rem;
+	font-size: 0.74rem;
+	color: var(--text-secondary, inherit);
+}
+.cb__hint { font-size: 0.68rem; color: var(--accent, #6366f1); }
+
+.cb__foot {
+	font-size: 0.72rem;
+	color: var(--text-muted);
+	margin: 0.6rem 0 0;
+	line-height: 1.5;
+}
