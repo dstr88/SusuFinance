@@ -140,8 +140,13 @@ const panels = await Promise.all(
 						<span class="mh__dlgtitle">New message</span>
 						<span class="mh__dlgfrom">from {box.address}</span>
 					</div>
-					<input class="mh__in mh__to" type="text" placeholder="To" autocomplete="off" />
-					<input class="mh__in mh__cc" type="text" placeholder="Cc (optional)" autocomplete="off" />
+					{/* Completions come from this mailbox's own correspondence — see
+					    /api/admin/mail/contacts. A native datalist rather than a custom
+					    dropdown: the browser handles matching, keyboard and screen readers,
+					    and it degrades to a plain text field if the fetch fails. */}
+					<input class="mh__in mh__to" type="text" placeholder="To" autocomplete="off" list={`mh-contacts-${box.address}`} />
+					<input class="mh__in mh__cc" type="text" placeholder="Cc (optional)" autocomplete="off" list={`mh-contacts-${box.address}`} />
+					<datalist id={`mh-contacts-${box.address}`}></datalist>
 					<input class="mh__in mh__subj" type="text" placeholder="Subject" autocomplete="off" />
 					<textarea class="mh__in mh__text" placeholder="Message"></textarea>
 					<input type="hidden" class="mh__replyto" />

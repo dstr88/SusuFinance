@@ -268,9 +268,45 @@ document.addEventListener('click', (e) => {
 });
 
 // ── Compose / reply / drafts ──────────────────────────────────────────────
+/**
+ * Fill the To/Cc completions for one panel, once.
+ *
+ * Loaded lazily on first compose rather than at page load: most visits never open the
+ * composer, and a mailbox with years of history is a query worth not running.
+ *
+ * Each option's value is the bare address, because that is what the field must submit.
+ * The label carries the name, so typing "Don" matches a person whose address is
+ * donnie@almstins.com even though the two strings share only three letters.
+ */
+async function loadContacts(panel: HTMLElement): Promise<void> {
+	const list = panel.querySelector<HTMLDataListElement>('datalist');
+	if (!list || list.dataset.loaded) return;
+	list.dataset.loaded = '1';
+
+	try {
+		const res = await fetch(`/api/admin/mail/contacts?mailbox=${encodeURIComponent(panel.dataset.mailbox!)}`);
+		const data = await res.json();
+		if (!data.ok) return;
+
+		list.innerHTML = '';
+		for (const c of data.contacts as Array<{ address: string; name: string | null }>) {
+			const opt = document.createElement('option');
+			opt.value = c.address;
+			// textContent, never innerHTML: a display name is chosen by whoever emailed
+			// you, and this is the admin origin.
+			if (c.name) opt.textContent = `${c.name} — ${c.address}`;
+			list.appendChild(opt);
+		}
+	} catch {
+		// No completions is a smaller problem than a broken composer; allow a retry.
+		delete list.dataset.loaded;
+	}
+}
+
 function openForm(panel: HTMLElement, v: { to?: string; subject?: string; body?: string; replyToId?: string; draftId?: string } = {}) {
 	const form = q<HTMLFormElement>(panel, '.mh__form')!;
 	const dlg = q<HTMLDialogElement>(panel, '.mh__dlg')!;
+	void loadContacts(panel);
 	// showModal() rather than an .open class: focus trapping, an inert background
 	// and Escape all come from the browser.
 	if (!dlg.open) dlg.showModal();
