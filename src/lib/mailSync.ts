@@ -83,10 +83,23 @@ export function isHiddenFolder(path: string, specialUse: string | null): boolean
 
 export async function listFolders(imap: ImapFlow): Promise<MailFolder[]> {
 	const raw = await imap.list();
+
+	// Some mailboxes carry two junk folders: the one the server actually files spam
+	// into (flagged \Junk — here it is INBOX.spam) and an unflagged leftover created
+	// by some mail client along the way (INBOX.Junk). Showing both invites the operator
+	// to check two places for the same thing, and to wonder which one is real.
+	//
+	// The FLAG decides. If any folder claims \Junk, an unflagged folder merely NAMED
+	// junk or spam is a duplicate and is dropped from the list — never from the server.
+	const hasFlaggedJunk = raw.some((f) => (f as { specialUse?: string }).specialUse === '\\Junk');
+	const isUnflaggedJunkName = (path: string, specialUse: string | null) =>
+		!specialUse && /^(inbox[./])?(junk|spam)$/i.test(path);
+
 	const out: MailFolder[] = [];
 	for (const f of raw) {
 		const specialUse = (f as { specialUse?: string }).specialUse ?? null;
 		if (isHiddenFolder(f.path, specialUse)) continue;
+		if (hasFlaggedJunk && isUnflaggedJunkName(f.path, specialUse)) continue;
 		out.push({ path: f.path, name: f.name ?? f.path, specialUse });
 	}
 	// INBOX first, then Sent, Drafts, then the rest alphabetically — the order the

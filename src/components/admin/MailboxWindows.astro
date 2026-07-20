@@ -79,6 +79,8 @@ const panels = await Promise.all(
 			: f.specialUse === '\\Sent' ? 'Sent'
 			: f.specialUse === '\\Drafts' ? 'Drafts'
 			: f.specialUse === '\\Archive' ? 'Archive'
+			: f.specialUse === '\\Junk' ? 'Spam'
+			: f.specialUse === '\\Trash' ? 'Trash'
 			: f.path.split(/[./]/).pop() || f.path;
 
 		return {
