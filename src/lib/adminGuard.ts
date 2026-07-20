@@ -9,12 +9,17 @@ const ADMIN_EMAILS = new Set(
 		.filter(Boolean),
 );
 
-// Comma-separated list of admin tenant IDs — more reliable than email because
-// the tenant ID is always present in the JWT regardless of OAuth email privacy.
-// Set ADMIN_TENANT_IDS on Render to the tenant ID shown in the account menu.
+// Comma-separated list of admin tenant IDs.
 //
-// CAUTION: a tenant is a GROUP. Granting by tenant grants every member of that
-// tenant, which is rarely what is intended — prefer ADMIN_USER_IDS below.
+// CAUTION, two traps here:
+//
+//  1. A tenant is a GROUP. Granting by tenant grants EVERY member of that tenant,
+//     which is rarely what is intended. Prefer ADMIN_USER_IDS below.
+//  2. The tenant id is NOT what the account menu displays. That menu shows the
+//     user's own UUID (auth_users.id — see the account dropdown in Layout.astro,
+//     labelled "UUID"). An earlier version of this comment said otherwise and cost
+//     a real debugging session. To find a tenant id you have to query the database;
+//     to find a user id you just open the account menu and click copy.
 const ADMIN_TENANT_IDS = new Set(
 	(process.env.ADMIN_TENANT_IDS ?? process.env.ADMIN_TENANT_ID ?? '')
 		.split(',')
