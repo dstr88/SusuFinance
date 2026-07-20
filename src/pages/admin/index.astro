@@ -5,6 +5,7 @@ import { getGA4Summary } from '@/lib/ga4';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
 import CircleBoard from '@/components/circles/CircleBoard';
 import Notepads from '@/components/admin/Notepads.astro';
+import TrafficChart from '@/components/admin/TrafficChart.astro';
 
 // Guard — redirect non-admin users rather than returning a raw 4xx,
 // since Render's infrastructure renders raw error responses as "file not found".
@@ -511,6 +512,9 @@ const [
 		)}
 	</div>
 	)}
+
+	<!-- ── Website traffic ──────────────────────────────────────── -->
+	<TrafficChart />
 
 	<!-- ── Question Inbox ─────────────────────────────────────────────── -->
 	<div class="section" id="inbox-section">

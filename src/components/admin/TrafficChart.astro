@@ -1,0 +1,30 @@
+---
+/**
+ * TrafficChart.astro — site traffic, by day, week or month.
+ *
+ * Markup only; behavior in trafficChart.client.ts, presentation in TrafficChart.css.
+ * Drawn as plain SVG bars rather than pulling in a charting library: this is one series
+ * of at most thirty bars, and a dependency that ships a rendering engine to draw
+ * rectangles is a dependency to maintain forever.
+ */
+import './TrafficChart.css';
+---
+
+<section class="tc" id="traffic-chart">
+	<header class="tc__head">
+		<span class="tc__title">Website traffic</span>
+		<span class="tc__total"></span>
+		<span class="tc__spacer"></span>
+		<div class="tc__views" role="group" aria-label="Traffic range">
+			<button class="tc__view tc__view--on" type="button" data-view="day">Daily</button>
+			<button class="tc__view" type="button" data-view="week">Weekly</button>
+			<button class="tc__view" type="button" data-view="month">Monthly</button>
+		</div>
+	</header>
+
+	<div class="tc__body" aria-live="polite"></div>
+</section>
+
+<script>
+	import './trafficChart.client.ts';
+</script>

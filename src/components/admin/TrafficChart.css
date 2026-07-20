@@ -1,0 +1,50 @@
+/* TrafficChart — presentation only. */
+
+.tc {
+	width: 80%;
+	margin: 0 auto 1.5rem;
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+	border-radius: 10px;
+	background: var(--surface-card, rgba(255,255,255,0.02));
+}
+@media (max-width: 900px) { .tc { width: 100%; } }
+
+.tc__head {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.6rem 0.8rem;
+	border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+	font-size: 14px;
+}
+.tc__title { font-weight: 600; }
+.tc__total { font-size: 13px; color: var(--text-muted); }
+.tc__spacer { flex: 1; }
+
+.tc__views { display: flex; gap: 0.25rem; }
+.tc__view {
+	font: inherit;
+	font-size: 13px;
+	padding: 0.2rem 0.6rem;
+	border-radius: 7px;
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+}
+.tc__view:hover { color: var(--text-primary, inherit); }
+.tc__view--on {
+	color: var(--text-primary, inherit);
+	border-color: var(--border-subtle, rgba(255,255,255,0.12));
+	background: var(--surface-card-2, rgba(255,255,255,0.06));
+}
+
+.tc__body { padding: 0.8rem; overflow-x: auto; }
+.tc__empty { font-size: 14px; color: var(--text-muted); margin: 0; }
+
+.tc__bar { fill: var(--accent, #6366f1); }
+.tc__bar:hover { fill: var(--accent-dim, #818cf8); }
+/* Server errors stack on top in red — a traffic spike that is all 500s is not traffic. */
+.tc__bar--err { fill: var(--loss, #ef4444); }
+.tc__axis { fill: var(--text-muted); font-size: 10px; }
+.tc__grid { stroke: var(--border-subtle, rgba(255,255,255,0.08)); stroke-width: 1; }

@@ -74,3 +74,9 @@ document.addEventListener('blur', (e) => {
 }, true);
 
 void load();
+
+// This file is a MODULE, not a global script. Without an import or export, TypeScript
+// treats a .ts file as a global script and its top-level names share one scope with
+// every other such file — which is how two unrelated client scripts both defining
+// load() became a duplicate-implementation error.
+export {};
