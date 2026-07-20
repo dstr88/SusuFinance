@@ -86,7 +86,8 @@ export const GET: APIRoute = async ({ request }) => {
 		sql: `SELECT id, direction, folder, special_use, message_id, in_reply_to,
 		             from_addr, from_name, to_addrs, cc_addrs,
 		             subject, body_text, sent_at, read_at, send_error,
-		             spam_flag, spam_score, threat_level, scanned_at
+		             spam_flag, spam_score, threat_level, scanned_at,
+             (body_html IS NOT NULL AND body_html <> '') AS has_html
 		      FROM mail_messages
 		      WHERE mailbox = ? AND (? = '' OR folder = ?)
 		      ORDER BY COALESCE(sent_at, fetched_at) DESC

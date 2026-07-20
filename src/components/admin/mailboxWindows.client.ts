@@ -269,7 +269,12 @@ function renderMessages(data: any, mailbox: string): string {
 							<code>${escapeHtml(t.kind === 'url' ? String(t.value).replace(/\./g, '[.]') : t.value)}</code> <span>${escapeHtml(t.reason)}</span>
 						</div>`).join('')}
 					</div>` : ''}
-					<p class="mhc__body">${escapeHtml(body)}</p>
+					${!String(m.body_text ?? '').trim() && m.has_html
+						? `<p class="mhc__nobody">This message was sent as HTML only. Open it to read it — it opens sandboxed, with scripts and remote images blocked.</p>`
+						: `<p class="mhc__body">${escapeHtml(body)}</p>`}
+					${m.has_html
+						? `<p class="mhc__htmlrow"><a class="mh__btn" href="/api/admin/mail/html?id=${encodeURIComponent(String(m.id))}" target="_blank" rel="noopener noreferrer">Open original</a></p>`
+						: ''}
 					${atts.length ? `<div class="mhc__atts">${atts.map((a: any) =>
 						a.skipped
 							? `<span class="mhc__att mhc__att--skip">📎 ${escapeHtml(a.filename)} (too large)</span>`

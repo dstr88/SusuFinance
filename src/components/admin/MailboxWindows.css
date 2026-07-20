@@ -466,3 +466,17 @@ select.mh__bulkmove { font: inherit; font-size: 12px; padding: 0.2rem 0.35rem; m
 	font-size: 13px;
 	flex: 0 0 auto;
 }
+
+/* Said plainly rather than left as an empty box: a message with no visible body
+   reads as a broken panel, not as a message that needs a click. */
+.mhc__nobody {
+	font-size: 14px;
+	line-height: 1.55;
+	margin: 0 0 0.4rem;
+	padding: 0.4rem 0.55rem;
+	border-radius: 7px;
+	border: 1px dashed var(--border-bright, rgba(255,255,255,0.18));
+	color: var(--text-secondary, inherit);
+}
+.mhc__htmlrow { margin: 0 0 0.4rem; }
+.mhc__htmlrow a { display: inline-block; text-decoration: none; }
