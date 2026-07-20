@@ -48,7 +48,14 @@ const panels = await Promise.all(
 				 WHERE mailbox = ? AND direction = 'in' AND read_at IS NULL`,
 				[box.address],
 			),
-			safeQ(`SELECT folder, special_use FROM mail_folder_state WHERE mailbox = ?`, [box.address]),
+			safeQ(
+				`SELECT s.folder, s.special_use,
+				        (SELECT COUNT(*) FROM mail_messages m
+				          WHERE m.mailbox = s.mailbox AND m.folder = s.folder
+				            AND m.direction = 'in' AND m.read_at IS NULL) AS unread
+				 FROM mail_folder_state s WHERE s.mailbox = ?`,
+				[box.address],
+			),
 			safeQ(`SELECT COUNT(*) AS n FROM mail_drafts WHERE mailbox = ?`, [box.address]),
 		]);
 
@@ -60,6 +67,7 @@ const panels = await Promise.all(
 			.map((f) => ({
 				path: String(f.folder),
 				specialUse: f.special_use ? String(f.special_use) : null,
+				unread: Number(f.unread ?? 0),
 			}))
 			.filter((f) => !isHiddenFolder(f.path, f.specialUse))
 			.filter((f) => f.specialUse !== '\\Drafts' && !/^(inbox[./])?drafts?$/i.test(f.path));
@@ -134,12 +142,18 @@ const panels = await Promise.all(
 				{/* Folder rail on the right, the way a mail client puts it. Vertical so
 				    long folder names stay readable instead of wrapping into a tab row. */}
 				<nav class="mh__rail">
+					{/* An unread count per folder. Replies can now file themselves into a
+					    folder, so the rail has to say when something arrived there — mail
+					    that lands silently is worse than mail in the wrong place. */}
 					{tabs.map((t, i) => (
 						<button
 							class:list={['mh__rf', { 'mh__rf--on': i === 0 }]}
 							type="button"
 							data-folder={t.path}
-						>{t.label}</button>
+						>
+							<span class="mh__rfname">{t.label}</span>
+							{t.unread > 0 && <span class="mh__rfcount">{t.unread}</span>}
+						</button>
 					))}
 					{box.canSend && (
 						<button class="mh__rf mh__rf--drafts" type="button" data-folder="__drafts__">

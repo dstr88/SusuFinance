@@ -98,6 +98,9 @@
 	overflow-y: auto;
 }
 .mh__rf {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
 	font: inherit;
 	font-size: 14px;
 	text-align: left;
@@ -434,3 +437,16 @@ select.mh__bulkmove { font: inherit; font-size: 12px; padding: 0.2rem 0.35rem; m
 .mhc { cursor: grab; }
 .mhc:active { cursor: grabbing; }
 .mhc--sel { cursor: default; }
+
+.mh__rfname { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+/* Unread count per folder. Quiet until it is not zero — a badge that is always
+   there stops being a signal. */
+.mh__rfcount {
+	flex: 0 0 auto;
+	font-size: 11px;
+	line-height: 1.6;
+	padding: 0 0.35rem;
+	border-radius: 999px;
+	background: var(--accent, #6366f1);
+	color: #fff;
+}

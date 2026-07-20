@@ -198,6 +198,55 @@ function readSpamVerdict(headers: Map<string, unknown> | undefined): { flag: boo
 	return { flag, score };
 }
 
+
+/**
+ * Where does this message's conversation already live?
+ *
+ * Looks up the parent by Message-ID — first the direct In-Reply-To, then the References
+ * chain newest-first, since a long thread names every ancestor and the nearest one is
+ * the most likely to have been filed deliberately.
+ *
+ * Only ordinary folders are followed into. A reply must never be auto-filed into Sent,
+ * Drafts, Junk, Trash or Archive: those describe what was DONE with a message, not what
+ * it is about, and filing incoming mail there would hide it behind a meaning it does
+ * not have.
+ */
+async function threadFolder(
+	mailbox: string, inReplyTo: string | null, refs: string | null,
+): Promise<string | null> {
+	const candidates = [
+		...(inReplyTo ? [inReplyTo] : []),
+		...(refs ? refs.split(/\s+/).filter(Boolean).reverse() : []),
+	];
+	if (!candidates.length) return null;
+
+	for (const messageId of candidates.slice(0, 10)) {
+		try {
+			const r = await db.execute({
+				sql: `SELECT folder, special_use FROM mail_messages
+				      WHERE mailbox = ? AND message_id = ?
+				      ORDER BY COALESCE(sent_at, fetched_at) DESC
+				      LIMIT 1`,
+				args: [mailbox, messageId],
+			});
+			const row = r.rows[0] as Record<string, unknown> | undefined;
+			if (!row) continue;
+
+			const folder = String(row.folder);
+			const special = row.special_use ? String(row.special_use) : null;
+
+			if (folder.toUpperCase() === 'INBOX') return null;   // already where it would go
+			if (special) return null;                             // Sent/Drafts/Archive/Junk/Trash
+			if (/^(inbox[./])?(sent|drafts?|junk|spam|trash|archive|deleted items?)$/i.test(folder)) return null;
+
+			return folder;
+		} catch {
+			return null;
+		}
+	}
+	return null;
+}
+
 /** Poll one folder. Returns counts; throws only on a connection-level failure. */
 async function pollFolder(
 	imap: ImapFlow, box: Mailbox, folder: MailFolder,
@@ -292,6 +341,20 @@ async function pollFolder(
 			if (Number(res.rowsAffected ?? 0) > 0) {
 				inserted++;
 				await storeAttachments(rowId, parsed.attachments ?? []);
+
+				// A reply to something already filed follows it there, so a conversation
+				// stays whole instead of splitting between Inbox and the folder its
+				// earlier messages live in. Only for mail arriving in INBOX — moving a
+				// message that the server already filed would fight the server's rules.
+				if (direction === 'in' && folder.path.toUpperCase() === 'INBOX') {
+					const target = await threadFolder(box.address, parsed.inReplyTo ?? null, refs);
+					if (target) {
+						const moved = await moveMessage(box, folder.path, uid, target);
+						if (!moved.ok) {
+							console.warn(`[mailSync] thread-follow to ${target} failed:`, moved.error);
+						}
+					}
+				}
 
 				// Outbound is scanned too, but reports DANGER only.
 				//
