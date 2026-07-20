@@ -87,7 +87,7 @@ export const PROFILES: Record<Jurisdiction, JurisdictionProfile> = {
 /**
  * Returns the jurisdiction profile for a tenant.
  * Falls back to the US profile if no setting row exists (preserves current
- * behaviour for all existing tenants after the migration runs).
+ * behavior for all existing tenants after the migration runs).
  */
 export async function getJurisdictionProfile(tenantId: string): Promise<JurisdictionProfile> {
   try {

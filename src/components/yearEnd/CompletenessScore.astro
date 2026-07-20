@@ -58,7 +58,7 @@ const uid = `cs-${Math.random().toString(36).slice(2, 8)}`;   // unique per inst
 					        stroke-dashoffset="226.19"
 					        style="transition: stroke-dashoffset 0.8s ease, stroke 0.4s ease"/>
 				</svg>
-				<!-- Score text in centre -->
+				<!-- Score text in center -->
 				<div class="absolute inset-0 flex flex-col items-center justify-center">
 					<span id={`${uid}-pct`} class="text-xl font-black text-gray-900 leading-none">—</span>
 					<span class="text-xs text-gray-400 font-medium leading-none mt-0.5">/ 100</span>
@@ -207,7 +207,7 @@ async function loadCompleteness() {
 				pillarsEl.appendChild(row);
 			}
 
-			// Toggle behaviour
+			// Toggle behavior
 			toggle?.addEventListener('click', () => {
 				const open = pillarsEl.classList.toggle('hidden');
 				if (toggle) {

@@ -312,7 +312,7 @@ export async function runTransferMatching(
 		args: [tenantId],
 	});
 
-	// Group in-transactions by normalised symbol for fast lookup
+	// Group in-transactions by normalized symbol for fast lookup
 	const inBySymbol = new Map<string, TxRow[]>();
 	for (const row of inResult.rows) {
 		const tx = row as unknown as TxRow;

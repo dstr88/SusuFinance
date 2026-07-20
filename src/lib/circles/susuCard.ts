@@ -16,7 +16,7 @@
  *   • the current cycle's star row            — one slot per turn in the cycle
  *   • lifetime tallies                        — composition + completed-cycle gates
  *
- * Star row (glyphs, not colours — a colour-blind or pre-literate reader must parse
+ * Star row (glyphs, not colors — a color-blind or pre-literate reader must parse
  * it before she reads it):
  *   on_time  ★  paid on the due date or early
  *   late     ☆  paid, but late (within grace) or made good after (repaid) — still a star

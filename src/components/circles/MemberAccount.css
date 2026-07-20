@@ -243,8 +243,8 @@
 	color: var(--accent-dim);
 }
 
-/* The star row. Glyph shape is the meaning; colour only reinforces it, so the row
-   survives a colour-blind reader and a greyscale print of the export. */
+/* The star row. Glyph shape is the meaning; color only reinforces it, so the row
+   survives a color-blind reader and a grayscale print of the export. */
 .ma__stars {
 	display: flex;
 	flex-wrap: wrap;
@@ -305,7 +305,7 @@
 	line-height: 1;
 }
 /* Every fifth mark struck through — the closed gate (IIII̸). A pseudo-element line
-   so the strike is a shape, not a colour. */
+   so the strike is a shape, not a color. */
 .ma__tallymark--gate {
 	position: relative;
 	margin-right: 0.25rem;

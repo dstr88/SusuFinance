@@ -9,7 +9,7 @@
  * who she is, whether she is still in the group, whose turn it is, and whether her
  * payout address is verified. Nothing else.
  *
- * Colour discipline: red is reserved for an unverified payout ADDRESS — a safety
+ * Color discipline: red is reserved for an unverified payout ADDRESS — a safety
  * fact §3 says must be settled before a round opens. Nothing about a member is red.
  * A departure is muted, never a scarlet letter.
  */
@@ -83,7 +83,7 @@
   border-radius: 12px;
   padding: 1rem 1rem 0.85rem;
 }
-/* Receiving this round — the circle's centre of gravity, marked with the accent,
+/* Receiving this round — the circle's center of gravity, marked with the accent,
    never with a rank. */
 .mc-card--receiving { border-color: var(--accent-soft); background: var(--surface-card-2); }
 /* A departure is recorded, not condemned: the card fades out of the present tense

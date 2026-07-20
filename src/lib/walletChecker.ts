@@ -938,7 +938,7 @@ export async function checkWallet(address: string): Promise<WalletCheckResult> {
   const chain = detectChain(address);
   const allErrors: string[] = [];
 
-  // Recognised chain but no safety data yet — return a stub result immediately
+  // Recognized chain but no safety data yet — return a stub result immediately
   if (!SUPPORTED_CHAINS.has(chain) && chain !== 'unknown') {
     const emptyF: WalletCheckResult['flags'] = {
       blacklisted: false, phishing: false, honeypotRelated: false,

@@ -2,8 +2,8 @@
 // and the printable export page (server). Kept in its own module with NO db import
 // so the client bundle never pulls the server-only card queries.
 //
-// Glyphs, not colours (SusuData §4): shape carries the meaning, so the row survives a
-// colour-blind reader and a greyscale print of the card she hands to a lender.
+// Glyphs, not colors (SusuData §4): shape carries the meaning, so the row survives a
+// color-blind reader and a grayscale print of the card she hands to a lender.
 
 export type SlotState = 'on_time' | 'late' | 'turn' | 'missed' | 'pending';
 

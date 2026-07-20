@@ -3,7 +3,7 @@
  * Design tokens only; no hex, no rgb(), no rgba().
  * Mobile-first: one column, widening up.
  *
- * Colour as vocabulary, same rule as every other surface here: red (--loss) appears
+ * Color as vocabulary, same rule as every other surface here: red (--loss) appears
  * for exactly ONE thing — an open round whose recipient is not verified, which is a
  * safety fact about an ADDRESS and something §3 says should not have happened.
  * Nothing about members is red. Not "behind", not early withdrawals, not a low

@@ -317,7 +317,7 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 	const { contract, members, rounds, events } = data;
 
 	/** A member's chosen identity, or a shortened UUID — only ever for real member
-	 *  ids. Never guess: an unrecognised id is returned whole, because truncating
+	 *  ids. Never guess: an unrecognized id is returned whole, because truncating
 	 *  something you failed to resolve renders a fiction that looks like a name. */
 	const nameOf = (id: string | null) => {
 		if (!id) return '—';

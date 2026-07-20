@@ -1,11 +1,11 @@
 /* ContractTinsGrid — the operator vault's contract tins.
  *
- * Design tokens only. Every colour below is one of the 22 custom properties; there
+ * Design tokens only. Every color below is one of the 22 custom properties; there
  * is no hex, rgb() or rgba() in this file.
  *
  * Mobile-first: the audience is a phone. One column by default, widening up.
  *
- * A note on colour as vocabulary: --loss (red) is used for exactly one thing here,
+ * A note on color as vocabulary: --loss (red) is used for exactly one thing here,
  * an unverified payout address, because §3 says a round should not open until the
  * address is verified — that is a safety fact about an ADDRESS, not a judgment of a
  * person. Nothing about a member's contribution timing is ever red. A missed week is
@@ -228,7 +228,7 @@
    A tin being assembled shows its women rather than a rotation it does not have
    yet. Cards drag between tins to move; the corner square drags to copy.
 
-   Colours are tokens only — no hex, no rgba. The "can take this card" state reuses
+   Colors are tokens only — no hex, no rgba. The "can take this card" state reuses
    --accent rather than inventing a highlight. */
 
 .ct-card--forming {

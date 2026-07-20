@@ -405,7 +405,7 @@ function SusuCardFace({ card, t, lang }: { card: SusuCard; t: ReturnType<typeof 
 			</div>
 
 			{/* The star row — this cycle only. role=list so a screen reader walks the
-			    slots; each glyph carries its meaning as an aria-label, not by colour. */}
+			    slots; each glyph carries its meaning as an aria-label, not by color. */}
 			<div className="ma__stars" role="list" aria-label={l.thisCycle}>
 				{card.slots.map((s, i) => (
 					<span

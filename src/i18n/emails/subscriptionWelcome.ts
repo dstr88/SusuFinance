@@ -5,7 +5,7 @@
 // calls render(). Bodies use template literals (backticks) so apostrophes are safe.
 // Plan names stay English in all locales.
 //
-// Colours are inline hex because email clients strip external CSS and do not honour
+// Colors are inline hex because email clients strip external CSS and do not honor
 // CSS variables — the token rule is an app-UI rule and cannot apply here. The accent
 // is SusuFinance teal (#2dd4a8), matching --accent.
 

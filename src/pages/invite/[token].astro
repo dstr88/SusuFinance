@@ -34,7 +34,7 @@ const token = Astro.params.token ?? '';
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 
 // Not signed in? Send her to sign in, and come straight back here. The `next` path
-// survives the round-trip (postLoginRedirect honours it over the lobby default).
+// survives the round-trip (postLoginRedirect honors it over the lobby default).
 const auth = await getAuthSession(Astro.request).catch(() => null);
 const userId = auth?.user?.id ? String(auth.user.id) : '';
 if (!userId) {
