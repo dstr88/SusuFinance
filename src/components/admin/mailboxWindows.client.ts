@@ -190,6 +190,10 @@ const snippet = (t: string) => {
  * Trash) everywhere else, Destroy (permanent) only here. One button per row, so there
  * is never an irreversible action sitting next to a reversible one that looks like it.
  */
+function inJunk(m: any): boolean {
+	return /^(inbox[./])?(junk|spam)$/i.test(String(m.folder ?? ''));
+}
+
 function inTrash(m: any): boolean {
 	return /^(inbox[./])?(trash|deleted items?)$/i.test(String(m.folder ?? ''));
 }
@@ -224,7 +228,15 @@ function renderMessages(data: any, mailbox: string): string {
 		// spam_flag is the MAIL SERVER's judgment of the message; threat_level is the
 		// WALLET CHECKER's judgment of the addresses and links inside it. A message can
 		// be either, both, or neither.
-		const spam = Boolean(m.spam_flag);
+		// "Junk" throughout, matching the folder name and IMAP's own \Junk flag. Spam and
+		// junk are the same concept under different vendor names, and using both words in
+		// one panel invites the reader to hunt for a distinction that does not exist.
+		//
+		// The badge is suppressed inside the Junk folder itself: everything there is junk
+		// by definition, so marking it says nothing. What the badge is FOR is the message
+		// that scored high and was delivered to the Inbox anyway — borderline mail that
+		// reached you, which is invisible without it.
+		const spam = Boolean(m.spam_flag) && !inJunk(m);
 		const spamScore = m.spam_score == null ? '' : ` ${Number(m.spam_score).toFixed(1)}`;
 		const threats = (m.threats ?? []) as any[];
 		const danger = m.threat_level === 'danger';
@@ -236,7 +248,7 @@ function renderMessages(data: any, mailbox: string): string {
 			<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}${spam || danger ? ' mhc--spam' : ''}${caution && !danger ? ' mhc--caution' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}">
 				<div class="mhc__row">
 					<input class="mhc__chk" type="checkbox" data-id="${escapeHtml(m.id)}" aria-label="Select message" />
-					${spam ? `<span class="mhc__scam" title="Your mail server flagged this as spam">⚠ SPAM${escapeHtml(spamScore)}</span>` : ''}
+					${spam ? `<span class="mhc__scam" title="Your mail server scored this as junk but delivered it anyway">⚠ JUNK${escapeHtml(spamScore)}</span>` : ''}
 					${danger ? '<span class="mhc__scam" title="A wallet address or link in this message is on a scam list">⚠ SCAM</span>' : ''}
 					${caution && !danger ? '<span class="mhc__caution" title="Something here is worth checking before acting on it">⚠ CHECK</span>' : ''}
 					<span class="mhc__who">${who}</span>
