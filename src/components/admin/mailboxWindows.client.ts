@@ -663,6 +663,35 @@ document.addEventListener('click', async (e) => {
 // Junk arrives in volume. Selecting, select-all, and Ctrl+Shift+Delete are what make
 // this usable as an actual mail client rather than a demo.
 
+/**
+ * Fill the bulk-move folder list for a panel.
+ *
+ * Rebuilt on every load because the current folder is excluded from its own list, and
+ * "move these to where they already are" is a no-op that reads as a broken action.
+ */
+function fillBulkMove(panel: HTMLElement, data: any): void {
+	const sel = q<HTMLSelectElement>(panel, '.mh__bulkmove');
+	if (!sel) return;
+	const current = activeFolder(panel);
+	const folders = ((data.folders ?? []) as Array<{ path: string; specialUse: string | null }>)
+		.filter((f) => f.path !== current);
+
+	const label = (f: { path: string; specialUse: string | null }) =>
+		f.path.toUpperCase() === 'INBOX' ? 'Inbox'
+		: f.specialUse === '\\Sent' ? 'Sent'
+		: f.specialUse === '\\Archive' ? 'Archive'
+		: f.path.split(/[./]/).pop() || f.path;
+
+	sel.innerHTML = '<option value="">Move selected to…</option>';
+	for (const f of folders) {
+		const opt = document.createElement('option');
+		opt.value = f.path;
+		// textContent, not innerHTML: a folder name is operator-supplied text.
+		opt.textContent = label(f);
+		sel.appendChild(opt);
+	}
+}
+
 function checkedIds(panel: HTMLElement): string[] {
 	return Array.from(panel.querySelectorAll<HTMLInputElement>('.mhc__chk:checked'))
 		.map((c) => c.dataset.id!)
@@ -724,7 +753,39 @@ async function bulkAct(panel: HTMLElement, action: 'delete' | 'destroy'): Promis
 	}
 }
 
-document.addEventListener('change', (e) => {
+document.addEventListener('change', async (e) => {
+	const mv = (e.target as Element).closest<HTMLSelectElement>('.mh__bulkmove');
+	if (mv?.value) {
+		const panel = mv.closest<HTMLElement>('.mh')!;
+		const ids = checkedIds(panel);
+		const target = mv.value;
+		mv.value = '';
+		if (!ids.length) { setStatus(panel, 'Nothing selected'); return; }
+
+		setStatus(panel, 'Moving…');
+		try {
+			const res = await fetch('/api/admin/mail/organize', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ mailbox: panel.dataset.mailbox, action: 'move', ids, folder: target }),
+			});
+			const data = await res.json().catch(() => ({}));
+			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+			for (const id of data.done ?? []) {
+				panel.querySelector(`.mhc[data-id="${CSS.escape(String(id))}"]`)?.remove();
+			}
+			setStatus(panel, (data.failed ?? []).length
+				? `${data.done.length} moved, ${data.failed.length} failed`
+				: `${data.done.length} moved`);
+			const all = q<HTMLInputElement>(panel, '.mh__bulkall');
+			if (all) all.checked = false;
+			syncBulkBar(panel);
+		} catch (err) {
+			setStatus(panel, err instanceof Error ? err.message : 'Move failed');
+		}
+		return;
+	}
+
 	const chk = (e.target as Element).closest<HTMLInputElement>('.mhc__chk');
 	if (chk) { syncBulkBar(chk.closest<HTMLElement>('.mh')!); return; }
 

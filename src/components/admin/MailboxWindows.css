@@ -418,3 +418,5 @@ select.mhc__move {
 /* The checkbox sits at the head of the row and must not be squeezed out by a long
    subject; it is also excluded from the click target that opens the message. */
 .mhc__chk { flex: 0 0 auto; margin: 0 0.15rem 0 0; cursor: pointer; }
+
+select.mh__bulkmove { font: inherit; font-size: 12px; padding: 0.2rem 0.35rem; max-width: 160px; }
