@@ -1,0 +1,36 @@
+---
+/**
+ * Notepads.astro — two scratch pads under the signup board.
+ *
+ * Admin is shared by every admin; Personal belongs to whoever is signed in. The split
+ * mirrors the mailboxes at the top of the page — shared address, private address — so
+ * the two words already carry a meaning the operator has met.
+ *
+ * Markup only; behaviour in notepads.client.ts, presentation in Notepads.css.
+ */
+import './Notepads.css';
+---
+
+<section class="np">
+	<div class="np__pad" data-scope="admin">
+		<header class="np__head">
+			<span class="np__title">Admin</span>
+			<span class="np__sub">shared with every admin</span>
+			<span class="np__status" aria-live="polite"></span>
+		</header>
+		<textarea class="np__text" placeholder="Shared notes…" aria-label="Admin notes"></textarea>
+	</div>
+
+	<div class="np__pad" data-scope="personal">
+		<header class="np__head">
+			<span class="np__title">Personal</span>
+			<span class="np__sub">only you</span>
+			<span class="np__status" aria-live="polite"></span>
+		</header>
+		<textarea class="np__text" placeholder="Your own notes…" aria-label="Personal notes"></textarea>
+	</div>
+</section>
+
+<script>
+	import './notepads.client.ts';
+</script>

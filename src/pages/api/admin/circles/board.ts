@@ -67,8 +67,9 @@ export const POST: APIRoute = async ({ request }) => {
 
 	// ── Generate a group ─────────────────────────────────────────────────────
 	if (action === 'group') {
+		// An empty tin is allowed: the operator creates it, then drags people in. Refusing
+		// would mean the only way to make a tin is to already have people picked for it.
 		const memberIds = Array.isArray(body.memberIds) ? body.memberIds.map(String) : [];
-		if (!memberIds.length) return json({ ok: false, error: 'Select at least one person.' }, 400);
 
 		const result = await createGroup({
 			tenantId: ctx.tenantId,

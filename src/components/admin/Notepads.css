@@ -1,0 +1,48 @@
+/* Notepads — presentation only.
+   Markup in Notepads.astro, behavior in notepads.client.ts. */
+
+.np {
+	width: 80%;
+	margin: 0 auto 1.5rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+/* Side by side on a laptop, stacked on a phone — two half-width textareas on a
+   narrow screen are two unusable textareas. */
+@media (max-width: 900px) {
+	.np { width: 100%; grid-template-columns: 1fr; }
+}
+
+.np__pad {
+	border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+	border-radius: 10px;
+	background: var(--surface-card, rgba(255,255,255,0.02));
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+.np__head {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	padding: 0.5rem 0.7rem;
+	border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+	font-size: 14px;
+}
+.np__title { font-weight: 600; }
+.np__sub { font-size: 12px; color: var(--text-muted); }
+.np__status { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+
+.np__text {
+	border: 0;
+	resize: vertical;
+	min-height: 150px;
+	padding: 0.6rem 0.7rem;
+	background: var(--surface-bg, #0a0f1a);
+	color: var(--text-primary, inherit);
+	font: inherit;
+	font-size: 14px;
+	line-height: 1.55;
+}
+.np__text:focus { outline: 2px solid var(--accent-glow, rgba(99,102,241,0.4)); outline-offset: -2px; }

@@ -5,6 +5,7 @@ import { getGA4Summary } from '@/lib/ga4';
 import { OWNER_TENANT_ID } from '@/lib/owner';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
 import CircleBoard from '@/components/circles/CircleBoard';
+import Notepads from '@/components/admin/Notepads.astro';
 
 // Guard — redirect non-admin users rather than returning a raw 4xx,
 // since Render's infrastructure renders raw error responses as "file not found".
@@ -474,6 +475,9 @@ const fmtDate = (iso: string | null) => {
 
 	<!-- ── Signup task bar + circle tins ────────────────────────── -->
 	<CircleBoard client:load />
+
+	<!-- ── Notepads ─────────────────────────────────────────────── -->
+	<Notepads />
 
 	<!-- ── Adoption ─────────────────────────────────────────────── -->
 	<div class="section">

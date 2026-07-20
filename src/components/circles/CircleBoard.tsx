@@ -108,6 +108,8 @@ export default function CircleBoard({ heading = 'Signups' }: { heading?: string 
 
 	const generate = useCallback(async () => {
 		try {
+			// No selection is fine — an empty forming tin is a perfectly good thing to
+			// make and then drag people into.
 			await post({
 				action: 'group',
 				name: form.name,
@@ -138,11 +140,13 @@ export default function CircleBoard({ heading = 'Signups' }: { heading?: string 
 				<h2 className="cb__title">{heading}</h2>
 				<span className="cb__count">{signups.length}</span>
 				<span className="cb__spacer" />
-				{selected.size > 0 && (
-					<button className="cb__btn cb__btn--go" type="button" onClick={() => setFormOpen((v) => !v)}>
-						Generate group ({selected.size})
-					</button>
-				)}
+				{/* Always available, not only once someone is selected: the control that
+				    makes the FIRST tin cannot be hidden behind having tins to select
+				    people for. With a selection it seats them; without one it makes an
+				    empty tin to drag people into. */}
+				<button className="cb__btn cb__btn--go" type="button" onClick={() => setFormOpen((v) => !v)}>
+					{selected.size > 0 ? `New tin (${selected.size} selected)` : 'New tin'}
+				</button>
 			</header>
 
 			{note && (
