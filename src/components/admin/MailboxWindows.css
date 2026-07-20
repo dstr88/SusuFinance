@@ -368,3 +368,18 @@ textarea.mh__in {
 }
 .mhc__threats--ok .mhc__threathead { color: var(--gain, #34d399); }
 .mhc__threat--known code, .mhc__threat--known span { color: var(--gain, #34d399); }
+
+/* Move control sits in the row's action strip and matches the buttons beside it,
+   so filing a message reads as one of the ordinary actions rather than a setting. */
+select.mhc__move {
+	font: inherit;
+	font-size: 12px;
+	padding: 0.22rem 0.4rem;
+	max-width: 130px;
+}
+.mh__newfolder {
+	margin-top: 0.3rem;
+	border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+	padding-top: 0.4rem;
+	color: var(--text-muted);
+}

@@ -706,6 +706,125 @@ export async function deleteDraft(box: Mailbox, draftId: string): Promise<void> 
 }
 
 /**
+ * Move one message to another folder, on the server and in our copy.
+ *
+ * IMAP UIDs are per-folder, so a moved message gets a NEW uid in its destination. We
+ * therefore clear the uid locally rather than guess it: the next poll of the target
+ * folder inserts the real row, and the unique index keeps that from duplicating. The
+ * row stays visible in the meantime because its folder has already been updated.
+ */
+export async function moveMessage(
+	box: Mailbox, fromFolder: string, uid: number, toFolder: string,
+): Promise<{ ok: boolean; error?: string }> {
+	let imap: ImapFlow | null = null;
+	try {
+		imap = client(box);
+		await imap.connect();
+
+		const lock = await imap.getMailboxLock(fromFolder);
+		try {
+			await imap.messageMove({ uid: String(uid) }, toFolder, { uid: true });
+		} finally {
+			lock.release();
+		}
+
+		await db.execute({
+			sql: `UPDATE mail_messages
+			      SET folder = ?, special_use = NULL, uid = NULL
+			      WHERE mailbox = ? AND folder = ? AND uid = ?`,
+			args: [toFolder, box.address, fromFolder, uid],
+		});
+
+		// The destination's cursor must not skip the message we just put there. Clearing
+		// the cursor makes the next poll re-read that folder from the start, which the
+		// unique index makes safe.
+		await db.execute({
+			sql: `DELETE FROM mail_folder_state WHERE mailbox = ? AND folder = ?`,
+			args: [box.address, toFolder],
+		});
+
+		return { ok: true };
+	} catch (err) {
+		return { ok: false, error: err instanceof Error ? err.message : String(err) };
+	} finally {
+		try { await imap?.logout(); } catch { /* already gone */ }
+	}
+}
+
+/**
+ * Delete = move to Trash. Never expunge.
+ *
+ * The operator clicking a small button next to a message must not be able to destroy
+ * it. Trash is polled like every other folder, so a deleted message stays readable and
+ * can be moved back. Actual destruction is the mail server's retention policy to apply,
+ * not a side effect of a UI click.
+ *
+ * If the mailbox genuinely has no Trash folder, the message is flagged \Deleted rather
+ * than expunged — still recoverable until the server cleans up.
+ */
+export async function deleteMessage(
+	box: Mailbox, folder: string, uid: number,
+): Promise<{ ok: boolean; error?: string }> {
+	let imap: ImapFlow | null = null;
+	try {
+		imap = client(box);
+		await imap.connect();
+		const trash = await findFolderBySpecialUse(imap, '\\Trash', /^(inbox[./])?(trash|deleted items?)$/i);
+		try { await imap.logout(); } catch { /* ignore */ }
+		imap = null;
+
+		if (trash && trash !== folder) return moveMessage(box, folder, uid, trash);
+
+		// No Trash, or already in it: flag, do not expunge.
+		imap = client(box);
+		await imap.connect();
+		const lock = await imap.getMailboxLock(folder);
+		try {
+			await imap.messageFlagsAdd({ uid: String(uid) }, ['\\Deleted'], { uid: true });
+		} finally {
+			lock.release();
+		}
+		return { ok: true };
+	} catch (err) {
+		return { ok: false, error: err instanceof Error ? err.message : String(err) };
+	} finally {
+		try { await imap?.logout(); } catch { /* already gone */ }
+	}
+}
+
+/** Create a folder the operator can file mail into. */
+export async function createMailFolder(
+	box: Mailbox, name: string,
+): Promise<{ ok: boolean; path?: string; error?: string }> {
+	const clean = name.trim();
+	// Slashes and dots are IMAP hierarchy separators depending on the server; letting
+	// them through would silently create nested folders the operator did not ask for.
+	if (!clean || /[./\\]/.test(clean)) {
+		return { ok: false, error: 'Use a simple name without slashes or dots.' };
+	}
+
+	let imap: ImapFlow | null = null;
+	try {
+		imap = client(box);
+		await imap.connect();
+
+		// cPanel/Dovecot nests user folders under INBOX; creating a top-level folder on
+		// such a server either fails or lands somewhere the client will not show.
+		const list = await imap.list();
+		const nested = list.some((f) => /^INBOX[./]/i.test(f.path));
+		const sep = list.find((f) => f.delimiter)?.delimiter ?? '.';
+		const path = nested ? `INBOX${sep}${clean}` : clean;
+
+		await imap.mailboxCreate(path);
+		return { ok: true, path };
+	} catch (err) {
+		return { ok: false, error: err instanceof Error ? err.message : String(err) };
+	} finally {
+		try { await imap?.logout(); } catch { /* already gone */ }
+	}
+}
+
+/**
  * Find a folder by its SPECIAL-USE flag, falling back to a name pattern.
  *
  * Servers disagree on names — 'Sent' vs 'Sent Items' vs 'INBOX.Sent' — so the flag is

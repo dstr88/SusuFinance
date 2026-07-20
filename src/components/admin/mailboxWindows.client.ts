@@ -176,6 +176,30 @@ const snippet = (t: string) => {
 	return line.length > 90 ? `${line.slice(0, 90)}…` : line;
 };
 
+/**
+ * The "Move to…" control for one message.
+ *
+ * Rendered per message rather than as one shared control because the current folder is
+ * excluded from its own list — offering "move to where it already is" is a no-op that
+ * reads as a broken action.
+ */
+function folderOptions(data: any, m: any): string {
+	const folders = (data.folders ?? []) as Array<{ path: string; specialUse: string | null }>;
+	const others = folders.filter((f) => f.path !== m.folder);
+	if (!others.length) return '';
+
+	const label = (f: { path: string; specialUse: string | null }) =>
+		f.path.toUpperCase() === 'INBOX' ? 'Inbox'
+		: f.specialUse === '\\Sent' ? 'Sent'
+		: f.specialUse === '\\Archive' ? 'Archive'
+		: f.path.split(/[./]/).pop() || f.path;
+
+	return `<select class="mh__btn mhc__move" data-id="${escapeHtml(m.id)}" aria-label="Move to folder">
+		<option value="">Move to…</option>
+		${others.map((f) => `<option value="${escapeHtml(f.path)}">${escapeHtml(label(f))}</option>`).join('')}
+	</select>`;
+}
+
 function renderMessages(data: any, mailbox: string): string {
 	return (data.messages as any[]).map((m) => {
 		const out = m.direction === 'out';
@@ -231,6 +255,8 @@ function renderMessages(data: any, mailbox: string): string {
 					<div class="mhc__acts">
 						${data.canSend && !out ? `<button class="mh__btn mhc__reply" type="button" data-id="${escapeHtml(m.id)}">Reply</button>` : ''}
 						${unread ? `<button class="mh__btn mhc__read" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>` : ''}
+						${folderOptions(data, m)}
+						<button class="mh__btn mhc__del" type="button" data-id="${escapeHtml(m.id)}" title="Move to Trash">Delete</button>
 					</div>
 				</div>
 			</div>`;
@@ -517,6 +543,74 @@ document.addEventListener('click', async (e) => {
 		setStatus(panel, err instanceof Error ? err.message : 'Check failed');
 	} finally {
 		btn.disabled = false;
+	}
+});
+
+// ── Organize: delete, move, new folder ──────────────────────────────────────
+async function organize(panel: HTMLElement, body: Record<string, unknown>): Promise<boolean> {
+	setStatus(panel, 'Working…');
+	try {
+		const res = await fetch('/api/admin/mail/organize', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mailbox: panel.dataset.mailbox, ...body }),
+		});
+		const data = await res.json().catch(() => ({}));
+		if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+		setStatus(panel, '');
+		return true;
+	} catch (err) {
+		setStatus(panel, err instanceof Error ? err.message : 'Failed');
+		return false;
+	}
+}
+
+document.addEventListener('click', async (e) => {
+	const btn = (e.target as Element).closest<HTMLButtonElement>('.mhc__del');
+	if (!btn?.dataset.id) return;
+	const panel = btn.closest<HTMLElement>('.mh')!;
+
+	// Deleting moves to Trash rather than destroying, so this asks once and plainly
+	// instead of demanding a scary confirmation for a reversible act.
+	if (!confirm('Move this message to Trash?')) return;
+
+	btn.disabled = true;
+	if (await organize(panel, { action: 'delete', id: btn.dataset.id })) {
+		btn.closest('.mhc')?.remove();
+	} else {
+		btn.disabled = false;
+	}
+});
+
+document.addEventListener('change', async (e) => {
+	const sel = (e.target as Element).closest<HTMLSelectElement>('.mhc__move');
+	if (!sel?.value || !sel.dataset.id) return;
+	const panel = sel.closest<HTMLElement>('.mh')!;
+	const target = sel.value;
+	sel.disabled = true;
+	if (await organize(panel, { action: 'move', id: sel.dataset.id, folder: target })) {
+		sel.closest('.mhc')?.remove();
+	} else {
+		sel.disabled = false;
+		sel.value = '';
+	}
+});
+
+document.addEventListener('click', async (e) => {
+	const btn = (e.target as Element).closest<HTMLButtonElement>('.mh__newfolder');
+	if (!btn) return;
+	const panel = btn.closest<HTMLElement>('.mh')!;
+	const name = prompt('New folder name');
+	if (!name) return;
+	if (await organize(panel, { action: 'create-folder', name })) {
+		// The rail is server-rendered from mail_folder_state, which the next poll fills.
+		// Check now so the folder appears without waiting for the cron.
+		await fetch('/api/admin/mail/refresh', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mailbox: panel.dataset.mailbox }),
+		}).catch(() => {});
+		location.reload();
 	}
 });
 
