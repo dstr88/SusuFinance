@@ -66,9 +66,37 @@ export const GET: APIRoute = async ({ request }) => {
 	return json({
 		ok: true,
 		elapsed_ms: Date.now() - started,
+		deploy: deployInfo(),
 		mailboxes: results.length,
 		inserted,
 		failed: failed.length,
 		results,
 	});
 };
+
+/**
+ * What the RUNNING process sees — which commit is live, and how many entries each
+ * admin-grant variable holds.
+ *
+ * Counts only, never values: an admin user id is not a secret but it is an identifier,
+ * and a diagnostic reachable with the cron secret should not hand out account ids.
+ *
+ * This exists because two separate stalls during the mail build looked identical from
+ * the outside — a variable that had not been picked up because the service had not
+ * restarted, and code that predated the variable existing. Neither produced an error
+ * message; both looked like a wrong value. This answers both in one call.
+ */
+function deployInfo() {
+	const count = (v: string | undefined) =>
+		(v ?? '').split(',').map((s) => s.trim()).filter(Boolean).length;
+
+	return {
+		// Set by Render on every deploy. Absent when running anywhere else.
+		commit: (process.env.RENDER_GIT_COMMIT ?? '').slice(0, 8) || null,
+		adminGrants: {
+			userIds: count(process.env.ADMIN_USER_IDS ?? process.env.ADMIN_USER_ID),
+			tenantIds: count(process.env.ADMIN_TENANT_IDS ?? process.env.ADMIN_TENANT_ID),
+			emails: count(process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL),
+		},
+	};
+}
