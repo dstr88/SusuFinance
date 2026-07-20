@@ -211,8 +211,12 @@ function renderMessages(data: any, mailbox: string): string {
 					<span class="mhc__when">${escapeHtml(fmt(m.sent_at))}</span>
 				</div>
 				<div class="mhc__open">
-					${threats.length ? `<div class="mhc__threats">
-						<div class="mhc__threathead">Checked against the scam lists — verify before acting on this:</div>
+					${threats.length ? `<div class="mhc__threats${threats.every((t: any) => t.severity === 'known') ? ' mhc__threats--ok' : ''}">
+						<div class="mhc__threathead">${
+							threats.every((t: any) => t.severity === 'known')
+								? 'Recognised address:'
+								: 'Checked against the scam lists — verify before acting on this:'
+						}</div>
 						${threats.map((t: any) => `<div class="mhc__threat mhc__threat--${escapeHtml(t.severity)}">
 							<code>${escapeHtml(t.kind === 'url' ? String(t.value).replace(/\./g, '[.]') : t.value)}</code> <span>${escapeHtml(t.reason)}</span>
 						</div>`).join('')}

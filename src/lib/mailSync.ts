@@ -302,7 +302,10 @@ async function pollFolder(
 				// -level noise about the operator's own known payout addresses — a warning
 				// that fires on his normal behavior is one he learns to dismiss.
 				const scanText = `${parsed.subject ?? ''}\n${parsed.text ?? ''}\n${parsed.html ?? ''}`;
-				await scanAndRecord(rowId, scanText, budget, { dangerOnly: direction === 'out' });
+				await scanAndRecord(rowId, scanText, budget, {
+					dangerOnly: direction === 'out',
+					tenantId: box.tenantId,
+				});
 			}
 		}
 

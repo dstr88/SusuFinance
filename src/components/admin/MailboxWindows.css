@@ -359,3 +359,12 @@ textarea.mh__in {
 }
 .mhc__threat span { color: var(--text-secondary, inherit); }
 .mhc__threat--warning code, .mhc__threat--warning span { color: var(--warning, #f59e0b); }
+
+/* A findings box containing only positive results is not a warning. Green, quiet,
+   and stated as fact — the contrast is what makes the red ones mean something. */
+.mhc__threats--ok {
+	border-color: var(--gain-border, rgba(52,211,153,0.3));
+	background: var(--gain-bg, rgba(52,211,153,0.08));
+}
+.mhc__threats--ok .mhc__threathead { color: var(--gain, #34d399); }
+.mhc__threat--known code, .mhc__threat--known span { color: var(--gain, #34d399); }

@@ -105,8 +105,54 @@ export async function sweepVerdictCache(): Promise<void> {
 export interface Finding {
 	kind: 'address' | 'url';
 	value: string;
-	severity: 'danger' | 'warning';
+	/** 'known' is the positive case — evidence FOR an address, not against it. */
+	severity: 'danger' | 'warning' | 'known';
 	reason: string;
+}
+
+/**
+ * Is this address one the programme already knows?
+ *
+ * Answers only within ONE tenant, and only when the mailbox declares which. A search
+ * across every tenant's members would use one programme's mail to answer questions
+ * about another programme's people, which is the isolation line this architecture does
+ * not cross. No tenant on the mailbox means no lookup at all — fail closed.
+ *
+ * The value here is not just reassurance. A susu organizer's live risk is the swapped
+ * address: a message that looks routine, carrying a payout address that is NOT the one
+ * on file. Marking the ones that ARE on file is what makes the unmarked ones visible.
+ */
+async function lookupKnownAddress(address: string, tenantId: string | null): Promise<Finding | null> {
+	if (!tenantId) return null;
+	try {
+		const r = await db.execute({
+			sql: `SELECT display_name, address_verified_at
+			      FROM members
+			      WHERE tenant_id = ? AND lower(payout_address) = lower(?)
+			      LIMIT 1`,
+			args: [tenantId, address],
+		});
+		const row = r.rows[0] as Record<string, unknown> | undefined;
+		if (!row) return null;
+
+		// A chosen name, or nothing — a UUID-only member is a choice, and printing her
+		// id into a mail panel would undo it.
+		const who = row.display_name ? String(row.display_name) : 'a member';
+		const verified = Boolean(row.address_verified_at);
+
+		return {
+			kind: 'address',
+			value: address,
+			// Verified means she proved control of it via a self-send. Unverified means
+			// it is merely what is recorded, which is worth knowing but is not proof.
+			severity: verified ? 'known' : 'warning',
+			reason: verified
+				? `Payout address on file for ${who}, verified`
+				: `Payout address on file for ${who}, NOT yet verified`,
+		};
+	} catch {
+		return null;
+	}
 }
 
 // EVM, Bitcoin (bech32 and legacy), and Solana base58. Deliberately broad: a false
@@ -146,7 +192,7 @@ export function extractDomains(text: string): string[] {
 export async function scanMessage(
 	text: string,
 	budget: { addressChecksLeft: number },
-	opts: { dangerOnly?: boolean } = {},
+	opts: { dangerOnly?: boolean; tenantId?: string | null } = {},
 ): Promise<Finding[]> {
 	const findings: Finding[] = [];
 
@@ -186,6 +232,16 @@ export async function scanMessage(
 	const addresses = extractAddresses(text).slice(0, MAX_ADDRESSES_PER_MESSAGE);
 	for (const address of addresses) {
 		try {
+			// Known-address check first: it is a local query, it costs nothing, and a
+			// recognised payout address is the most useful thing the panel can say about
+			// an address in a message about money.
+			const known = await lookupKnownAddress(address, opts.tenantId ?? null);
+			if (known) {
+				// Still fall through to the scam check — an address being on file does
+				// not make it safe, and a member's own wallet can be compromised.
+				findings.push(known);
+			}
+
 			// Three tiers, cheapest first. Postgres outlives the process and is shared
 			// across mailboxes, so a scam address circulating in twenty messages over a
 			// week costs one API call rather than twenty.
@@ -262,7 +318,7 @@ export async function scanAndRecord(
 	messageId: string,
 	text: string,
 	budget: { addressChecksLeft: number },
-	opts: { dangerOnly?: boolean } = {},
+	opts: { dangerOnly?: boolean; tenantId?: string | null } = {},
 ): Promise<Finding[]> {
 	let findings: Finding[] = [];
 	try {
@@ -281,8 +337,9 @@ export async function scanAndRecord(
 			});
 		}
 
+		// 'known' is a positive finding and must not colour the row as a threat.
 		const level = findings.some((f) => f.severity === 'danger') ? 'danger'
-			: findings.length ? 'warning'
+			: findings.some((f) => f.severity === 'warning') ? 'warning'
 			: null;
 
 		await db.execute({

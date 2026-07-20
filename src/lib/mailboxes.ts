@@ -18,6 +18,7 @@
  *   MAILBOX_1_LABEL      Admin          (optional, defaults to the local part)
  *   MAILBOX_1_SEND       true           (optional, default true)
  *   MAILBOX_1_OWNER      donnie@...     (optional, comma list; empty = every admin)
+ *   MAILBOX_1_TENANT     5c5133b3-...   (optional; enables member-aware address checks)
  *
  *   MAILBOX_2_ADDRESS    afrikanus@susufinance.com
  *   MAILBOX_2_SEND       false          ← read-only until Afrikanus has agreed
@@ -45,6 +46,16 @@ export interface Mailbox {
 	canSend: boolean;
 	/** Admin emails allowed to see this window. Empty = all admins. Lowercased. */
 	owners: string[];
+	/**
+	 * The programme this mailbox belongs to, for member-aware checks.
+	 *
+	 * Optional and fails CLOSED: with no tenant set, the scanner does not look at
+	 * members at all. It must never be inferred, because the alternative — searching
+	 * every tenant's members for a matching payout address — would answer questions
+	 * about one programme's people using another programme's mail. Tenant isolation is
+	 * architecture here, not a setting.
+	 */
+	tenantId: string | null;
 }
 
 export interface MailServerConfig {
@@ -100,6 +111,7 @@ export function getMailboxes(): Mailbox[] {
 				.split(',')
 				.map((e) => e.trim().toLowerCase())
 				.filter(Boolean),
+			tenantId: env(`MAILBOX_${i}_TENANT`) || null,
 		});
 	}
 	return boxes;
