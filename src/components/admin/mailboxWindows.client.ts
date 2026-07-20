@@ -137,6 +137,39 @@ async function load(panel: HTMLElement) {
 	}
 }
 
+/**
+ * Defang the URLs of flagged domains inside a message body.
+ *
+ *   https://evil-drainer.com/claim  →  hxxps://evil-drainer[.]com/claim
+ *
+ * The body is escaped and therefore not clickable, so this is not about stopping a
+ * click in this panel. It is about what happens NEXT: a live-looking URL gets copied,
+ * pasted into an address bar and followed. Defanged, it cannot be followed without
+ * being deliberately repaired first — which is exactly the moment of thought a drainer
+ * link is designed to skip.
+ *
+ * Only flagged domains are defanged. Mangling every link would make legitimate mail
+ * unreadable and teach the reader to ignore the mangling.
+ */
+function defangFlagged(body: string, threats: any[]): string {
+	const domains = threats
+		.filter((t) => t.kind === 'url' && t.severity === 'danger')
+		.map((t) => String(t.value).toLowerCase());
+	if (!domains.length) return body;
+
+	let out = body;
+	for (const domain of domains) {
+		// Escape for RegExp — a dot in a hostname is a literal, not "any character".
+		const safe = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		out = out.replace(
+			new RegExp(`https?://(www\\.)?${safe}`, 'gi'),
+			(match) => match.replace(/^http/i, 'hxxp').replace(/\./g, '[.]'),
+		);
+		out = out.replace(new RegExp(`\\b${safe}\\b`, 'gi'), domain.replace(/\./g, '[.]'));
+	}
+	return out;
+}
+
 /** First line of the body, for the one-line preview next to the subject. */
 const snippet = (t: string) => {
 	const line = String(t ?? '').replace(/\s+/g, ' ').trim();
@@ -151,19 +184,41 @@ function renderMessages(data: any, mailbox: string): string {
 			: escapeHtml(m.from_name || m.from_addr);
 		const unread = !out && !m.read_at;
 		const atts = (m.attachments ?? []) as any[];
+
+		// Two independent verdicts, shown separately because they mean different things.
+		// spam_flag is the MAIL SERVER's judgment of the message; threat_level is the
+		// WALLET CHECKER's judgment of the addresses and links inside it. A message can
+		// be either, both, or neither.
+		const spam = Boolean(m.spam_flag);
+		const spamScore = m.spam_score == null ? '' : ` ${Number(m.spam_score).toFixed(1)}`;
+		const threats = (m.threats ?? []) as any[];
+		const danger = m.threat_level === 'danger';
+		const caution = m.threat_level === 'warning';
+
+		const body = defangFlagged(String(m.body_text ?? ''), threats);
+
 		return `
-			<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}">
+			<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}${spam || danger ? ' mhc--spam' : ''}${caution && !danger ? ' mhc--caution' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}">
 				<div class="mhc__row">
+					${spam ? `<span class="mhc__scam" title="Your mail server flagged this as spam">⚠ SPAM${escapeHtml(spamScore)}</span>` : ''}
+					${danger ? '<span class="mhc__scam" title="A wallet address or link in this message is on a scam list">⚠ SCAM</span>' : ''}
+					${caution && !danger ? '<span class="mhc__caution" title="Something here is worth checking before acting on it">⚠ CHECK</span>' : ''}
 					<span class="mhc__who">${who}</span>
 					<span class="mhc__subj">${escapeHtml(m.subject || '(no subject)')}${
-						m.body_text ? ` <span class="mhc__snip">— ${escapeHtml(snippet(m.body_text))}</span>` : ''
+						body ? ` <span class="mhc__snip">— ${escapeHtml(snippet(body))}</span>` : ''
 					}</span>
 					${atts.length ? '<span class="mhc__clip">📎</span>' : ''}
 					<span class="mhc__when">${escapeHtml(fmt(m.sent_at))}</span>
 				</div>
 				<div class="mhc__open">
-					<p class="mhc__body">${escapeHtml(m.body_text)}</p>
-					${atts.length ? `<div class="mhc__atts">${atts.map((a) =>
+					${threats.length ? `<div class="mhc__threats">
+						<div class="mhc__threathead">Checked against the scam lists — verify before acting on this:</div>
+						${threats.map((t: any) => `<div class="mhc__threat mhc__threat--${escapeHtml(t.severity)}">
+							<code>${escapeHtml(t.kind === 'url' ? String(t.value).replace(/\./g, '[.]') : t.value)}</code> <span>${escapeHtml(t.reason)}</span>
+						</div>`).join('')}
+					</div>` : ''}
+					<p class="mhc__body">${escapeHtml(body)}</p>
+					${atts.length ? `<div class="mhc__atts">${atts.map((a: any) =>
 						a.skipped
 							? `<span class="mhc__att mhc__att--skip">📎 ${escapeHtml(a.filename)} (too large)</span>`
 							: `<a class="mhc__att" href="/api/admin/mail/attachment?id=${encodeURIComponent(String(a.id))}" download>📎 ${escapeHtml(a.filename)} <span>${escapeHtml(fmtSize(Number(a.size_bytes ?? 0)))}</span></a>`
