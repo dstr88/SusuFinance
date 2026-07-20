@@ -211,7 +211,10 @@ document.addEventListener('click', (e) => {
 // ── Compose / reply / drafts ──────────────────────────────────────────────
 function openForm(panel: HTMLElement, v: { to?: string; subject?: string; body?: string; replyToId?: string; draftId?: string } = {}) {
 	const form = q<HTMLFormElement>(panel, '.mh__form')!;
-	form.hidden = false;
+	const dlg = q<HTMLDialogElement>(panel, '.mh__dlg')!;
+	// showModal() rather than an .open class: focus trapping, an inert background
+	// and Escape all come from the browser.
+	if (!dlg.open) dlg.showModal();
 	q<HTMLInputElement>(form, '.mh__to')!.value = v.to ?? '';
 	q<HTMLInputElement>(form, '.mh__subj')!.value = v.subject ?? '';
 	q<HTMLTextAreaElement>(form, '.mh__text')!.value = v.body ?? '';
@@ -226,16 +229,15 @@ document.addEventListener('click', (e) => {
 
 	const compose = t.closest<HTMLElement>('.mh__compose');
 	if (compose) {
-		const panel = compose.closest<HTMLElement>('.mh')!;
-		setOpen(panel, true);
-		openForm(panel);
+		// No need to expand the panel first — the modal stands on its own, so New
+		// works from a collapsed bar.
+		openForm(compose.closest<HTMLElement>('.mh')!);
 		return;
 	}
 
 	const cancel = t.closest<HTMLElement>('.mh__cancel');
 	if (cancel) {
-		const form = cancel.closest<HTMLFormElement>('.mh__form')!;
-		form.hidden = true;
+		cancel.closest<HTMLDialogElement>('.mh__dlg')?.close();
 		return;
 	}
 
@@ -382,7 +384,7 @@ document.addEventListener('submit', async (e) => {
 		}
 
 		statusEl.textContent = 'Sent.';
-		form.hidden = true;
+		q<HTMLDialogElement>(panel, '.mh__dlg')?.close();
 		load(panel);
 	} catch (err) {
 		statusEl.textContent = err instanceof Error ? err.message : 'Send failed.';

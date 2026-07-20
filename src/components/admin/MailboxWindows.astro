@@ -51,10 +51,16 @@ const panels = await Promise.all(
 			safeQ(`SELECT COUNT(*) AS n FROM mail_drafts WHERE mailbox = ?`, [box.address]),
 		]);
 
-		const folders = folderRows.map((f) => ({
-			path: String(f.folder),
-			specialUse: f.special_use ? String(f.special_use) : null,
-		}));
+		// The real IMAP Drafts folder is deliberately NOT a tab. Drafts written here
+		// sync to it, so it would list the same messages a second time — and the polled
+		// copies are read-only, with no draft id, so Edit could not work from them. The
+		// synthetic Drafts tab below is the editable one, and the only one.
+		const folders = folderRows
+			.map((f) => ({
+				path: String(f.folder),
+				specialUse: f.special_use ? String(f.special_use) : null,
+			}))
+			.filter((f) => f.specialUse !== '\\Drafts' && !/^(inbox[./])?drafts?$/i.test(f.path));
 
 		// Friendly tab labels. The raw IMAP path ('INBOX.Sent') is not something to put
 		// in front of a person.
@@ -102,21 +108,6 @@ const panels = await Promise.all(
 			<div class="mh__body">
 				<div class="mh__main">
 
-				<form class="mh__form" hidden>
-					<input class="mh__in mh__to" type="text" placeholder="To" autocomplete="off" />
-					<input class="mh__in mh__cc" type="text" placeholder="Cc (optional)" autocomplete="off" />
-					<input class="mh__in mh__subj" type="text" placeholder="Subject" autocomplete="off" />
-					<textarea class="mh__in mh__text" rows="6" placeholder="Message"></textarea>
-					<input type="hidden" class="mh__replyto" />
-					<input type="hidden" class="mh__draftid" />
-					<div class="mh__formrow">
-						<button type="submit" class="mh__btn mh__send">Send</button>
-						<button type="button" class="mh__btn mh__savedraft">Save draft</button>
-						<button type="button" class="mh__btn mh__cancel">Cancel</button>
-						<span class="mh__formstatus"></span>
-					</div>
-				</form>
-
 					<div class="mh__list" aria-busy="false"></div>
 				</div>
 
@@ -137,6 +128,30 @@ const panels = await Promise.all(
 					)}
 				</nav>
 			</div>
+
+			{/* Compose lives in a modal rather than inline: it is an occasional action,
+			    and inline it permanently ate the top half of a panel whose whole job is
+			    showing mail. Full screen on a phone, half the viewport on a laptop. */}
+			<dialog class="mh__dlg">
+				<form class="mh__form">
+					<div class="mh__dlghead">
+						<span class="mh__dlgtitle">New message</span>
+						<span class="mh__dlgfrom">from {box.address}</span>
+					</div>
+					<input class="mh__in mh__to" type="text" placeholder="To" autocomplete="off" />
+					<input class="mh__in mh__cc" type="text" placeholder="Cc (optional)" autocomplete="off" />
+					<input class="mh__in mh__subj" type="text" placeholder="Subject" autocomplete="off" />
+					<textarea class="mh__in mh__text" placeholder="Message"></textarea>
+					<input type="hidden" class="mh__replyto" />
+					<input type="hidden" class="mh__draftid" />
+					<div class="mh__formrow">
+						<button type="submit" class="mh__btn mh__send">Send</button>
+						<button type="button" class="mh__btn mh__savedraft">Save draft</button>
+						<button type="button" class="mh__btn mh__cancel">Cancel</button>
+						<span class="mh__formstatus"></span>
+					</div>
+				</form>
+			</dialog>
 
 			{/* Drag down to grow, up to shrink. Keyboard-resizable too, since a grip that
 			    only responds to a mouse is unusable for anyone who does not use one. */}

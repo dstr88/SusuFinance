@@ -55,12 +55,21 @@ export interface MailFolder {
  */
 const SKIP_SPECIAL_USE = new Set(['\\Junk', '\\Trash', '\\All']);
 
+/**
+ * Name fallback for servers that do not advertise SPECIAL-USE.
+ *
+ * cPanel/Dovecot here returns a plain 'Junk' folder with no \\Junk flag, so the flag
+ * check alone lets spam through into the panel and into Postgres.
+ */
+const SKIP_NAME = /^(inbox[./])?(junk|spam|trash|deleted items?|bulk mail)$/i;
+
 export async function listFolders(imap: ImapFlow): Promise<MailFolder[]> {
 	const raw = await imap.list();
 	const out: MailFolder[] = [];
 	for (const f of raw) {
 		const specialUse = (f as { specialUse?: string }).specialUse ?? null;
 		if (specialUse && SKIP_SPECIAL_USE.has(specialUse)) continue;
+		if (SKIP_NAME.test(f.path)) continue;
 		out.push({ path: f.path, name: f.name ?? f.path, specialUse });
 	}
 	// INBOX first, then Sent, Drafts, then the rest alphabetically — the order the
