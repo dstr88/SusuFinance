@@ -110,6 +110,19 @@ const panels = await Promise.all(
 			<div class="mh__body">
 				<div class="mh__main">
 
+					{/* Selection toolbar. Always present so its position never shifts;
+					    the actions appear once something is selected. */}
+					<div class="mh__bulk">
+						<label class="mh__bulklabel">
+							<input class="mh__bulkall" type="checkbox" aria-label="Select all" />
+							<span>All</span>
+						</label>
+						<span class="mh__bulkcount"></span>
+						<button class="mh__btn mh__bulkdel" type="button">Delete selected</button>
+						<button class="mh__btn mh__bulkdestroy" type="button" hidden>Destroy selected</button>
+						<span class="mh__bulkhint">⌘/Ctrl+Shift+Delete</span>
+					</div>
+
 					<div class="mh__list" aria-busy="false"></div>
 				</div>
 

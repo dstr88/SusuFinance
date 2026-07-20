@@ -391,3 +391,30 @@ select.mhc__move {
 	border-color: var(--loss-border, rgba(239,68,68,0.35));
 }
 .mhc__destroy:hover:not(:disabled) { background: var(--loss-bg, rgba(239,68,68,0.14)); }
+
+/* ── Selection toolbar ──────────────────────────────────────────────────────
+   Always rendered so the list never jumps when a selection starts; the actions
+   themselves stay hidden until something is checked. */
+.mh__bulk {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.35rem 0.7rem 0;
+	font-size: 12px;
+	color: var(--text-muted);
+	flex: 0 0 auto;
+}
+.mh__bulklabel { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.mh__bulkcount { color: var(--text-secondary, inherit); }
+.mh__bulk .mh__btn { visibility: hidden; }
+.mh__bulk--on .mh__btn { visibility: visible; }
+.mh__bulkdestroy {
+	color: var(--loss, #ef4444);
+	border-color: var(--loss-border, rgba(239,68,68,0.35));
+}
+.mh__bulkhint { margin-left: auto; opacity: 0.55; }
+@media (max-width: 700px) { .mh__bulkhint { display: none; } }
+
+/* The checkbox sits at the head of the row and must not be squeezed out by a long
+   subject; it is also excluded from the click target that opens the message. */
+.mhc__chk { flex: 0 0 auto; margin: 0 0.15rem 0 0; cursor: pointer; }

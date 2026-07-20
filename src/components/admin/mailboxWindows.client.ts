@@ -235,6 +235,7 @@ function renderMessages(data: any, mailbox: string): string {
 		return `
 			<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}${spam || danger ? ' mhc--spam' : ''}${caution && !danger ? ' mhc--caution' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}">
 				<div class="mhc__row">
+					<input class="mhc__chk" type="checkbox" data-id="${escapeHtml(m.id)}" aria-label="Select message" />
 					${spam ? `<span class="mhc__scam" title="Your mail server flagged this as spam">⚠ SPAM${escapeHtml(spamScore)}</span>` : ''}
 					${danger ? '<span class="mhc__scam" title="A wallet address or link in this message is on a scam list">⚠ SCAM</span>' : ''}
 					${caution && !danger ? '<span class="mhc__caution" title="Something here is worth checking before acting on it">⚠ CHECK</span>' : ''}
@@ -300,7 +301,7 @@ function renderDrafts(data: any): string {
 // expanded area act on their own and must not toggle the row shut underneath them.
 document.addEventListener('click', (e) => {
 	const row = (e.target as Element).closest<HTMLElement>('.mhc');
-	if (!row || (e.target as Element).closest('.mh__btn, .mhc__att')) return;
+	if (!row || (e.target as Element).closest('.mh__btn, .mhc__att, .mhc__chk')) return;
 	const wasOpen = row.classList.contains('mhc--sel');
 	row.closest('.mh__list')?.querySelectorAll('.mhc--sel').forEach((r) => r.classList.remove('mhc--sel'));
 	if (!wasOpen) row.classList.add('mhc--sel');
@@ -604,8 +605,7 @@ document.addEventListener('click', async (e) => {
 	// one is not, so it asks for a deliberate act rather than a reflex. Naming the
 	// subject means the operator confirms THIS message, not "a message".
 	const subject = btn.dataset.subject ?? 'this message';
-	const typed = prompt(`Permanently delete "${subject}"? This cannot be undone.\n\nType DELETE to confirm.`);
-	if (typed !== 'DELETE') return;
+	if (!confirm(`Permanently delete "${subject}"? This cannot be undone.`)) return;
 
 	btn.disabled = true;
 	if (await organize(panel, { action: 'destroy', id: btn.dataset.id })) {
@@ -645,6 +645,105 @@ document.addEventListener('click', async (e) => {
 		}).catch(() => {});
 		location.reload();
 	}
+});
+
+// ── Bulk selection ──────────────────────────────────────────────────────────
+// Junk arrives in volume. Selecting, select-all, and Ctrl+Shift+Delete are what make
+// this usable as an actual mail client rather than a demo.
+
+function checkedIds(panel: HTMLElement): string[] {
+	return Array.from(panel.querySelectorAll<HTMLInputElement>('.mhc__chk:checked'))
+		.map((c) => c.dataset.id!)
+		.filter(Boolean);
+}
+
+/** Toolbar label and button state follow the selection. */
+function syncBulkBar(panel: HTMLElement): void {
+	const n = checkedIds(panel).length;
+	const bar = q<HTMLElement>(panel, '.mh__bulk');
+	if (!bar) return;
+	bar.classList.toggle('mh__bulk--on', n > 0);
+	const count = q<HTMLElement>(bar, '.mh__bulkcount');
+	if (count) count.textContent = n ? `${n} selected` : '';
+
+	// Destroy only makes sense in Trash — same rule as the per-row button.
+	const inTrashFolder = /^(inbox[./])?(trash|deleted items?)$/i.test(activeFolder(panel));
+	const destroy = q<HTMLButtonElement>(bar, '.mh__bulkdestroy');
+	if (destroy) destroy.hidden = !inTrashFolder;
+	const del = q<HTMLButtonElement>(bar, '.mh__bulkdel');
+	if (del) del.hidden = inTrashFolder;
+}
+
+async function bulkAct(panel: HTMLElement, action: 'delete' | 'destroy'): Promise<void> {
+	const ids = checkedIds(panel);
+	if (!ids.length) return;
+
+	// One confirm, naming the count. Delete is reversible so it barely needs asking;
+	// destroy is not, so it asks plainly — but neither demands typing. A prompt people
+	// meet twenty times a day has to be answerable in one click or they stop reading it.
+	const question = action === 'destroy'
+		? `Permanently delete ${ids.length} message${ids.length === 1 ? '' : 's'}? This cannot be undone.`
+		: `Move ${ids.length} message${ids.length === 1 ? '' : 's'} to Trash?`;
+	if (!confirm(question)) return;
+
+	setStatus(panel, action === 'destroy' ? 'Deleting…' : 'Moving to Trash…');
+	try {
+		const res = await fetch('/api/admin/mail/organize', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mailbox: panel.dataset.mailbox, action, ids }),
+		});
+		const data = await res.json().catch(() => ({}));
+		if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+
+		for (const id of data.done ?? []) {
+			panel.querySelector(`.mhc[data-id="${CSS.escape(String(id))}"]`)?.remove();
+		}
+		// Partial failure is named rather than hidden — nineteen of twenty is not a
+		// failure, but the one left behind should not vanish from the story.
+		setStatus(panel, (data.failed ?? []).length
+			? `${data.done.length} done, ${data.failed.length} failed: ${data.failed[0].error}`
+			: '');
+		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
+		if (all) all.checked = false;
+		syncBulkBar(panel);
+	} catch (err) {
+		setStatus(panel, err instanceof Error ? err.message : 'Failed');
+	}
+}
+
+document.addEventListener('change', (e) => {
+	const chk = (e.target as Element).closest<HTMLInputElement>('.mhc__chk');
+	if (chk) { syncBulkBar(chk.closest<HTMLElement>('.mh')!); return; }
+
+	const all = (e.target as Element).closest<HTMLInputElement>('.mh__bulkall');
+	if (!all) return;
+	const panel = all.closest<HTMLElement>('.mh')!;
+	panel.querySelectorAll<HTMLInputElement>('.mhc__chk').forEach((c) => { c.checked = all.checked; });
+	syncBulkBar(panel);
+});
+
+document.addEventListener('click', (e) => {
+	const del = (e.target as Element).closest<HTMLButtonElement>('.mh__bulkdel');
+	if (del) { void bulkAct(del.closest<HTMLElement>('.mh')!, 'delete'); return; }
+	const destroy = (e.target as Element).closest<HTMLButtonElement>('.mh__bulkdestroy');
+	if (destroy) { void bulkAct(destroy.closest<HTMLElement>('.mh')!, 'destroy'); }
+});
+
+// Ctrl/Cmd+Shift+Delete on whatever panel holds the selection.
+document.addEventListener('keydown', (e) => {
+	if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+	if (!e.shiftKey || !(e.ctrlKey || e.metaKey)) return;
+
+	const panel = panels().find((pl) => checkedIds(pl).length > 0);
+	if (!panel) return;
+	e.preventDefault();
+
+	// In Trash the shortcut destroys, everywhere else it files in Trash — the same
+	// meaning the visible buttons have, so the shortcut is never the more dangerous
+	// version of what the button would do.
+	const inTrashFolder = /^(inbox[./])?(trash|deleted items?)$/i.test(activeFolder(panel));
+	void bulkAct(panel, inTrashFolder ? 'destroy' : 'delete');
 });
 
 // Restore any panel the operator left open.

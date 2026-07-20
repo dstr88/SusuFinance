@@ -1,9 +1,9 @@
 /**
  * POST /api/admin/mail/organize
  *
- *   { mailbox, action: 'delete',        id }                 → move to Trash
- *   { mailbox, action: 'destroy',       id }                 → permanent, Trash only
- *   { mailbox, action: 'move',          id, folder }         → file it elsewhere
+ *   { mailbox, action: 'delete',        id | ids[] }         → move to Trash
+ *   { mailbox, action: 'destroy',       id | ids[] }         → permanent, Trash only
+ *   { mailbox, action: 'move',          id | ids[], folder } → file it elsewhere
  *   { mailbox, action: 'create-folder', name }               → new folder
  *
  * Delete moves to Trash and never expunges. A small button beside a message must not
@@ -51,56 +51,75 @@ export const POST: APIRoute = async ({ request }) => {
 		return result.ok ? json({ ok: true, path: result.path }) : json(result, 400);
 	}
 
-	// ── Delete / move — both need a real message in this mailbox ─────────────
-	const id = String(body.id ?? '');
-	if (!id) return json({ ok: false, error: 'id is required' }, 400);
+	// ── Delete / destroy / move — all operate on one or many ─────────────────
+	//
+	// Bulk is the normal case, not an edge case: junk arrives in volume, and a client
+	// that can only act on one message at a time is a client nobody uses. `id` is kept
+	// as shorthand for a single-element `ids`.
+	const ids = Array.isArray(body.ids)
+		? body.ids.map(String).filter(Boolean)
+		: body.id ? [String(body.id)] : [];
 
+	if (!ids.length) return json({ ok: false, error: 'Nothing selected' }, 400);
+
+	// One statement rather than a query per id, and scoped to this mailbox so a crafted
+	// list of ids cannot reach another mailbox's mail.
+	const placeholders = ids.map(() => '?').join(',');
 	const r = await db.execute({
-		sql: `SELECT folder, uid FROM mail_messages WHERE id = ? AND mailbox = ? LIMIT 1`,
-		args: [id, box.address],
+		sql: `SELECT id, folder, uid FROM mail_messages
+		      WHERE mailbox = ? AND id IN (${placeholders})`,
+		args: [box.address, ...ids],
 	});
-	const row = r.rows[0] as Record<string, unknown> | undefined;
-	if (!row) return json({ ok: false, error: 'No such message' }, 404);
+	const rows = r.rows as Record<string, unknown>[];
+	if (!rows.length) return json({ ok: false, error: 'No such messages' }, 404);
 
-	// A null uid means the row is a placeholder we wrote at send time, before the
-	// server's own copy came back. There is nothing on the server to move yet.
-	if (row.uid == null) {
-		return json({ ok: false, error: 'This message has not synced to the server yet — try again shortly.' }, 409);
-	}
+	const results: Array<{ id: string; ok: boolean; error?: string }> = [];
 
-	const folder = String(row.folder);
-	const uid = Number(row.uid);
+	for (const row of rows) {
+		const id = String(row.id);
+		const folder = String(row.folder);
 
-	if (action === 'delete') {
-		const result = await deleteMessage(box, folder, uid);
-		return result.ok ? json({ ok: true }) : json(result, 502);
-	}
-
-	if (action === 'destroy') {
-		// Trash-only, checked HERE rather than trusted from the UI. The button is hidden
-		// outside Trash, but a hidden button is not a boundary — this is the one action
-		// in the mail API with no undo, so the restriction has to hold against a
-		// hand-rolled request too.
-		const isTrash = /^(inbox[./])?(trash|deleted items?)$/i.test(folder);
-		if (!isTrash) {
-			return json({
-				ok: false,
-				error: 'Only messages already in Trash can be permanently deleted. Delete it first.',
-			}, 409);
+		// A null uid is a placeholder written at send time, before the server's copy came
+		// back. There is nothing on the server to act on yet.
+		if (row.uid == null) {
+			results.push({ id, ok: false, error: 'Not synced to the server yet' });
+			continue;
 		}
+		const uid = Number(row.uid);
 
-		const result = await destroyMessage(box, folder, uid);
-		return result.ok ? json({ ok: true }) : json(result, 502);
+		if (action === 'delete') {
+			const out = await deleteMessage(box, folder, uid);
+			results.push({ id, ok: out.ok, error: out.error });
+		} else if (action === 'destroy') {
+			// Trash-only, checked HERE rather than trusted from the UI. This is the one
+			// action with no undo, so the restriction has to hold for every id in the
+			// batch — including one slipped into a hand-rolled list.
+			if (!/^(inbox[./])?(trash|deleted items?)$/i.test(folder)) {
+				results.push({ id, ok: false, error: 'Only messages in Trash can be permanently deleted' });
+				continue;
+			}
+			const out = await destroyMessage(box, folder, uid);
+			results.push({ id, ok: out.ok, error: out.error });
+		} else if (action === 'move') {
+			const target = String(body.folder ?? '');
+			if (!target) return json({ ok: false, error: 'folder is required' }, 400);
+			if (target === folder) { results.push({ id, ok: true }); continue; }
+			const out = await moveMessage(box, folder, uid, target);
+			results.push({ id, ok: out.ok, error: out.error });
+		} else {
+			return json({ ok: false, error: 'Unknown action.' }, 400);
+		}
 	}
 
-	if (action === 'move') {
-		const target = String(body.folder ?? '');
-		if (!target) return json({ ok: false, error: 'folder is required' }, 400);
-		if (target === folder) return json({ ok: true });
+	const failed = results.filter((x) => !x.ok);
+	// Partial success is reported as success with detail rather than a blanket error:
+	// nineteen of twenty deleted is not a failure, but the operator still needs to know
+	// which one did not.
+	return json({
+		ok: true,
+		done: results.filter((x) => x.ok).map((x) => x.id),
+		failed,
+	});
+}
 
-		const result = await moveMessage(box, folder, uid, target);
-		return result.ok ? json({ ok: true }) : json(result, 502);
-	}
 
-	return json({ ok: false, error: 'Unknown action.' }, 400);
-};
