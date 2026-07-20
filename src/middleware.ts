@@ -62,10 +62,28 @@ export const onRequest = defineMiddleware(async (context, next) => {
 		}
 	}
 
-	// Auth + public paths: pure pass-through.
-	// app.ts is never even imported — nothing it does can break login.
+	// Auth + public paths: pass-through, plus a request count.
+	//
+	// app.ts is still never imported here — nothing it does can break login. But the
+	// analytics writer now lives in its own module, so it can be loaded AFTER the
+	// response exists. That matters: the homepage, /howTo and every marketing page are
+	// public, so before this they were never counted at all and the traffic chart
+	// measured signed-in app routes only.
+	//
+	// Recorded fire-and-forget and fully guarded: the response is already returned, so a
+	// failure here costs a data point, never a page.
 	if (isPublicPath(pathname)) {
-		return next();
+		const startedAt = Date.now();
+		const res = await next();
+		void (async () => {
+			try {
+				const { writeRequestAnalyticsBestEffort } = await import('./middleware/analytics');
+				await writeRequestAnalyticsBestEffort(context.request, res, startedAt);
+			} catch {
+				// A missing analytics module must not be visible to a visitor.
+			}
+		})();
+		return res;
 	}
 
 	// Lazy import: if app.ts or any of its dependencies (db, tenants, …) throw
