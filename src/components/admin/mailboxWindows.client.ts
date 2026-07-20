@@ -245,7 +245,7 @@ function renderMessages(data: any, mailbox: string): string {
 		const body = defangFlagged(String(m.body_text ?? ''), threats);
 
 		return `
-			<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}${spam || danger ? ' mhc--spam' : ''}${caution && !danger ? ' mhc--caution' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}">
+			<div class="mhc${unread ? ' mhc--unread' : ''}${out ? ' mhc--out' : ''}${spam || danger ? ' mhc--spam' : ''}${caution && !danger ? ' mhc--caution' : ''}" data-id="${escapeHtml(m.id)}" data-from="${escapeHtml(m.from_addr)}" draggable="true">
 				<div class="mhc__row">
 					<input class="mhc__chk" type="checkbox" data-id="${escapeHtml(m.id)}" aria-label="Select message" />
 					${spam ? `<span class="mhc__scam" title="Your mail server scored this as junk but delivered it anyway">⚠ JUNK${escapeHtml(spamScore)}</span>` : ''}
@@ -817,6 +817,86 @@ document.addEventListener('keydown', (e) => {
 	// version of what the button would do.
 	const inTrashFolder = /^(inbox[./])?(trash|deleted items?)$/i.test(activeFolder(panel));
 	void bulkAct(panel, inTrashFolder ? 'destroy' : 'delete');
+});
+
+// ── Drag messages onto a folder ─────────────────────────────────────────────
+// The same move the toolbar performs, by the gesture people reach for when the list
+// and the folders are both on screen. Dragging a SELECTED row carries the whole
+// selection; dragging an unselected one carries just it — which is what every mail
+// client does and therefore what the hand expects.
+
+let dragIds: string[] = [];
+
+document.addEventListener('dragstart', (e) => {
+	const row = (e.target as Element).closest<HTMLElement>('.mhc');
+	if (!row?.dataset.id) return;
+	const panel = row.closest<HTMLElement>('.mh')!;
+
+	const selected = checkedIds(panel);
+	dragIds = selected.includes(row.dataset.id) ? selected : [row.dataset.id];
+
+	row.classList.add('mhc--dragging');
+	// Some browsers refuse to start a drag without data on the transfer object.
+	e.dataTransfer?.setData('text/plain', dragIds.join(','));
+	if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+});
+
+document.addEventListener('dragend', () => {
+	document.querySelectorAll('.mhc--dragging').forEach((r) => r.classList.remove('mhc--dragging'));
+	document.querySelectorAll('.mh__rf--over').forEach((r) => r.classList.remove('mh__rf--over'));
+	dragIds = [];
+});
+
+document.addEventListener('dragover', (e) => {
+	const tab = (e.target as Element).closest<HTMLElement>('.mh__rf');
+	if (!tab || !dragIds.length) return;
+	// Not a real folder, and not the folder the messages are already in.
+	const folder = tab.dataset.folder;
+	if (!folder || folder === '__drafts__' || tab.classList.contains('mh__rf--on')) return;
+
+	// preventDefault is what makes an element a drop target at all. Withholding it on
+	// the current folder means that tab visibly refuses the drag rather than accepting
+	// a drop that would do nothing.
+	e.preventDefault();
+	tab.classList.add('mh__rf--over');
+});
+
+document.addEventListener('dragleave', (e) => {
+	(e.target as Element).closest<HTMLElement>('.mh__rf')?.classList.remove('mh__rf--over');
+});
+
+document.addEventListener('drop', async (e) => {
+	const tab = (e.target as Element).closest<HTMLElement>('.mh__rf');
+	const folder = tab?.dataset.folder;
+	if (!tab || !folder || folder === '__drafts__' || !dragIds.length) return;
+	e.preventDefault();
+	tab.classList.remove('mh__rf--over');
+
+	const panel = tab.closest<HTMLElement>('.mh')!;
+	const ids = [...dragIds];
+	dragIds = [];
+
+	setStatus(panel, `Moving ${ids.length}…`);
+	try {
+		const res = await fetch('/api/admin/mail/organize', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mailbox: panel.dataset.mailbox, action: 'move', ids, folder }),
+		});
+		const data = await res.json().catch(() => ({}));
+		if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+		for (const id of data.done ?? []) {
+			panel.querySelector(`.mhc[data-id="${CSS.escape(String(id))}"]`)?.remove();
+		}
+		setStatus(panel, (data.failed ?? []).length
+			? `${data.done.length} moved, ${data.failed.length} failed`
+			: `${data.done.length} moved`);
+		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
+		if (all) all.checked = false;
+		syncBulkBar(panel);
+	} catch (err) {
+		setStatus(panel, err instanceof Error ? err.message : 'Move failed');
+	}
 });
 
 // Restore any panel the operator left open.

@@ -420,3 +420,17 @@ select.mhc__move {
 .mhc__chk { flex: 0 0 auto; margin: 0 0.15rem 0 0; cursor: pointer; }
 
 select.mh__bulkmove { font: inherit; font-size: 12px; padding: 0.2rem 0.35rem; max-width: 160px; }
+
+/* ── Dragging messages onto a folder ────────────────────────────────────────
+   The dragged rows fade; the folder under the cursor lights up. A folder that
+   cannot take the drop (the one you are already in) never highlights, so the
+   refusal is visible before the mouse is released. */
+.mhc--dragging { opacity: 0.4; }
+.mh__rf--over {
+	background: var(--accent-soft, rgba(99,102,241,0.2));
+	border-color: var(--accent, #6366f1);
+	color: var(--text-primary, inherit);
+}
+.mhc { cursor: grab; }
+.mhc:active { cursor: grabbing; }
+.mhc--sel { cursor: default; }
