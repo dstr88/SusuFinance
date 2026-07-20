@@ -2,7 +2,6 @@
 import { requireAdminSession } from '@/lib/adminGuard';
 import { db } from '@/lib/db';
 import { getGA4Summary } from '@/lib/ga4';
-import { OWNER_TENANT_ID } from '@/lib/owner';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
 import CircleBoard from '@/components/circles/CircleBoard';
 import Notepads from '@/components/admin/Notepads.astro';
@@ -72,15 +71,7 @@ const [
 	totalTenants,
 	loginsToday,
 	logins7d,
-	totalWallets,
-	totalImportFiles,
-	totalImportRows,
-	totalSuiTx,
-	totalOnchainTx,
-	recentUsers,
-	walletsByChain,
 	requestsToday,
-	topRoutes,
 	ga4,
 ] = await Promise.all([
 	safeScalar('SELECT COUNT(*) FROM auth_users'),
@@ -90,109 +81,10 @@ const [
 	safeScalar('SELECT COUNT(*) FROM tenants'),
 	safeScalar('SELECT COUNT(*) FROM auth_users WHERE last_login >= ?', [daysAgo(1)]),
 	safeScalar('SELECT COUNT(*) FROM auth_users WHERE last_login >= ?', [daysAgo(7)]),
-	safeScalar('SELECT COUNT(*) FROM wallets'),
-	safeScalar('SELECT COUNT(DISTINCT import_batch_id) FROM import_transactions'),
-	safeScalar('SELECT COUNT(*) FROM import_transactions'),
-	safeScalar('SELECT COUNT(*) FROM sui_transactions'),
-	safeScalar('SELECT COUNT(*) FROM transactions'),
-	safeQ(`SELECT u.email, u.name, u.last_login, tm.created_at AS member_since
-	   FROM auth_users u
-	   LEFT JOIN tenant_memberships tm ON tm.user_id = u.id
-	   ORDER BY u.last_login DESC NULLS LAST
-	   LIMIT 20`),
-	safeQ(`SELECT
-	     CASE
-	       WHEN chains LIKE '%sui%' THEN 'Sui'
-	       WHEN chains LIKE '%eth%' THEN 'Ethereum'
-	       WHEN chains LIKE '%base%' THEN 'Base'
-	       WHEN chains LIKE '%arb%' THEN 'Arbitrum'
-	       ELSE 'Other'
-	     END AS chain,
-	     COUNT(*) AS cnt
-	   FROM wallets
-	   GROUP BY chain
-	   ORDER BY cnt DESC`),
 	safeScalar(`SELECT SUM(count) FROM request_agg_daily WHERE day >= ?`, [daysAgo(1).slice(0, 10)]),
-	safeQ(`SELECT route_key, SUM(count) AS hits
-	   FROM request_agg_daily
-	   WHERE day >= ?
-	   GROUP BY route_key
-	   ORDER BY hits DESC
-	   LIMIT 8`, [daysAgo(7).slice(0, 10)]),
 	getGA4Summary(28).catch(() => null),
 ]);
 
-// ── Adoption stats (separate pass — these need the above to finish first) ────
-const [
-	tenantsWithWallets,
-	tenantsWithExchanges,
-	totalExchangeAccounts,
-	adoptionRows,
-] = await Promise.all([
-	safeScalar(`SELECT COUNT(DISTINCT tenant_id) FROM wallets`),
-	safeScalar(`SELECT COUNT(DISTINCT tenant_id) FROM exchange_accounts`),
-	safeScalar(`SELECT COUNT(*) FROM exchange_accounts`),
-	safeQ(`
-		SELECT
-			t.id AS tenant_id,
-			COALESCE(u.email, t.id) AS label,
-			(SELECT COUNT(*) FROM wallets w WHERE w.tenant_id = t.id) AS wallet_count,
-			(SELECT COUNT(*) FROM exchange_accounts ea WHERE ea.tenant_id = t.id) AS exchange_count,
-			(SELECT COUNT(DISTINCT import_batch_id) FROM import_transactions it WHERE it.account_id IN (SELECT id FROM exchange_accounts WHERE tenant_id = t.id)) AS import_batches,
-			u.last_login
-		FROM tenants t
-		LEFT JOIN tenant_memberships tm ON tm.tenant_id = t.id
-		LEFT JOIN auth_users u ON u.id = tm.user_id
-		ORDER BY wallet_count DESC, exchange_count DESC
-		LIMIT 40
-	`),
-]);
-
-// ── SusuFinance Verify — real business signups (excludes owner + demo tenants) ───
-const [verifySignups, verifyProvenCount] = await Promise.all([
-  safeQ(`
-    SELECT
-      d.tenant_id,
-      COALESCE(MIN(u.email), d.tenant_id) AS label,
-      COUNT(*) AS dest_count,
-      SUM(CASE WHEN d.kind = 'address' THEN 1 ELSE 0 END) AS addresses,
-      SUM(CASE WHEN d.kind = 'qr' THEN 1 ELSE 0 END) AS qrs,
-      SUM(CASE WHEN d.proof_status = 'proven' THEN 1 ELSE 0 END) AS proven,
-      MAX(d.label) AS business_name,
-      MIN(d.created_at) AS joined,
-      MAX(d.created_at) AS latest
-    FROM verify_destinations d
-    LEFT JOIN tenant_memberships tm ON tm.tenant_id = d.tenant_id
-    LEFT JOIN auth_users u ON u.id = tm.user_id
-    WHERE d.tenant_id <> ? AND d.tenant_id NOT LIKE 'demo-%'
-    GROUP BY d.tenant_id
-    ORDER BY joined DESC
-    LIMIT 50
-  `, [OWNER_TENANT_ID]),
-  safeScalar(`
-    SELECT COUNT(DISTINCT tenant_id) FROM verify_destinations
-    WHERE proof_status = 'proven' AND tenant_id <> ? AND tenant_id NOT LIKE 'demo-%'
-  `, [OWNER_TENANT_ID]),
-]);
-const verifyBusinessCount = verifySignups.length;
-
-// ── PetroTins visit stats ─────────────────────────────────────────────────────
-const [petroVisitCount, petroAvgDuration, petroRecentVisits] = await Promise.all([
-	safeScalar(`SELECT COUNT(*) FROM petro_visits`).catch(() => 0),
-	safeScalar(`SELECT ROUND(AVG(duration_s)) FROM petro_visits`).catch(() => 0),
-	safeQ(`SELECT visited_at, duration_s FROM petro_visits ORDER BY visited_at DESC LIMIT 10`).catch(() => []),
-]);
-
-const fmt = (iso: string | null) => {
-	if (!iso) return '—';
-	try { return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(iso)); }
-	catch { return iso; }
-};
-const fmtDate = (iso: string | null) => {
-	if (!iso) return '—';
-	try { return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(iso)); }
-	catch { return iso; }
-};
 ---
 
 <!doctype html>
@@ -479,129 +371,6 @@ const fmtDate = (iso: string | null) => {
 	<!-- ── Notepads ─────────────────────────────────────────────── -->
 	<Notepads />
 
-	<!-- ── Adoption ─────────────────────────────────────────────── -->
-	<div class="section">
-		<div class="section-title">Adoption — wallets &amp; exchanges plugged in</div>
-		<div class="stat-grid" style="margin-bottom:1rem;">
-			<div class="stat-card highlight">
-				<div class="stat-label">Tenants w/ wallets</div>
-				<div class="stat-value">{tenantsWithWallets}</div>
-				<div class="stat-sub">of {totalTenants} total tenants</div>
-			</div>
-			<div class="stat-card green">
-				<div class="stat-label">Tenants w/ exchanges</div>
-				<div class="stat-value">{tenantsWithExchanges}</div>
-				<div class="stat-sub">CSV import accounts</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-label">Exchange accounts</div>
-				<div class="stat-value">{totalExchangeAccounts}</div>
-				<div class="stat-sub">across all tenants</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-label">On-chain tins</div>
-				<div class="stat-value">{totalWallets}</div>
-				<div class="stat-sub">active wallet addresses</div>
-			</div>
-		</div>
-		<div class="table-wrap">
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th>Tenant / email</th>
-						<th style="text-align:right">Wallets</th>
-						<th style="text-align:right">Exchanges</th>
-						<th style="text-align:right">Import batches</th>
-						<th>Last login</th>
-					</tr>
-				</thead>
-				<tbody>
-					{adoptionRows.map((row) => (
-						<tr>
-							<td style="font-size:0.8rem; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{row.label}</td>
-							<td style="text-align:right; font-weight:600; color: {Number(row.wallet_count) > 0 ? '#4ade80' : 'inherit'}">
-								{Number(row.wallet_count) > 0
-									? <span style="color:#4ade80">{row.wallet_count}</span>
-									: <span style="opacity:0.3">0</span>
-								}
-							</td>
-							<td style="text-align:right;">
-								{Number(row.exchange_count) > 0
-									? <span style="color:#818cf8">{row.exchange_count}</span>
-									: <span style="opacity:0.3">0</span>
-								}
-							</td>
-							<td style="text-align:right;">
-								{Number(row.import_batches) > 0
-									? row.import_batches
-									: <span style="opacity:0.3">0</span>
-								}
-							</td>
-							<td style="font-size:0.78rem; opacity:0.65;">{row.last_login ? fmt(String(row.last_login)) : '—'}</td>
-						</tr>
-					))}
-					{adoptionRows.length === 0 && (
-						<tr><td colspan="5" style="opacity:0.35; text-align:center; padding:1.5rem;">No tenants yet</td></tr>
-					)}
-				</tbody>
-			</table>
-		</div>
-	</div>
-
-	<!-- ── SusuFinance Verify — business signups ─────────────────────── -->
-	<div class="section">
-		<div class="section-title">SusuFinance Verify — business signups <span class="inbox-count">{verifyBusinessCount}</span></div>
-		<div class="stat-grid" style="margin-bottom:1rem;">
-			<div class="stat-card highlight">
-				<div class="stat-label">Businesses</div>
-				<div class="stat-value">{verifyBusinessCount}</div>
-				<div class="stat-sub">real accounts (excl. demo &amp; you)</div>
-			</div>
-			<div class="stat-card green">
-				<div class="stat-label">Verified</div>
-				<div class="stat-value">{verifyProvenCount}</div>
-				<div class="stat-sub">with a proven destination</div>
-			</div>
-		</div>
-		<div class="table-wrap">
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th>Business / account</th>
-						<th style="text-align:right">Addresses</th>
-						<th style="text-align:right">QRs</th>
-						<th style="text-align:right">Proven</th>
-						<th>Joined</th>
-						<th>Last add</th>
-					</tr>
-				</thead>
-				<tbody>
-					{verifySignups.map((row) => (
-						<tr>
-							<td style="font-size:0.8rem; max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-								{row.business_name && String(row.business_name) !== String(row.label)
-									? <span><span style="color:#f1f5f9; font-weight:600;">{row.business_name}</span> <span style="opacity:0.5;">· {row.label}</span></span>
-									: <span>{row.label}</span>}
-							</td>
-							<td style="text-align:right;">{Number(row.addresses) > 0 ? row.addresses : <span style="opacity:0.3">0</span>}</td>
-							<td style="text-align:right;">{Number(row.qrs) > 0 ? row.qrs : <span style="opacity:0.3">0</span>}</td>
-							<td style="text-align:right;">
-								{Number(row.proven) > 0
-									? <span style="color:#4ade80; font-weight:600;">{row.proven}</span>
-									: <span style="opacity:0.3">0</span>}
-							</td>
-							<td style="font-size:0.78rem; opacity:0.65;">{fmtDate(String(row.joined))}</td>
-							<td style="font-size:0.78rem; opacity:0.65;">{fmt(String(row.latest))}</td>
-						</tr>
-					))}
-					{verifySignups.length === 0 && (
-						<tr><td colspan="6" style="opacity:0.35; text-align:center; padding:1.5rem;">No business signups yet</td></tr>
-					)}
-				</tbody>
-			</table>
-		</div>
-	</div>
-
 	<!-- ── KPI Strip ─────────────────────────────────────────────── -->
 	<div class="section">
 		<div class="section-title">Platform overview</div>
@@ -627,21 +396,6 @@ const fmtDate = (iso: string | null) => {
 				<div class="stat-sub">{logins7d} in last 7 days</div>
 			</div>
 			<div class="stat-card">
-				<div class="stat-label">Import rows</div>
-				<div class="stat-value">{totalImportRows.toLocaleString()}</div>
-				<div class="stat-sub">{totalImportFiles} import batches</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-label">EVM transactions</div>
-				<div class="stat-value">{totalOnchainTx.toLocaleString()}</div>
-				<div class="stat-sub">synced on-chain</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-label">Sui transactions</div>
-				<div class="stat-value">{totalSuiTx.toLocaleString()}</div>
-				<div class="stat-sub">synced on-chain</div>
-			</div>
-			<div class="stat-card">
 				<div class="stat-label">Requests today</div>
 				<div class="stat-value">{requestsToday > 0 ? requestsToday.toLocaleString() : '—'}</div>
 				<div class="stat-sub">from request log</div>
@@ -649,7 +403,12 @@ const fmtDate = (iso: string | null) => {
 		</div>
 	</div>
 
+	{/* Hidden entirely when GA4 is not configured. A panel whose only content is
+	    "data unavailable, check your environment variables" is an error message
+	    parked permanently on a dashboard — it teaches the reader to skip that part
+	    of the page, which is the last thing a dashboard should teach. */}
 	<!-- ── Google Analytics 4 — last 28 days ────────────────────── -->
+	{ga4 && (
 	<div class="section">
 		<div class="section-title">Google Analytics · last 28 days</div>
 
@@ -751,135 +510,7 @@ const fmtDate = (iso: string | null) => {
 			</div>
 		)}
 	</div>
-
-	<!-- ── Two-col: Recent users + Wallets by chain ───────────────── -->
-	<div class="two-col section">
-
-		<!-- Recent users -->
-		<div>
-			<div class="section-title">Recent users — last login</div>
-			<div class="table-wrap">
-				<table class="data-table">
-					<thead>
-						<tr>
-							<th>Email</th>
-							<th>Member since</th>
-							<th>Last login</th>
-						</tr>
-					</thead>
-					<tbody>
-						{recentUsers.map((u) => (
-							<tr>
-								<td>
-									<span class={`dot ${u.last_login ? 'dot-green' : 'dot-gray'}`}></span>
-									{u.email ?? '—'}
-								</td>
-								<td>{fmtDate(u.member_since)}</td>
-								<td>{u.last_login ? fmt(u.last_login) : <span style="opacity:0.35">Never</span>}</td>
-							</tr>
-						))}
-						{recentUsers.length === 0 && (
-							<tr><td colspan="3" style="opacity:0.35; text-align:center; padding:1.5rem;">No users yet</td></tr>
-						)}
-					</tbody>
-				</table>
-			</div>
-		</div>
-
-		<!-- Right column: wallets by chain + top routes -->
-		<div style="display:flex; flex-direction:column; gap:1.5rem;">
-
-			<!-- Wallets by chain -->
-			<div>
-				<div class="section-title">Wallets by chain</div>
-				<div class="table-wrap">
-					<table class="data-table">
-						<thead>
-							<tr><th>Chain</th><th style="text-align:right">Wallets</th></tr>
-						</thead>
-						<tbody>
-							{walletsByChain.map((row) => (
-								<tr>
-									<td>
-										<span class={`pill ${row.chain?.toLowerCase()}`}>{row.chain}</span>
-									</td>
-									<td style="text-align:right; font-weight:600;">{row.cnt}</td>
-								</tr>
-							))}
-							{walletsByChain.length === 0 && (
-								<tr><td colspan="2" style="opacity:0.35; text-align:center; padding:1.5rem;">No wallets</td></tr>
-							)}
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<!-- Top routes (7 days) -->
-			{topRoutes.length > 0 && (
-				<div>
-					<div class="section-title">Top routes — last 7 days</div>
-					<div class="table-wrap">
-						<table class="data-table">
-							<thead>
-								<tr><th>Route</th><th style="text-align:right">Hits</th></tr>
-							</thead>
-							<tbody>
-								{topRoutes.map((row) => (
-									<tr>
-										<td style="font-family:monospace; font-size:0.75rem;">{row.route_key}</td>
-										<td style="text-align:right;">{Number(row.hits).toLocaleString()}</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			)}
-		</div>
-	</div>
-
-	<!-- ── PetroTins visits ──────────────────────────────────────────────── -->
-	<div class="section">
-		<div class="section-title">PetroTins — visitor sessions</div>
-		<div class="stat-grid" style="margin-bottom:1rem">
-			<div class="stat-card">
-				<div class="stat-label">Total visits</div>
-				<div class="stat-value">{Number(petroVisitCount).toLocaleString()}</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-label">Avg time on page</div>
-				<div class="stat-value">
-					{petroAvgDuration
-						? `${Math.floor(Number(petroAvgDuration) / 60)}m ${Number(petroAvgDuration) % 60}s`
-						: '—'}
-				</div>
-			</div>
-		</div>
-		{(petroRecentVisits as any[]).length > 0 && (
-			<div class="table-wrap">
-				<table class="data-table">
-					<thead>
-						<tr><th>Visited at</th><th style="text-align:right">Time on page</th></tr>
-					</thead>
-					<tbody>
-						{(petroRecentVisits as any[]).map(row => (
-							<tr>
-								<td style="font-size:0.78rem">{fmt(String(row.visited_at))}</td>
-								<td style="text-align:right; font-variant-numeric:tabular-nums">
-									{Math.floor(Number(row.duration_s) / 60)}m {Number(row.duration_s) % 60}s
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-		)}
-		{(petroRecentVisits as any[]).length === 0 && (
-			<p style="font-size:0.82rem; color:var(--text-muted)">No visits recorded yet.</p>
-		)}
-	</div>
-
-	<p class="refresh-note">Data is live — refresh the page for updated stats.</p>
+	)}
 
 	<!-- ── Question Inbox ─────────────────────────────────────────────── -->
 	<div class="section" id="inbox-section">
