@@ -34,9 +34,9 @@ function json(body: unknown, status = 200) {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-	let adminEmail = '';
+	let who: { userId: string; email: string };
 	try {
-		adminEmail = (await requireAdminSession(request)).email;
+		who = await requireAdminSession(request);
 	} catch (resp) {
 		return resp instanceof Response ? resp : json({ ok: false, error: 'Unauthorized' }, 401);
 	}
@@ -45,10 +45,10 @@ export const POST: APIRoute = async ({ request }) => {
 	if (!status.configured) return json({ ok: false, error: status.reason }, 400);
 
 	// A specific mailbox if asked for, otherwise every one this admin can see.
-	let targets = getMailboxesForAdmin(adminEmail);
+	let targets = getMailboxesForAdmin(who);
 	const requested = await request.json().catch(() => ({} as Record<string, unknown>));
 	if (requested && typeof requested === 'object' && (requested as any).mailbox) {
-		const one = findMailboxForAdmin(String((requested as any).mailbox), adminEmail);
+		const one = findMailboxForAdmin(String((requested as any).mailbox), who);
 		if (!one) return json({ ok: false, error: 'Unknown mailbox' }, 404);
 		targets = [one];
 	}

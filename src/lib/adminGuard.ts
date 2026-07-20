@@ -12,8 +12,24 @@ const ADMIN_EMAILS = new Set(
 // Comma-separated list of admin tenant IDs — more reliable than email because
 // the tenant ID is always present in the JWT regardless of OAuth email privacy.
 // Set ADMIN_TENANT_IDS on Render to the tenant ID shown in the account menu.
+//
+// CAUTION: a tenant is a GROUP. Granting by tenant grants every member of that
+// tenant, which is rarely what is intended — prefer ADMIN_USER_IDS below.
 const ADMIN_TENANT_IDS = new Set(
 	(process.env.ADMIN_TENANT_IDS ?? process.env.ADMIN_TENANT_ID ?? '')
+		.split(',')
+		.map((id) => id.trim().toLowerCase())
+		.filter(Boolean),
+);
+
+// Comma-separated list of admin USER ids (auth_users.id) — the preferred grant.
+//
+// Precise where the other two are not: an email can be withheld by the OAuth
+// provider or change over time, and a tenant id covers everyone who belongs to
+// that tenant. A user id names exactly one person, is always present in the
+// session, and never widens on its own.
+const ADMIN_USER_IDS = new Set(
+	(process.env.ADMIN_USER_IDS ?? process.env.ADMIN_USER_ID ?? '')
 		.split(',')
 		.map((id) => id.trim().toLowerCase())
 		.filter(Boolean),
@@ -33,7 +49,12 @@ export async function requireAdminSession(request: Request): Promise<{ userId: s
 		throw new Response('Unauthorized', { status: 401 });
 	}
 
-	// Check tenant ID first — always in JWT, no email dependency.
+	// User id first — the most precise grant, and always present in the session.
+	if (ADMIN_USER_IDS.has(String(session.user.id).toLowerCase())) {
+		return { userId: session.user.id, email: session.user.email ?? '' };
+	}
+
+	// Then tenant ID — always in JWT, no email dependency, but grants the whole group.
 	if (isAdminTenant(session.tenantId)) {
 		const email = session.user.email ?? '';
 		return { userId: session.user.id, email };

@@ -106,22 +106,40 @@ export function getMailboxes(): Mailbox[] {
 }
 
 /**
- * The mailboxes a given admin may see. An empty owners list means "any admin"; a
- * populated one restricts to those addresses.
+ * Who is asking. Both identifiers are checked against MAILBOX_n_OWNER, so an owner
+ * entry may be written as either a login email or a user id (auth_users.id).
  *
- * Today you are the only admin and this is a no-op. It exists now so that the day
- * Afrikanus gets a login to /admin, his window resolves to his mail and not yours,
- * without a schema change or a retrofit.
+ * The user id is the dependable one: an OAuth provider can withhold an email, and an
+ * email can change, but the id is always present in the session and names exactly one
+ * person. Email is still accepted because it is the readable option when you are
+ * writing the env var by hand.
  */
-export function getMailboxesForAdmin(adminEmail: string): Mailbox[] {
-	const who = (adminEmail ?? '').trim().toLowerCase();
-	return getMailboxes().filter((b) => b.owners.length === 0 || b.owners.includes(who));
+export interface AdminIdentity {
+	userId?: string | null;
+	email?: string | null;
+}
+
+/**
+ * The mailboxes a given admin may see.
+ *
+ * Empty owners list = shared with every admin (the intent for a company address like
+ * admin@). A populated list = private to those named (the intent for a personal box).
+ */
+export function getMailboxesForAdmin(who: AdminIdentity): Mailbox[] {
+	const email = (who.email ?? '').trim().toLowerCase();
+	const userId = (who.userId ?? '').trim().toLowerCase();
+	return getMailboxes().filter(
+		(b) =>
+			b.owners.length === 0 ||
+			(email && b.owners.includes(email)) ||
+			(userId && b.owners.includes(userId)),
+	);
 }
 
 /** Look up one mailbox an admin is allowed to touch. Null if absent or not theirs. */
-export function findMailboxForAdmin(address: string, adminEmail: string): Mailbox | null {
+export function findMailboxForAdmin(address: string, who: AdminIdentity): Mailbox | null {
 	const want = (address ?? '').trim().toLowerCase();
-	return getMailboxesForAdmin(adminEmail).find((b) => b.address === want) ?? null;
+	return getMailboxesForAdmin(who).find((b) => b.address === want) ?? null;
 }
 
 /** Config presence, for the admin page to explain itself when nothing is set up yet. */

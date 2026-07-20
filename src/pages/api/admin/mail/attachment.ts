@@ -18,9 +18,9 @@ import { findMailboxForAdmin } from '@/lib/mailboxes';
 export const prerender = false;
 
 export const GET: APIRoute = async ({ request }) => {
-	let adminEmail = '';
+	let who: { userId: string; email: string };
 	try {
-		adminEmail = (await requireAdminSession(request)).email;
+		who = await requireAdminSession(request);
 	} catch (resp) {
 		return resp instanceof Response ? resp : new Response('Unauthorized', { status: 401 });
 	}
@@ -40,7 +40,7 @@ export const GET: APIRoute = async ({ request }) => {
 	if (!row) return new Response('Not found', { status: 404 });
 
 	// The authorization step: does this admin own the mailbox this file arrived in?
-	if (!findMailboxForAdmin(String(row.mailbox ?? ''), adminEmail)) {
+	if (!findMailboxForAdmin(String(row.mailbox ?? ''), who)) {
 		return new Response('Forbidden', { status: 403 });
 	}
 

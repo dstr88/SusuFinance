@@ -19,11 +19,13 @@
 import { getMailboxesForAdmin, mailConfigStatus } from '@/lib/mailboxes';
 import { db } from '@/lib/db';
 
-interface Props { adminEmail: string }
-const { adminEmail } = Astro.props;
+interface Props { adminEmail: string; adminUserId?: string }
+const { adminEmail, adminUserId } = Astro.props;
 
 const status = mailConfigStatus();
-const boxes = getMailboxesForAdmin(adminEmail);
+// Matched on either identifier — see AdminIdentity in mailboxes.ts. The user id is the
+// dependable one when an OAuth provider withholds the email.
+const boxes = getMailboxesForAdmin({ userId: adminUserId, email: adminEmail });
 
 /** Never let a mail failure take down the whole admin dashboard. */
 const safeQ = async (sql: string, args: any[] = []): Promise<Record<string, any>[]> => {

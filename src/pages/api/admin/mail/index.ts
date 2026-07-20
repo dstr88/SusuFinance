@@ -35,10 +35,10 @@ function json(body: unknown, status = 200) {
 }
 
 /** Resolves the admin, or returns the Response to send back. */
-async function admin(request: Request): Promise<{ email: string } | Response> {
+async function admin(request: Request): Promise<{ userId: string; email: string } | Response> {
 	try {
-		const { email } = await requireAdminSession(request);
-		return { email };
+		const { userId, email } = await requireAdminSession(request);
+		return { userId, email };
 	} catch (resp) {
 		return resp instanceof Response ? resp : json({ ok: false, error: 'Unauthorized' }, 401);
 	}
@@ -51,7 +51,7 @@ export const GET: APIRoute = async ({ request }) => {
 
 	const url = new URL(request.url);
 	const address = url.searchParams.get('mailbox') ?? '';
-	const box = findMailboxForAdmin(address, who.email);
+	const box = findMailboxForAdmin(address, who);
 	if (!box) return json({ ok: false, error: 'Unknown mailbox' }, 404);
 
 	const limit = Math.min(Number(url.searchParams.get('limit')) || DEFAULT_LIMIT, MAX_LIMIT);
@@ -115,7 +115,7 @@ export const POST: APIRoute = async ({ request }) => {
 	try { body = await request.json(); }
 	catch { return json({ ok: false, error: 'Invalid JSON' }, 400); }
 
-	const box = findMailboxForAdmin(String(body.mailbox ?? ''), who.email);
+	const box = findMailboxForAdmin(String(body.mailbox ?? ''), who);
 	if (!box) return json({ ok: false, error: 'Unknown mailbox' }, 404);
 
 	// Enforced server-side as well as hidden in the UI. A read-only mailbox must refuse
@@ -158,7 +158,7 @@ export const PATCH: APIRoute = async ({ request }) => {
 
 	// Scope the update to mailboxes this admin owns, so an id alone is not enough to
 	// touch someone else's window.
-	const allowed = findMailboxForAdmin(String(body.mailbox ?? ''), who.email);
+	const allowed = findMailboxForAdmin(String(body.mailbox ?? ''), who);
 	if (!allowed) return json({ ok: false, error: 'Unknown mailbox' }, 404);
 
 	await db.execute({
