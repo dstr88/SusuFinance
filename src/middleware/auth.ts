@@ -30,6 +30,9 @@ export function isPublicPath(pathname: string): boolean {
 		pathname === '/fr' ||
 		// Trust & discovery pages — must be reachable without a session
 		pathname === '/howTo' ||
+		// The questions someone asks BEFORE joining. Gating it would ask her to sign in
+		// to find out how the thing works, which has the order backwards.
+		pathname === '/faq' ||
 		pathname === '/about' ||
 		pathname === '/about/es' ||
 		pathname === '/about/fr' ||

@@ -1,0 +1,58 @@
+---
+/**
+ * /faq — the questions people ask before they trust a savings circle with money.
+ *
+ * Public and unauthenticated on purpose: the audience is someone deciding whether to
+ * join, and asking her to sign in first to find out how it works has the order wrong.
+ *
+ * Content lives in src/i18n/faq/{en,fr,es}.ts; the component renders one button and
+ * one modal per item and picks the language itself.
+ */
+import LoginLayout from '../layouts/LoginLayout.astro';
+import Faq from '../components/faq.astro';
+import { langFromCookieHeader } from '@/lib/i18n/locale';
+
+const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+
+const TITLE: Record<string, string> = {
+  en: 'Questions',
+  fr: 'Questions',
+  es: 'Preguntas',
+};
+const INTRO: Record<string, string> = {
+  en: 'How a circle works, who decides what, and where the money actually sits.',
+  fr: 'Comment fonctionne un cercle, qui décide quoi, et où se trouve réellement l’argent.',
+  es: 'Cómo funciona un círculo, quién decide qué y dónde está realmente el dinero.',
+};
+---
+
+<LoginLayout title={`${TITLE[lang] ?? TITLE.en} | SusuFinance`}>
+  <section class="faq-page">
+    <h1 class="faq-page__title">{TITLE[lang] ?? TITLE.en}</h1>
+    <p class="faq-page__intro">{INTRO[lang] ?? INTRO.en}</p>
+    <Faq lang={lang} />
+  </section>
+</LoginLayout>
+
+<style>
+  .faq-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+  .faq-page__title {
+    margin: 0 0 0.4rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .faq-page__intro {
+    margin: 0 0 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+  @media (min-width: 768px) {
+    .faq-page { padding: 3rem 2rem 5rem; }
+  }
+</style>
