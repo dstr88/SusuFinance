@@ -81,13 +81,19 @@ export const POST: APIRoute = async ({ request }) => {
 			sponsorMemberId,
 		});
 
-		// Point her session at the programme so she resolves as a member from here on
-		// (requireTenantSession's slow path reads active_tenant_id).
-		await db.execute({
-			sql: `UPDATE auth_users SET active_tenant_id = ? WHERE id = ? AND active_tenant_id IS NULL`,
-			args: [tenantId, userId],
-		});
-
+		// NO tenant grant here, deliberately.
+		//
+		// This used to set auth_users.active_tenant_id the instant she asked, so that
+		// "she resolves as a member from here on". She is not a member yet — that is
+		// the entire point of the vote about to happen. Granting the tenant at request
+		// time meant anyone who signed up and guessed a circle name plus one member's
+		// display name could open /dashboard/circles and read the whole programme
+		// while her admission was still pending. The vote gated her membership and
+		// nothing gated her access.
+		//
+		// The grant now lives in admitMember (lib/circles/votes.ts), which runs when
+		// the sponsor says yes. Asking gets her a pending state and the lobby message
+		// that explains it; approval gets her in.
 		return json({ ok: true, voteId, status: 'pending', sponsorName, groupName });
 	} catch (err) {
 		if (err instanceof VoteError) return json({ ok: false, error: err.code, message: err.message }, 409);

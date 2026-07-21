@@ -8,12 +8,14 @@
 // All stats within-tenant. No cross-tenant benchmarks, ever.
 import Layout from '../../../layouts/Layout.astro';
 import ProgrammeStats from '../../../components/circles/ProgrammeStats';
-import { requireTenantSession } from '@/lib/requireTenantSession';
+import { circleGateTarget } from '@/lib/circles/circleAccess';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
-const session = await requireTenantSession(Astro.request);
-if (!session) return Astro.redirect('/login?next=/dashboard/circles/stats');
+const gate = await circleGateTarget(Astro.request, '/dashboard/circles/stats');
+if ('redirect' in gate) return Astro.redirect(gate.redirect);
+
+
 
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);

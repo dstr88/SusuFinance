@@ -10,19 +10,19 @@
 import Layout from '../../../layouts/Layout.astro';
 import MemberCards from '../../../components/circles/MemberCards';
 import { db } from '@/lib/db';
-import { requireTenantSession } from '@/lib/requireTenantSession';
-import { getAuthSession } from '@/lib/authSession';
+import { circleGateTarget } from '@/lib/circles/circleAccess';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
-const session = await requireTenantSession(Astro.request);
-if (!session) return Astro.redirect('/login?next=/dashboard/circles');
+const gate = await circleGateTarget(Astro.request, '/dashboard/circles');
+if ('redirect' in gate) return Astro.redirect(gate.redirect);
+const session = gate.session;
+const viewerId = gate.userId;
 
 // Only the operator (owner/admin) may mint a member's claim link, so only she is
 // shown the button. The mint endpoint re-checks this server-side — the flag just
 // keeps the control off everyone else's screen.
-const auth = await getAuthSession(Astro.request).catch(() => null);
-const viewerId = auth?.user?.id ? String(auth.user.id) : '';
+
 let viewerIsAdmin = false;
 if (viewerId) {
   const roleRes = await db.execute({

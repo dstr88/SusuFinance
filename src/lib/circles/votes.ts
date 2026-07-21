@@ -244,6 +244,22 @@ async function admitMember(tenantId: string, contractId: string, memberId: strin
 		      VALUES (?, ?, ?, NULL, now())`,
 		args: [tenantId, contractId, memberId],
 	});
+
+	// Admission is where the tenant is granted — not where she asked for it.
+	//
+	// join-request.ts used to do this at REQUEST time, which handed a stranger a
+	// tenant before anyone approved her, and a tenant was all any circle surface
+	// checked. Here it is the consequence of the group saying yes, which is the only
+	// thing that should ever produce it. Scoped through her member row so it can
+	// never point at a programme other than the one that just admitted her, and
+	// guarded on NULL so it never steals a login already settled elsewhere.
+	await db.execute({
+		sql: `UPDATE auth_users SET active_tenant_id = ?
+		       WHERE active_tenant_id IS NULL
+		         AND id = (SELECT user_id FROM members
+		                    WHERE id = ? AND tenant_id = ? AND user_id IS NOT NULL)`,
+		args: [tenantId, memberId, tenantId],
+	});
 }
 
 // ── The close pass ───────────────────────────────────────────────────────────

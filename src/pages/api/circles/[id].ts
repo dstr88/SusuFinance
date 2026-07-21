@@ -41,6 +41,8 @@
 import type { APIRoute } from 'astro';
 import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
+import { hasCircleAccess } from '@/lib/circles/circleAccess';
 import { closeExpiredVotes } from '@/lib/circles/votes';
 
 export const prerender = false;
@@ -48,6 +50,14 @@ export const prerender = false;
 export const GET: APIRoute = async ({ params, request }) => {
 	const session = await requireTenantSession(request);
 	if (!session) return json({ ok: false, error: 'unauthorized' }, 401);
+
+	// A tenant is not an entitlement — see lib/circles/circleAccess.ts. Guarding the
+	// page alone would be theatre: this endpoint is the thing that hands over the data.
+	const viewer = await getAuthSession(request).catch(() => null);
+	const viewerId = viewer?.user?.id ? String(viewer.user.id) : '';
+	if (!(await hasCircleAccess(session.tenantId, viewerId, session.isDemo))) {
+		return json({ ok: false, error: 'forbidden' }, 403);
+	}
 	const tenantId = session.tenantId;
 	const contractId = String(params.id ?? '');
 	if (!contractId) return json({ ok: false, error: 'bad_request' }, 400);

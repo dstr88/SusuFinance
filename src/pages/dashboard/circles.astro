@@ -12,21 +12,22 @@
 import Layout from '../../layouts/Layout.astro';
 import ContractTinsGrid from '../../components/circles/ContractTinsGrid';
 import { db } from '@/lib/db';
-import { requireTenantSession } from '@/lib/requireTenantSession';
-import { getAuthSession } from '@/lib/authSession';
+import { circleGateTarget } from '@/lib/circles/circleAccess';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
 
-const session = await requireTenantSession(Astro.request);
-if (!session) return Astro.redirect('/login?next=/dashboard/circles');
+const gate = await circleGateTarget(Astro.request, '/dashboard/circles');
+if ('redirect' in gate) return Astro.redirect(gate.redirect);
+const session = gate.session;
+const uid = gate.userId;
 
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
 const t = getCirclesLocale(lang);
 
 // Only the operator sees "New circle" — creation is owner/admin (the endpoint
 // re-checks). A member viewing the grid does not get the control.
-const auth = await getAuthSession(Astro.request).catch(() => null);
-const uid = auth?.user?.id ? String(auth.user.id) : '';
+
+
 let isAdmin = false;
 if (uid) {
   const r = await db.execute({ sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`, args: [session.tenantId, uid] });
