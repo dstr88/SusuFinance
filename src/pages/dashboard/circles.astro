@@ -53,7 +53,7 @@ const newCircleLabel = lang === 'fr' ? '+ Nouveau cercle' : lang === 'es' ? '+ N
 
     {/* `lang`, not `t`: Astro serializes island props to JSON and would drop the
         locale's interpolation functions. The component resolves its own locale. */}
-    <ContractTinsGrid client:load lang={lang} />
+    <ContractTinsGrid client:load lang={lang} canArrange={isAdmin} />
   </section>
 </Layout>
 

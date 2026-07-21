@@ -27,6 +27,7 @@
 import type { APIRoute } from 'astro';
 import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
 import { disciplineState, type DisciplineState } from '@/lib/circles/discipline';
 
 export const prerender = false;
@@ -135,7 +136,22 @@ export const GET: APIRoute = async ({ request }) => {
 		// one trip.
 		//
 		// Same isolation as everything above: WHERE tenant_id, from the session.
-		const signupsRes = await db.execute({
+		// Who is waiting to be placed is the organizer's working list, not something a
+		// member needs — and the bar that shows it is a placement tool she cannot use.
+		// Returned empty rather than omitted so the client has one shape to render.
+		const auth = await getAuthSession(request).catch(() => null);
+		const viewerId = auth?.user?.id ? String(auth.user.id) : '';
+		let viewerIsOperator = false;
+		if (viewerId) {
+			const roleRes = await db.execute({
+				sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`,
+				args: [tenantId, viewerId],
+			});
+			const role = roleRes.rows[0] ? String((roleRes.rows[0] as any).role ?? '') : '';
+			viewerIsOperator = role === 'owner' || role === 'admin';
+		}
+
+		const signupsRes = viewerIsOperator ? await db.execute({
 			sql: `SELECT m.id, m.display_name,
 			             EXISTS (
 			               SELECT 1 FROM circle_votes v
@@ -153,7 +169,7 @@ export const GET: APIRoute = async ({ request }) => {
 			        )
 			      ORDER BY m.created_at DESC`,
 			args: [tenantId],
-		});
+		}) : { rows: [] as Record<string, unknown>[] };
 
 		const signups = (signupsRes.rows as Record<string, unknown>[]).map((r) => ({
 			memberId: String(r.id),

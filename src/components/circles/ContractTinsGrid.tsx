@@ -137,18 +137,21 @@ function RosterCard({
 	tinId,
 	t,
 	onGrab,
+	canArrange,
 }: {
 	r: NonNullable<CircleCard['roster']>[number];
 	tinId: string;
 	t: CirclesLocale;
 	onGrab: (e: React.DragEvent, p: DragPayload) => void;
+	/** A member sees the roster; only the operator may rearrange it. */
+	canArrange: boolean;
 }) {
 	const name = rosterLabel(r);
 	return (
 		<div
 			className="ct-mini"
-			draggable
-			onDragStart={(e) => onGrab(e, { memberId: r.memberId, fromContractId: tinId, mode: 'move', name })}
+			draggable={canArrange}
+			onDragStart={(e) => canArrange && onGrab(e, { memberId: r.memberId, fromContractId: tinId, mode: 'move', name })}
 		>
 			<span className="ct-mini__turn">{r.turnOrder ? t.arrange.turn(r.turnOrder) : t.arrange.noTurn}</span>
 			<span className="ct-mini__name">{name}</span>
@@ -159,7 +162,7 @@ function RosterCard({
 			/>
 			<span
 				className="ct-mini__copy"
-				draggable
+				draggable={canArrange}
 				role="img"
 				aria-label={t.arrange.copyLabel(name)}
 				title={t.arrange.copyHint}
@@ -167,6 +170,7 @@ function RosterCard({
 					// Stop the card's own dragstart from firing too — otherwise the parent
 					// would overwrite the payload and every copy would silently be a move.
 					e.stopPropagation();
+					if (!canArrange) return;
 					onGrab(e, { memberId: r.memberId, fromContractId: tinId, mode: 'copy', name });
 				}}
 			>
@@ -182,12 +186,14 @@ function Card({
 	onGrab,
 	onDropCard,
 	dragging,
+	canArrange,
 }: {
 	c: CircleCard;
 	t: CirclesLocale;
 	onGrab: (e: React.DragEvent, p: DragPayload) => void;
 	onDropCard: (p: DragPayload, toContractId: string) => void;
 	dragging: DragPayload | null;
+	canArrange: boolean;
 }) {
 	const isCircle = c.type === 'circle';
 	const kind = isCircle ? t.kind.circle : t.kind.targetGroup;
@@ -197,7 +203,7 @@ function Card({
 	// names were never sent. An empty array is a forming tin with room.
 	const forming = c.roster !== null;
 	// Dropping her back where she came from is a no-op, so it is not a drop target.
-	const canTake = forming && dragging !== null && dragging.fromContractId !== c.id;
+	const canTake = canArrange && forming && dragging !== null && dragging.fromContractId !== c.id;
 
 	return (
 		<article
@@ -245,7 +251,7 @@ function Card({
 					) : (
 						<div className="ct-roster__cards">
 							{c.roster!.map((r) => (
-								<RosterCard key={r.memberId} r={r} tinId={c.id} t={t} onGrab={onGrab} />
+								<RosterCard key={r.memberId} r={r} tinId={c.id} t={t} onGrab={onGrab} canArrange={canArrange} />
 							))}
 						</div>
 					)}
@@ -333,7 +339,15 @@ function Card({
  * locale here keeps interpolation as functions instead of flattening the strings
  * into template placeholders that FR word order would eventually fight.
  */
-export default function ContractTinsGrid({ lang }: { lang: Lang }) {
+/**
+ * `canArrange` — is the viewer the operator?
+ *
+ * Members still SEE a forming tin's roster; who is in a circle is not a secret from
+ * the people in it. What they do not get is the ability to reorder it or place someone
+ * into it, because arranging is the organizer's act (§5a). The server enforces this in
+ * arrange.ts; this only stops the UI offering a gesture that would be refused.
+ */
+export default function ContractTinsGrid({ lang, canArrange = false }: { lang: Lang; canArrange?: boolean }) {
 	const t = getCirclesLocale(lang);
 	const [cards, setCards] = useState<CircleCard[]>([]);
 	/** People in this programme who belong to no circle yet — the bar above the tins. */
@@ -431,7 +445,7 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 
 	const circles = cards.filter((c) => c.type === 'circle');
 	const groups = cards.filter((c) => c.type === 'target_group');
-	const props = { t, onGrab, onDropCard, dragging };
+	const props = { t, onGrab, onDropCard, dragging, canArrange };
 
 	return (
 		<>
@@ -440,6 +454,7 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 		    table of its own. Dragging from here uses mode 'copy' — there is no tin to
 		    leave — and a forming tin accepts it while a started one refuses, which is
 		    the same rule the cards already obey. */}
+		{canArrange && (
 		<section className="ct-signups" aria-label={t.signups.title}>
 			<header className="ct-signups__head">
 				<h2 className="ct-signups__title">{t.signups.title}</h2>
@@ -477,6 +492,7 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 				</>
 			)}
 		</section>
+		)}
 
 		<div className="ct-grid" onDragEnd={() => setDragging(null)}>
 			{/* aria-live: a drop is a mouse gesture with no text of its own, so the

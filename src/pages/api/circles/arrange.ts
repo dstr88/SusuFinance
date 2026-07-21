@@ -49,6 +49,7 @@
 import type { APIRoute } from 'astro';
 import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
+import { getAuthSession } from '@/lib/authSession';
 
 export const prerender = false;
 
@@ -61,6 +62,23 @@ export const POST: APIRoute = async ({ request }) => {
 	// tenant is shared — one visitor reshuffling a circle hands the next visitor a
 	// scrambled one.
 	if (session.isDemo) return json({ ok: false, error: 'demo_readonly' }, 403);
+
+	// Arranging a circle is the organizer's act (§5a), not any member's. Without this
+	// the tenant filter was the only check — which keeps one programme out of another's
+	// tins, but lets anyone INSIDE a programme reorder a forming circle or place a
+	// person into one. Isolation and authority are different questions and this file
+	// was only answering the first.
+	const auth = await getAuthSession(request).catch(() => null);
+	const actorId = auth?.user?.id ? String(auth.user.id) : '';
+	if (!actorId) return json({ ok: false, error: 'unauthorized' }, 401);
+	const roleRes = await db.execute({
+		sql: `SELECT role FROM tenant_memberships WHERE tenant_id = ? AND user_id = ? LIMIT 1`,
+		args: [session.tenantId, actorId],
+	});
+	const actorRole = roleRes.rows[0] ? String((roleRes.rows[0] as any).role ?? '') : '';
+	if (actorRole !== 'owner' && actorRole !== 'admin') {
+		return json({ ok: false, error: 'forbidden' }, 403);
+	}
 
 	let body: any;
 	try {
