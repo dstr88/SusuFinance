@@ -10,6 +10,7 @@ disagreements about it, and trusting whoever held the pot.
 SusuFinance keeps the record. It does not hold the pot, because there is no pot.
 
 **Live:** [susufinance.com](https://susufinance.com) · **Questions:** [susufinance.com/faq](https://susufinance.com/faq)
+· **Why it is built this way:** [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
