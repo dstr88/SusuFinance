@@ -22,6 +22,7 @@ import type { APIRoute } from 'astro';
 import { db } from '@/lib/db';
 import { getAuthSession } from '@/lib/authSession';
 import { ensureMemberForUser, openAdmission, VoteError } from '@/lib/circles/votes';
+import { isAdmissionsHeld } from '@/lib/platformSettings';
 
 export const prerender = false;
 
@@ -29,6 +30,13 @@ export const POST: APIRoute = async ({ request }) => {
 	const auth = await getAuthSession(request).catch(() => null);
 	const userId = auth?.user?.id ? String(auth.user.id) : '';
 	if (!userId) return json({ ok: false, error: 'unauthorized' }, 401);
+
+	// The admissions hold. Checked BEFORE anything is created or resolved, so a held
+	// door leaves no member row, no candidacy, and no trace of the attempt.
+	//
+	// Fail-closed by construction (isAdmissionsHeld returns true on any error): the
+	// door does not open because the thing guarding it broke.
+	if (await isAdmissionsHeld()) return json({ ok: false, error: 'admissions_held' }, 403);
 
 	let body: any;
 	try { body = await request.json(); } catch { return json({ ok: false, error: 'bad_json' }, 400); }

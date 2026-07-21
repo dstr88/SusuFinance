@@ -35,6 +35,7 @@ import { db } from '@/lib/db';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import { getMemberAccount } from '@/lib/circles/memberAccount';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
+import { isAdmissionsHeld } from '@/lib/platformSettings';
 
 // "Are you signed in?" — NOT "which programme are you in?". The lobby is a door-
 // chooser; it needs neither a tenant nor a role. requireTenantSession would throw
@@ -73,8 +74,6 @@ const t = getCirclesLocale(lang);
 // now lives inside the modal alongside everything else the group is deciding.
 const memberAccount = userId ? await getMemberAccount(userId).catch(() => null) : null;
 
-// Two widths: phones get a 900px webp, desktops 1800. Same picture, a quarter of
-// the bytes on the device most likely to be paying per megabyte.
 // Three states, and the lobby has to tell them apart out loud.
 //
 // Signing up is open to anyone, and structurally that is already harmless: the
@@ -89,11 +88,19 @@ const memberAccount = userId ? await getMemberAccount(userId).catch(() => null) 
 //   pending  — she asked, and her sponsor has not answered. Say who it is with.
 //   member   — she is in a circle. The modal, as before.
 //
-// The join door stays reachable in every state, because a real invitee arrives here
-// too and must not be walled out by a message aimed at someone else.
+// The join door is reachable in every state EXCEPT while admissions are held, so a
+// real invitee is never walled out by a message aimed at someone else.
 const isPending = Boolean(memberAccount) && memberAccount!.circles.length === 0;
 const isStranger = !memberAccount;
 
+// While admissions are held, the join door leads straight back here. A door that
+// bounces you is worse than no door: she reads it as the site failing rather than as
+// a decision someone took. So it is not rendered, and the waiting message carries the
+// whole explanation on its own.
+const held = await isAdmissionsHeld();
+
+// Two widths: phones get a 900px webp, desktops 1800. Same picture, a quarter of
+// the bytes on the device most likely to be paying per megabyte.
 const [bgSmall, bgLarge] = await Promise.all([
   getImage({ src: bankLobby, format: 'webp', width: 900, quality: 62 }),
   getImage({ src: bankLobby, format: 'webp', width: 1800, quality: 68 }),
@@ -121,12 +128,14 @@ const [bgSmall, bgLarge] = await Promise.all([
       />
     )}
 
+    {!held && (
     <nav class="lobby__doors" aria-label="Your way in">
       {/* The "admin" door was deleted Jul 16 — admins land straight in their panel.
           "Invited by" is the member's way in: the self-serve join form, where she
           names her group and sponsor. (A seeded member instead gets a claim link.) */}
       <a class="lobby__door lobby__door--right" href="/join">{t.lobby.invitedBy}</a>
     </nav>
+    )}
 
     {(isStranger || isPending) && (
       <div class="lobby__waiting">
@@ -136,7 +145,7 @@ const [bgSmall, bgLarge] = await Promise.all([
         <p class="lobby__waiting-body">
           {isPending ? t.lobby.pendingBody : t.lobby.waitingBody}
         </p>
-        {isStranger && (
+        {isStranger && !held && (
           <p class="lobby__waiting-sponsor">
             {t.lobby.waitingSponsor}
             {' '}

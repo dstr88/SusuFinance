@@ -1,0 +1,73 @@
+/* AdmissionsHold — presentation only.
+
+   Quiet when held, because held is the resting state and a permanent alarm is an
+   alarm nobody reads. It gains an accent border when admissions are OPEN, which is
+   the condition worth noticing from across the page. */
+
+.ah {
+  width: 80%;
+  margin: 0 auto 1.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--surface-card);
+  padding: 0.75rem 0.9rem;
+}
+.ah[data-held='false'] {
+  border-color: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+}
+@media (max-width: 900px) { .ah { width: 100%; } }
+
+.ah__row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.ah__pill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.ah__pill--held {
+  color: var(--text-secondary);
+  background: var(--surface-card-2);
+  border: 1px solid var(--border-bright);
+}
+.ah__pill--open {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-soft);
+}
+
+.ah__what {
+  flex: 1 1 20rem;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.ah__btn {
+  margin-left: auto;
+  border: 1px solid var(--border-bright);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ah__btn:hover { background: var(--surface-hover); }
+.ah__btn:disabled { opacity: 0.5; cursor: default; }
+
+.ah__meta {
+  margin-top: 0.45rem;
+  font-size: 12px;
+  color: var(--text-muted);
+}

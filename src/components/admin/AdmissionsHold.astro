@@ -1,0 +1,61 @@
+---
+/**
+ * AdmissionsHold.astro — the door, and the switch that shuts it.
+ *
+ * Always rendered, unlike the pooling panel. That one is silent when there is
+ * nothing wrong; this one is a state you must be able to see at a glance, because
+ * "is the platform open to strangers right now" is not a question anyone should have
+ * to go and check.
+ *
+ * Lifting is the consequential direction, so it asks for confirmation and holding is
+ * one click. Confirmation proportional to consequence: shutting a door too eagerly
+ * costs somebody a wait, opening one too eagerly costs the thing the wait was for.
+ */
+import './AdmissionsHold.css';
+import { getAdmissionsHold } from '@/lib/platformSettings';
+
+const state = await getAdmissionsHold();
+const when = state.updatedAt ? new Date(state.updatedAt).toISOString().slice(0, 16).replace('T', ' ') : null;
+---
+
+<section class="ah" data-held={String(state.held)}>
+  <div class="ah__row">
+    <span class={state.held ? 'ah__pill ah__pill--held' : 'ah__pill ah__pill--open'}>
+      {state.held ? 'Admissions held' : 'Admissions open'}
+    </span>
+    <span class="ah__what">
+      {state.held
+        ? 'Nobody can ask to join. People who sign up wait in the lobby. You can still create a circle and place members yourself.'
+        : 'Anyone signed in can ask an existing group to take her. Her sponsor’s yes admits her.'}
+    </span>
+    <button class="ah__btn" type="button" id="ah-toggle">
+      {state.held ? 'Open admissions' : 'Hold admissions'}
+    </button>
+  </div>
+  {when && (
+    <div class="ah__meta">Last changed {when} by {state.updatedBy ?? 'unknown'}</div>
+  )}
+</section>
+
+<script>
+	const btn = document.getElementById('ah-toggle');
+	btn?.addEventListener('click', async () => {
+		const section = btn.closest('.ah') as HTMLElement | null;
+		const held = section?.dataset.held === 'true';
+		// Opening is the direction that lets strangers in, so only that way asks.
+		if (held && !window.confirm(
+			'Open admissions? Anyone signed in will be able to ask an existing group to take her, and one member’s yes admits her.'
+		)) return;
+		(btn as HTMLButtonElement).disabled = true;
+		const res = await fetch('/api/admin/admissions-hold', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ held: !held }),
+		});
+		if (res.ok) window.location.reload();
+		else {
+			(btn as HTMLButtonElement).disabled = false;
+			window.alert('Could not change that.');
+		}
+	});
+</script>

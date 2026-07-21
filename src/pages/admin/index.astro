@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { getGA4Summary } from '@/lib/ga4';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
 import PoolAlerts from '@/components/admin/PoolAlerts.astro';
+import AdmissionsHold from '@/components/admin/AdmissionsHold.astro';
 import Notepads from '@/components/admin/Notepads.astro';
 import OrganizerGuide from '@/components/admin/OrganizerGuide.astro';
 import Faq from '@/components/faq.astro';
@@ -253,6 +254,9 @@ const [
 
 	<!-- ── Pooling findings — renders only when there are any ───── -->
 	<PoolAlerts />
+
+	<!-- ── Is the door open? ────────────────────────────────────── -->
+	<AdmissionsHold />
 
 	<!-- ── Mail hero ────────────────────────────────────────────── -->
 	<MailboxWindows adminEmail={adminEmail} adminUserId={adminUserId} />

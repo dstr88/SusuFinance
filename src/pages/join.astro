@@ -9,11 +9,18 @@
 import LoginLayout from '../layouts/LoginLayout.astro';
 import { getAuthSession } from '@/lib/authSession';
 import { langFromCookieHeader } from '@/lib/i18n/locale';
+import { isAdmissionsHeld } from '@/lib/platformSettings';
 
 const auth = await getAuthSession(Astro.request).catch(() => null);
 if (!auth?.user?.id) return Astro.redirect('/login?next=/join');
 
 const lang = langFromCookieHeader(Astro.request.headers.get('cookie'));
+
+// While admissions are held there is no form worth showing. Rendering one that can
+// only answer "no group by that name" is how a deliberate hold gets mistaken for a
+// broken site — the exact failure the lobby message was written to stop. Send her
+// back to the lobby, which says where she stands.
+if (await isAdmissionsHeld()) return Astro.redirect('/dashboard/lobby');
 
 const COPY: Record<string, Record<string, string>> = {
   en: {
