@@ -3,7 +3,6 @@ import { requireAdminSession } from '@/lib/adminGuard';
 import { db } from '@/lib/db';
 import { getGA4Summary } from '@/lib/ga4';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
-import CircleBoard from '@/components/circles/CircleBoard';
 import Notepads from '@/components/admin/Notepads.astro';
 import TrafficChart from '@/components/admin/TrafficChart.astro';
 
@@ -251,9 +250,6 @@ const [
 
 	<!-- ── Mail hero ────────────────────────────────────────────── -->
 	<MailboxWindows adminEmail={adminEmail} adminUserId={adminUserId} />
-
-	<!-- ── Signup task bar + circle tins ────────────────────────── -->
-	<CircleBoard client:load />
 
 	<!-- ── Notepads ─────────────────────────────────────────────── -->
 	<Notepads />

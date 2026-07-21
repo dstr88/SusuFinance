@@ -362,3 +362,71 @@
 	background: var(--loss-bg);
 	color: var(--loss);
 }
+
+/* ── Waiting to be placed ────────────────────────────────────────────────────
+   The holding area above the tins. Dashed, so it reads as somewhere things pass
+   through rather than somewhere they live — the tins are the destination and
+   should stay the solid objects on the page.
+
+   Tokens only, like everything else here. */
+.ct-signups {
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px dashed var(--border-bright);
+  border-radius: 12px;
+  background: var(--surface-card);
+}
+.ct-signups__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.ct-signups__title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ct-signups__count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: var(--surface-card-2);
+  border-radius: 999px;
+  padding: 0 0.45rem;
+}
+.ct-signups__hint,
+.ct-signups__empty {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.ct-signups__empty { margin-bottom: 0; }
+.ct-signups__row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.ct-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-bright);
+  background: var(--surface-card-2);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  cursor: grab;
+  user-select: none;
+}
+.ct-chip:active { cursor: grabbing; }
+/* Already before the group. Dimmed rather than hidden: she is still waiting, and
+   hiding her would make the bar disagree with the count beside it. */
+.ct-chip--pending { opacity: 0.7; }
+.ct-chip__pending {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}

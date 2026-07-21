@@ -127,7 +127,47 @@ export const GET: APIRoute = async ({ request }) => {
 			args: [tenantId],
 		});
 
-		if (!contractsRes.rows.length) return json({ ok: true, cards: [], updatedAt: new Date().toISOString() });
+		// ── Signups: people in this programme who belong to no circle yet ────────
+		//
+		// The natural holding state between registering and being placed, and it needs
+		// no table of its own: a member row with no live contract_members row IS the
+		// state. Returned here rather than from a second endpoint so the vault loads in
+		// one trip.
+		//
+		// Same isolation as everything above: WHERE tenant_id, from the session.
+		const signupsRes = await db.execute({
+			sql: `SELECT m.id, m.display_name,
+			             EXISTS (
+			               SELECT 1 FROM circle_votes v
+			               WHERE v.tenant_id = m.tenant_id
+			                 AND v.subject_member_id = m.id
+			                 AND v.status = 'open'
+			             ) AS pending_vote
+			      FROM members m
+			      WHERE m.tenant_id = ?
+			        AND NOT EXISTS (
+			          SELECT 1 FROM contract_members cm
+			          WHERE cm.tenant_id = m.tenant_id
+			            AND cm.member_id = m.id
+			            AND cm.left_at IS NULL
+			        )
+			      ORDER BY m.created_at DESC`,
+			args: [tenantId],
+		});
+
+		const signups = (signupsRes.rows as Record<string, unknown>[]).map((r) => ({
+			memberId: String(r.id),
+			// Her chosen name, or nothing. A UUID-only member made a choice; the caller
+			// decides how to show it rather than having an id forced on her here.
+			displayName: r.display_name ? String(r.display_name) : null,
+			pendingVote: Boolean(r.pending_vote),
+		}));
+
+		// A programme with signups and no circles yet is precisely when the signup bar
+		// matters most, so the early return carries them too.
+		if (!contractsRes.rows.length) {
+			return json({ ok: true, cards: [], signups, updatedAt: new Date().toISOString() });
+		}
 
 		const contractIds = contractsRes.rows.map((r) => String(r.id));
 		const placeholders = contractIds.map(() => '?').join(',');
@@ -316,7 +356,7 @@ export const GET: APIRoute = async ({ request }) => {
 			};
 		});
 
-		return json({ ok: true, cards, updatedAt: new Date().toISOString() });
+		return json({ ok: true, cards, signups, updatedAt: new Date().toISOString() });
 	} catch (err) {
 		console.error('[api/circles] failed', err);
 		return json({ ok: false, error: 'load_failed' }, 500);

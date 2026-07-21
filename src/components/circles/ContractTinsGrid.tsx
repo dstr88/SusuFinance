@@ -336,6 +336,8 @@ function Card({
 export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 	const t = getCirclesLocale(lang);
 	const [cards, setCards] = useState<CircleCard[]>([]);
+	/** People in this programme who belong to no circle yet — the bar above the tins. */
+	const [signups, setSignups] = useState<Array<{ memberId: string; displayName: string | null; pendingVote: boolean }>>([]);
 	const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
 	/** What is in his hand right now — drives which tins light up as targets. */
 	const [dragging, setDragging] = useState<DragPayload | null>(null);
@@ -351,6 +353,7 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 			const data = await res.json();
 			if (!data.ok) throw new Error(data.error ?? 'load_failed');
 			setCards(data.cards ?? []);
+			setSignups(data.signups ?? []);
 			setState('ready');
 		} catch {
 			setState('error');
@@ -431,6 +434,50 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 	const props = { t, onGrab, onDropCard, dragging };
 
 	return (
+		<>
+		{/* ── Waiting to be placed ──────────────────────────────────────────────
+		    A member row with no live contract_members row IS this state; it needs no
+		    table of its own. Dragging from here uses mode 'copy' — there is no tin to
+		    leave — and a forming tin accepts it while a started one refuses, which is
+		    the same rule the cards already obey. */}
+		<section className="ct-signups" aria-label={t.signups.title}>
+			<header className="ct-signups__head">
+				<h2 className="ct-signups__title">{t.signups.title}</h2>
+				<span className="ct-signups__count">{signups.length}</span>
+			</header>
+			{signups.length === 0 ? (
+				<p className="ct-signups__empty">{t.signups.empty}</p>
+			) : (
+				<>
+					<p className="ct-signups__hint">{t.signups.hint}</p>
+					<div className="ct-signups__row">
+						{signups.map((sg) => (
+							<div
+								key={sg.memberId}
+								className={`ct-chip ${sg.pendingVote ? 'ct-chip--pending' : ''}`}
+								draggable
+								onDragStart={(e) =>
+									onGrab(e, {
+										memberId: sg.memberId,
+										// No tin to leave. An empty id also never matches a real
+										// contract id, so every forming tin reads as a valid target.
+										fromContractId: '',
+										mode: 'copy',
+										name: sg.displayName ?? '',
+									})
+								}
+							>
+								<span className="ct-chip__name">
+									{sg.displayName ?? `${sg.memberId.slice(0, 8)}…`}
+								</span>
+								{sg.pendingVote && <span className="ct-chip__pending">{t.signups.pending}</span>}
+							</div>
+						))}
+					</div>
+				</>
+			)}
+		</section>
+
 		<div className="ct-grid" onDragEnd={() => setDragging(null)}>
 			{/* aria-live: a drop is a mouse gesture with no text of its own, so the
 			    outcome has to be announced or it happens silently. */}
@@ -450,5 +497,6 @@ export default function ContractTinsGrid({ lang }: { lang: Lang }) {
 			)}
 			<p className="ct-footnote">{t.footnote}</p>
 		</div>
+		</>
 	);
 }

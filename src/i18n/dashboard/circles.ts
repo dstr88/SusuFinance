@@ -23,6 +23,16 @@ import type { Lang } from '@/lib/i18n/locale';
 
 export interface CirclesLocale {
 	lang: Lang;
+	/** The holding area above the tins: people with no circle yet. */
+	signups: {
+		title: string;
+		/** Not an error — an empty bar is the ordinary state of a settled programme. */
+		empty: string;
+		/** Says what the bar is for, and what dragging from it does. */
+		hint: string;
+		/** Someone whose admission is already before the group. */
+		pending: string;
+	};
 	page: {
 		title: string;
 		subtitle: string;
@@ -325,6 +335,12 @@ export interface CirclesLocale {
 }
 
 const EN: CirclesLocale = {
+	signups: {
+		title: 'Waiting to be placed',
+		empty: 'Nobody waiting. New members appear here until they join a circle.',
+		hint: 'Drag someone onto a forming tin to place her. A tin that has started decides for itself.',
+		pending: 'vote open',
+	},
 	lang: 'en',
 	page: {
 		title: 'Circles',
@@ -603,6 +619,12 @@ const EN: CirclesLocale = {
 };
 
 const FR: CirclesLocale = {
+	signups: {
+		title: 'En attente de placement',
+		empty: 'Personne en attente. Les nouvelles membres apparaissent ici jusqu’à ce qu’elles rejoignent un cercle.',
+		hint: 'Faites glisser une personne vers un cercle en formation pour la placer. Un cercle commencé décide lui-même.',
+		pending: 'vote en cours',
+	},
 	lang: 'fr',
 	page: {
 		title: 'Cercles',
@@ -882,6 +904,12 @@ const FR: CirclesLocale = {
 };
 
 const ES: CirclesLocale = {
+	signups: {
+		title: 'Esperando ser asignadas',
+		empty: 'Nadie esperando. Las nuevas integrantes aparecen aquí hasta que entran en un círculo.',
+		hint: 'Arrastra a alguien a un círculo en formación para asignarla. Un círculo ya iniciado decide por sí mismo.',
+		pending: 'votación abierta',
+	},
 	lang: 'es',
 	page: {
 		title: 'Círculos',
