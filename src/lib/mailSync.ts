@@ -581,6 +581,9 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 	let messageId: string | null = null;
 	let sendError: string | null = null;
 	let raw: string | Buffer | null = null;
+	// Discovered during the Sent-folder append below; used for the placeholder row so
+	// both agree on where the message lives.
+	let sentFolder = 'Sent';
 
 	try {
 		// Build the RFC822 bytes ourselves, then send THOSE, rather than handing fields
@@ -630,18 +633,21 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 
 	// Record either way. A failed send that leaves no trace is the worst outcome —
 	// you would not know whether it went.
-	// folder='Sent' so it files under the Sent tab immediately. This row is a
-	// placeholder with no UID; the server's own copy replaces it on the next poll
-	// (see the Message-ID converge step in pollFolder).
+	// The placeholder must use the server's REAL Sent path, resolved above during the
+	// append. Hardcoding 'Sent' put the row in a folder name this server does not have
+	// (it uses INBOX.Sent), so a just-sent message was invisible in every tab until the
+	// next poll fetched the server's own copy — which looked exactly like sending being
+	// broken. Falls back to 'Sent' only when the append never ran.
 	await db.execute({
 		sql: `INSERT INTO mail_messages
 		        (id, mailbox, folder, special_use, direction, message_id, in_reply_to, refs,
 		         from_addr, from_name, to_addrs, cc_addrs,
 		         subject, body_text, sent_at, read_at, send_error)
-		      VALUES (?, ?, 'Sent', '\\Sent', 'out', ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(), ?)`,
+		      VALUES (?, ?, ?, '\\Sent', 'out', ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now(), ?)`,
 		args: [
 			id,
 			box.address,
+			sentFolder,
 			messageId,
 			inReplyTo,
 			references,
@@ -665,7 +671,19 @@ export async function sendFromMailbox(input: SendInput): Promise<SendResult> {
 			imap = client(box);
 			await imap.connect();
 			const target = await findSentFolder(imap);
-			if (target) await imap.append(target, raw, ['\\Seen']);
+			if (target) {
+				sentFolder = target;
+				await imap.append(target, raw, ['\\Seen']);
+
+				// Correct the row now that the real path is known. The insert above runs
+				// first so a send is recorded even if the append fails, which means the
+				// folder starts as a fallback and is fixed here — rather than leaving the
+				// message filed under a folder name this server does not have.
+				await db.execute({
+					sql: `UPDATE mail_messages SET folder = ? WHERE id = ?`,
+					args: [sentFolder, id],
+				});
+			}
 		} catch (err) {
 			// Delivered either way, so this is not a send failure — but it IS the thing
 			// that hid a bug for a day, so it gets logged rather than swallowed.

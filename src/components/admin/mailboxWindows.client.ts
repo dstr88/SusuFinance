@@ -437,8 +437,10 @@ document.addEventListener('click', async (e) => {
 			body: JSON.stringify({ id: btn.dataset.id, mailbox: btn.dataset.mailbox }),
 		});
 		if (!res.ok) throw new Error();
-		btn.closest('.mhc')?.classList.remove('mhc--unread');
+		const card = btn.closest<HTMLElement>('.mhc');
+		card?.classList.remove('mhc--unread');
 		btn.remove();
+		decrementUnread(btn.closest<HTMLElement>('.mh')!);
 	} catch { btn.disabled = false; }
 });
 
@@ -753,6 +755,30 @@ function offerRule(panel: HTMLElement, senders: string[], folder: string): void 
 	no.textContent = 'No';
 	no.addEventListener('click', () => { bar.hidden = true; });
 	bar.appendChild(no);
+}
+
+/**
+ * Drop the unread count by one, on the bar and on the folder in the rail.
+ *
+ * Both are rendered by the server at page load, so clicking "Mark read" updated the
+ * database and removed the button while the badge kept saying 1. The message was read
+ * and the panel still insisted otherwise, which reads as the click not working.
+ *
+ * Adjusted in place rather than re-fetched: the count is one number and a round trip to
+ * decrement it would be slower than the click that caused it.
+ */
+function decrementUnread(panel: HTMLElement): void {
+	const bump = (el: HTMLElement | null) => {
+		if (!el) return;
+		const next = Math.max(0, Number(el.textContent?.replace(/\D/g, '') || 0) - 1);
+		// A zero badge is not a quiet badge, it is a wrong one — remove it.
+		if (next === 0) el.remove();
+		else el.textContent = String(next);
+	};
+
+	bump(q<HTMLElement>(panel, '.mh__badge'));
+	const tab = q<HTMLElement>(panel, '.mh__rf--on');
+	if (tab) bump(tab.querySelector<HTMLElement>('.mh__rfcount'));
 }
 
 function checkedIds(panel: HTMLElement): string[] {
