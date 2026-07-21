@@ -75,6 +75,25 @@ const memberAccount = userId ? await getMemberAccount(userId).catch(() => null) 
 
 // Two widths: phones get a 900px webp, desktops 1800. Same picture, a quarter of
 // the bytes on the device most likely to be paying per megabyte.
+// Three states, and the lobby has to tell them apart out loud.
+//
+// Signing up is open to anyone, and structurally that is already harmless: the
+// two-founder bootstrap is closed, so a stranger's login resolves to no programme,
+// and the only thing she can do is ask an existing group to take her. What she got
+// instead was a single "Invited by" door leading to a form that answered "No group by
+// that name" — an error phrased as a spelling mistake, to someone whose real problem
+// is that she is early. That reads as a broken site, and a broken site is what she
+// tells her friends about.
+//
+//   stranger — no member row at all. Nothing is open to her; say so plainly.
+//   pending  — she asked, and her sponsor has not answered. Say who it is with.
+//   member   — she is in a circle. The modal, as before.
+//
+// The join door stays reachable in every state, because a real invitee arrives here
+// too and must not be walled out by a message aimed at someone else.
+const isPending = Boolean(memberAccount) && memberAccount!.circles.length === 0;
+const isStranger = !memberAccount;
+
 const [bgSmall, bgLarge] = await Promise.all([
   getImage({ src: bankLobby, format: 'webp', width: 900, quality: 62 }),
   getImage({ src: bankLobby, format: 'webp', width: 1800, quality: 68 }),
@@ -108,6 +127,24 @@ const [bgSmall, bgLarge] = await Promise.all([
           names her group and sponsor. (A seeded member instead gets a claim link.) */}
       <a class="lobby__door lobby__door--right" href="/join">{t.lobby.invitedBy}</a>
     </nav>
+
+    {(isStranger || isPending) && (
+      <div class="lobby__waiting">
+        <h2 class="lobby__waiting-title">
+          {isPending ? t.lobby.pendingTitle : t.lobby.waitingTitle}
+        </h2>
+        <p class="lobby__waiting-body">
+          {isPending ? t.lobby.pendingBody : t.lobby.waitingBody}
+        </p>
+        {isStranger && (
+          <p class="lobby__waiting-sponsor">
+            {t.lobby.waitingSponsor}
+            {' '}
+            <a href="/join">{t.lobby.invitedBy}</a>
+          </p>
+        )}
+      </div>
+    )}
 
     <h1 class="lobby__welcome">{t.lobby.welcome}</h1>
   </section>
@@ -180,6 +217,39 @@ const [bgSmall, bgLarge] = await Promise.all([
     background: var(--surface-card-2);
   }
   .lobby__door:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* The waiting card. Sits above the welcome line, sharing its bottom anchor, so a
+     phone shows the explanation without scrolling — she is the person most likely to
+     assume nothing happened and close the tab. */
+  .lobby__waiting {
+    position: relative;
+    z-index: 1;
+    max-width: 34rem;
+    margin: 0 1.25rem 1.25rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--surface-card);
+    text-align: left;
+  }
+  .lobby__waiting-title {
+    margin: 0 0 0.4rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .lobby__waiting-body {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  .lobby__waiting-sponsor {
+    margin: 0.7rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .lobby__waiting-sponsor a { color: var(--accent); }
 
   .lobby__welcome {
     position: relative;

@@ -121,6 +121,16 @@ export interface CirclesLocale {
 		welcome: string;
 		admin: string;
 		invitedBy: string;
+		/** The waiting card, for someone signed in who belongs to no circle yet.
+		 *  `waitingTitle`/`waitingBody` — she has never asked; nothing is open to her.
+		 *  `pendingTitle`/`pendingBody` — she has asked, and her sponsor has not
+		 *  answered. Both say where she stands, because "signed in and nothing
+		 *  happens" is the state most easily mistaken for a broken site. */
+		waitingTitle: string;
+		waitingBody: string;
+		waitingSponsor: string;
+		pendingTitle: string;
+		pendingBody: string;
 	};
 	/** Her account modal — the member's own home: her circles and the votes open in
 	 *  them. The counterpart to the operator's account dropdown. */
@@ -480,6 +490,13 @@ const EN: CirclesLocale = {
 		welcome: 'Welcome to SusuFinance',
 		admin: 'admin',
 		invitedBy: 'Invited by',
+		waitingTitle: 'You are signed in',
+		waitingBody:
+			'A susu is a group, so there is nothing here for one person on her own. Groups are being brought in a few at a time while we finish setting things up, and you cannot start one yourself yet.',
+		waitingSponsor: 'Already have a group and someone who invited you?',
+		pendingTitle: 'Waiting for your sponsor',
+		pendingBody:
+			'You have asked to join, and it is with the member who invited you. When she confirms, your circle appears here.',
 	},
 	me: {
 		trigger: 'My circles',
@@ -765,6 +782,13 @@ const FR: CirclesLocale = {
 		welcome: 'Bienvenue à SusuFinance',
 		admin: 'admin',
 		invitedBy: 'Invité par',
+		waitingTitle: 'Vous êtes connectée',
+		waitingBody:
+			'Une susu est un groupe : il n’y a donc rien ici pour une personne seule. Les groupes arrivent quelques-uns à la fois pendant que nous terminons les préparatifs, et vous ne pouvez pas encore en créer un vous-même.',
+		waitingSponsor: 'Vous avez déjà un groupe et quelqu’un qui vous a invitée ?',
+		pendingTitle: 'En attente de votre parrain',
+		pendingBody:
+			'Vous avez demandé à rejoindre le groupe, et la demande est chez la personne qui vous a invitée. Dès qu’elle confirme, votre cercle apparaît ici.',
 	},
 	me: {
 		trigger: 'Mes cercles',
@@ -986,6 +1010,13 @@ const ES: CirclesLocale = {
 		welcome: 'Bienvenida a SusuFinance',
 		admin: 'admin',
 		invitedBy: 'Invitada por',
+		waitingTitle: 'Ya inició sesión',
+		waitingBody:
+			'Una susu es un grupo, así que aquí no hay nada para una sola persona. Los grupos van entrando de a pocos mientras terminamos de prepararlo todo, y todavía no puede crear uno usted misma.',
+		waitingSponsor: '¿Ya tiene un grupo y alguien que la invitó?',
+		pendingTitle: 'Esperando a su padrino',
+		pendingBody:
+			'Ya pidió unirse y su solicitud está con la integrante que la invitó. Cuando ella confirme, su círculo aparecerá aquí.',
 	},
 	me: {
 		trigger: 'Mis círculos',
