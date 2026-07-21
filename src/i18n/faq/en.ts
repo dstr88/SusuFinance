@@ -27,8 +27,9 @@ export const items: FaqItem[] = [
   {
     id: 'faq-holds-money',
     q: 'Does SusuFinance hold our money?',
-    a: `<p>No. SusuFinance runs the administration of the circle, not the money. Your USDC stays in your own wallet, which you control. There is no pot here. When it is your turn, the others send USDC directly to your wallet.</p>
-<p>The app records what the circle agreed and what happened, so everyone can see that everyone paid. It never holds funds, and nobody else in your circle, including the organizer, can see your balance. There is nothing here for anyone to lose or run off with.</p>`,
+    a: `<p>No. SusuFinance runs the administration of the circle, not the money. There is no pot here. When it is your turn, the others send USDC directly to your wallet.</p>
+<p>Neither SusuFinance nor Almstins ever holds the keys to your wallet. We cannot move your money, freeze it, or spend it, because we have nothing to move it with.</p>
+<p>The app records what the circle agreed and what happened, so everyone can see that everyone paid. Nobody else in your circle, including the organizer, can see your balance.</p>`,
   },
   {
     id: 'faq-trust',

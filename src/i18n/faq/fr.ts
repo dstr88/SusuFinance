@@ -27,8 +27,9 @@ export const items: FaqItem[] = [
   {
     id: 'faq-holds-money',
     q: 'SusuFinance détient-il notre argent ?',
-    a: `<p>Non. SusuFinance gère l'administration du cercle, pas l'argent. Vos USDC restent dans votre propre portefeuille, que vous contrôlez. Il n'y a pas de cagnotte ici. Quand c'est votre tour, les autres envoient les USDC directement dans votre portefeuille.</p>
-<p>L'application enregistre ce que le cercle a convenu et ce qui s'est passé, pour que chacune voie que chacune a payé. Elle ne détient jamais de fonds, et personne d'autre dans votre cercle, y compris l'organisatrice, ne peut voir votre solde. Il n'y a rien ici que quelqu'un puisse perdre ou emporter.</p>`,
+    a: `<p>Non. SusuFinance gère l'administration du cercle, pas l'argent. Il n'y a pas de cagnotte ici. Quand c'est votre tour, les autres envoient les USDC directement dans votre portefeuille.</p>
+<p>Ni SusuFinance ni Almstins ne détiennent jamais les clés de votre portefeuille. Nous ne pouvons ni déplacer votre argent, ni le bloquer, ni le dépenser, parce que nous n'avons rien pour le faire.</p>
+<p>L'application enregistre ce que le cercle a convenu et ce qui s'est passé, pour que chacune voie que chacune a payé. Personne d'autre dans votre cercle, y compris l'organisatrice, ne peut voir votre solde.</p>`,
   },
   {
     id: 'faq-trust',

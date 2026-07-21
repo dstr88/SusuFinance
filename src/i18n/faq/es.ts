@@ -27,8 +27,9 @@ export const items: FaqItem[] = [
   {
     id: 'faq-holds-money',
     q: '¿SusuFinance guarda nuestro dinero?',
-    a: `<p>No. SusuFinance lleva la administración del círculo, no el dinero. Tus USDC se quedan en tu propia billetera, que tú controlas. Aquí no hay un bote común. Cuando llega tu turno, las demás envían los USDC directamente a tu billetera.</p>
-<p>La aplicación registra lo que el círculo acordó y lo que ocurrió, para que todas vean que todas pagaron. Nunca guarda fondos, y nadie más en tu círculo, incluida la organizadora, puede ver tu saldo. Aquí no hay nada que alguien pueda perder ni llevarse.</p>`,
+    a: `<p>No. SusuFinance lleva la administración del círculo, no el dinero. Aquí no hay un bote común. Cuando llega tu turno, las demás envían los USDC directamente a tu billetera.</p>
+<p>Ni SusuFinance ni Almstins tienen nunca las claves de tu billetera. No podemos mover tu dinero, ni congelarlo, ni gastarlo, porque no tenemos nada con qué hacerlo.</p>
+<p>La aplicación registra lo que el círculo acordó y lo que ocurrió, para que todas vean que todas pagaron. Nadie más en tu círculo, incluida la organizadora, puede ver tu saldo.</p>`,
   },
   {
     id: 'faq-trust',
