@@ -1,0 +1,32 @@
+# Marks circle contributions paid by reading the chain.
+#
+# Hourly, not every fifteen minutes: a contribution is due on a date, not a minute, and
+# every run costs Etherscan quota that the free tier meters daily. Nobody is waiting on
+# a star appearing within the quarter hour.
+#
+# Runs from the repository's DEFAULT branch. curl uses --fail so an HTTP error turns the
+# run red instead of exiting 0 while nothing was observed.
+name: observe-payments
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Observe payments
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "CRON_SECRET is not set as a repository secret"; exit 1
+          fi
+          BASE="${APP_URL:-https://susufinance.com}"
+          curl -sS --fail --max-time 300 \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${BASE}/api/cron/observe-payments"
