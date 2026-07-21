@@ -63,22 +63,57 @@ export const GET: APIRoute = async ({ request }) => {
 		sql: `SELECT folder, special_use FROM mail_folder_state WHERE mailbox = ?`,
 		args: [box.address],
 	});
-	const folders = (folderRows.rows as Record<string, unknown>[]).map((f) => ({
-		path: String(f.folder),
-		specialUse: f.special_use ? String(f.special_use) : null,
-	}));
+	// Matches the rail's own filtering (see MailboxWindows.astro): the real Drafts
+	// folder is covered by the synthetic Drafts tab, and an unflagged folder merely
+	// NAMED junk is a duplicate of the one the server flags \Junk. Without this the
+	// move menu offered destinations the rail could not show, which is how a message
+	// moved to Drafts vanished.
+	const folders = (folderRows.rows as Record<string, unknown>[])
+		.map((f) => ({
+			path: String(f.folder),
+			specialUse: f.special_use ? String(f.special_use) : null,
+		}))
+		.filter((f) => f.specialUse !== '\\Drafts' && !/^(inbox[./])?drafts?$/i.test(f.path))
+		.filter((f, _i, all) =>
+			!(!f.specialUse
+				&& /^(inbox[./])?(junk|spam)$/i.test(f.path)
+				&& all.some((o) => o.specialUse === '\\Junk')));
 
-	// Drafts are a synthetic tab: the rows come from mail_drafts, not mail_messages,
-	// because a draft being composed has no server copy until it is saved.
+	// Drafts is one tab over two sources.
+	//
+	// mail_drafts holds what was composed HERE — editable, and with no server copy until
+	// saved. mail_messages holds anything sitting in the IMAP Drafts folder, including
+	// mail moved there from another folder.
+	//
+	// Previously this returned only the first, so the real Drafts folder had no tab at
+	// all: a message moved into it left its old folder, never appeared anywhere, and
+	// looked lost. One tab showing both is what "Drafts" means to the person reading it.
 	if (folder === '__drafts__') {
-		const d = await db.execute({
-			sql: `SELECT id, to_addrs, cc_addrs, subject, body_text, reply_to_id, updated_at
-			      FROM mail_drafts WHERE mailbox = ? ORDER BY updated_at DESC LIMIT ?`,
-			args: [box.address, limit],
-		});
+		const [d, m] = await Promise.all([
+			db.execute({
+				sql: `SELECT id, to_addrs, cc_addrs, subject, body_text, reply_to_id, updated_at
+				      FROM mail_drafts WHERE mailbox = ? ORDER BY updated_at DESC LIMIT ?`,
+				args: [box.address, limit],
+			}),
+			db.execute({
+				sql: `SELECT id, direction, folder, special_use, message_id, in_reply_to,
+				             from_addr, from_name, to_addrs, cc_addrs,
+				             subject, body_text, sent_at, read_at, send_error,
+				             spam_flag, spam_score, threat_level, scanned_at,
+				             (body_html IS NOT NULL AND body_html <> '') AS has_html
+				      FROM mail_messages
+				      WHERE mailbox = ?
+				        AND (special_use = '\\Drafts' OR folder ~* '^(inbox[./])?drafts?$')
+				      ORDER BY COALESCE(sent_at, fetched_at) DESC
+				      LIMIT ?`,
+				args: [box.address, limit],
+			}),
+		]);
 		return json({
 			ok: true, mailbox: box.address, label: box.label, canSend: box.canSend,
-			folder, folders, unread: 0, drafts: d.rows, messages: [],
+			folder, folders, unread: 0,
+			drafts: d.rows,
+			messages: (m.rows as Record<string, unknown>[]).map((r) => ({ ...r, attachments: [], threats: [] })),
 		});
 	}
 
