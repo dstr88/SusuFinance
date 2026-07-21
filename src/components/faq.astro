@@ -2,8 +2,13 @@
 import type { Lang } from "@/lib/i18n/locale";
 import { getFaq } from "@/i18n/faq";
 
-const { lang = "en" } = Astro.props as { lang?: Lang };
-const t = getFaq(lang);
+const { lang = "en", audience = "member" } = Astro.props as {
+  lang?: Lang;
+  audience?: "member" | "admin";
+};
+const all = getFaq(lang);
+// Absent audience means member — the default set, and what the footer shows.
+const t = { items: all.items.filter((i) => (i.audience ?? "member") === audience) };
 ---
 
 <section class="faq-section">

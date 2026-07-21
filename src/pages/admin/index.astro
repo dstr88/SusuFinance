@@ -5,6 +5,7 @@ import { getGA4Summary } from '@/lib/ga4';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
 import Notepads from '@/components/admin/Notepads.astro';
 import OrganizerGuide from '@/components/admin/OrganizerGuide.astro';
+import Faq from '@/components/faq.astro';
 import TrafficChart from '@/components/admin/TrafficChart.astro';
 
 // Guard — redirect non-admin users rather than returning a raw 4xx,
@@ -398,6 +399,14 @@ const [
 		)}
 	</div>
 	)}
+
+	{/* Organizer questions only. lang is pinned to en because /admin is
+	    English-only, and the admin items are written in English alone. */}
+	<!-- ── Questions ────────────────────────────────────────────── -->
+	<div class="section">
+		<div class="section-title">Questions</div>
+		<Faq lang="en" audience="admin" />
+	</div>
 
 	<!-- ── Website traffic ──────────────────────────────────────── -->
 	<TrafficChart />

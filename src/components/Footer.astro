@@ -11,6 +11,7 @@ import TermsOfService from "./terms-of-service.astro";
 const { lang = "en" } = Astro.props as { lang?: Lang };
 const t = getFooter(lang);
 const year = new Date().getFullYear();
+import Faq from './faq.astro';
 ---
 
 <footer class="site-footer">
@@ -50,11 +51,13 @@ const year = new Date().getFullYear();
     </section>
 
     <section class="footer-col footer-faq">
-      {/* The FAQ that lived here answered Almstins questions — exchanges,
-          DeFi, the safety checker, filing returns — on a page about a savings
-          circle. Removed rather than rewritten: the questions a susu member
-          actually has are not yet known, and inventing them would be worse
-          than asking none. /howTo does the explaining. */}
+      {/* The Almstins FAQ that lived here was removed because "the questions a susu
+          member actually has are not yet known, and inventing them would be worse
+          than asking none". They are known now — written Jul 20 against what the
+          member screen actually does. The footer renders in both layouts, so this
+          puts them on every page including the lobby. Member items only; the
+          organizer's set renders on /admin. */}
+      <Faq lang={lang} audience="member" />
       <div class="footer-legal">
         <a href={t.aboutHref} class="footer-legal-link">
           {t.aboutLabel}

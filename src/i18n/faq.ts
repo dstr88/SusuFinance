@@ -16,6 +16,16 @@ import { items as esItems } from './faq/es';
 import { items as frItems } from './faq/fr';
 
 export interface FaqItem {
+  /**
+   * Who the question is for. Absent means 'member' — the overwhelming majority, and
+   * the audience whose page (the footer, and so the lobby) renders by default.
+   *
+   * 'admin' items answer the organizer's questions and render on /admin only. They
+   * are kept in this same list rather than a separate file so a question can be
+   * MOVED between audiences by editing one word, which is what happens the first
+   * time someone asks it on the wrong page.
+   */
+  audience?: 'member' | 'admin';
   /** DOM id, shared across languages (data-modal target + modal id). */
   id: string;
   /** Question — used as the grid button label and the modal heading. */

@@ -9,6 +9,11 @@
 //
 // No jargon past "wallet" and "USDC". The word "crypto" appears nowhere on purpose.
 //
+// Two audiences in one list, split by `audience`. Member items (the default) render
+// in the footer, which puts them on every page including the lobby. Admin items render
+// on /admin. Keeping them in one file means a question can move audience by editing
+// one word, which is what happens the first time it is asked on the wrong page.
+//
 // Every claim is true of the code today, except one flagged in FAQquestions.claude.md:
 // nothing observes payments yet, so "the circle shows what happened" is ahead of the
 // watcher. Fix the copy or ship the watcher before a pilot.
@@ -154,5 +159,75 @@ export const items: FaqItem[] = [
     q: 'What if someone stops paying?',
     a: `<p>You will see it.</p>
 <p>What to do is the group's decision. The app will not chase her, fine her, or report her anywhere.</p>`,
+  },
+  {
+    id: 'faq-admin-create',
+    audience: 'admin',
+    q: 'How do I start a circle?',
+    a: `<ol><li>Open the Circles page and choose New circle.</li>
+<li>Name it, set the amount each person pays and how often.</li></ol>
+<p>It starts as forming, which is the only time you can arrange it.</p>`,
+  },
+  {
+    id: 'faq-admin-place',
+    audience: 'admin',
+    q: 'How do I put someone in a circle?',
+    a: `<p>Drag her from “Waiting to be placed” onto the tin.</p>
+<p>Anyone who has signed up but is not in a circle waits there.</p>`,
+  },
+  {
+    id: 'faq-admin-order',
+    audience: 'admin',
+    q: 'How do I set the turn order?',
+    a: `<p>Drag the cards inside the tin into the order the group agreed.</p>
+<p>Do it before you open round one. After that the order is fixed for everyone, including you.</p>`,
+  },
+  {
+    id: 'faq-admin-wallet',
+    audience: 'admin',
+    q: "How do I set someone's payout wallet?",
+    a: `<p>Open her card and set the address. She can change it herself once she has signed in.</p>
+<p>She then has two weeks to prove it, or her turn will not open.</p>`,
+  },
+  {
+    id: 'faq-admin-links',
+    audience: 'admin',
+    q: 'How does she get into the app?',
+    a: `<p>Send her the link from her card. It works once and expires in seven days.</p>
+<p>It binds her login to her place in the circle, so she arrives as herself.</p>`,
+  },
+  {
+    id: 'faq-admin-open',
+    audience: 'admin',
+    q: 'What happens when I open round one?',
+    a: `<p>Forming ends. The roster locks, the turn order freezes, this round's payout address is fixed so it cannot be swapped, and everyone except the recipient gets a payment due.</p>`,
+  },
+  {
+    id: 'faq-admin-remove',
+    audience: 'admin',
+    q: "Why can't I remove someone from a running circle?",
+    a: `<p>Because the others arranged their turns around her and some have already paid.</p>
+<p>You can propose it. Adding and removing are both votes the group takes.</p>`,
+  },
+  {
+    id: 'faq-admin-second',
+    audience: 'admin',
+    q: 'What happens if I am unavailable?',
+    a: `<p>The circle stalls. Only an organizer can open each new round.</p>
+<p>Nobody's money is stuck, because it was never pooled. Add a second organizer on day one.</p>`,
+  },
+  {
+    id: 'faq-admin-balances',
+    audience: 'admin',
+    q: "Why can't I see a member's balance?",
+    a: `<p>There is no way to show one. The app does not read balances and the database does not store them.</p>
+<p>You see what was agreed and what happened. What she holds is hers.</p>`,
+  },
+  {
+    id: 'faq-admin-unpaid',
+    audience: 'admin',
+    q: 'Why does everyone show as unpaid?',
+    a: `<p>Because nothing watches the chain yet. Opening a round records what each member owes, and no payment is ever marked received.</p>
+<p>Do not read it as anyone being late. This is being built.</p>`,
   },
 ];
