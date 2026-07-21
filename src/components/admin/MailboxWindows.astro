@@ -128,11 +128,15 @@ const panels = await Promise.all(
 							<span>All</span>
 						</label>
 						<span class="mh__bulkcount"></span>
-						{/* Filing many at once is the point of folders. Doing it one dropdown
-						    at a time is not organizing, it is data entry. */}
-						<select class="mh__btn mh__bulkmove" aria-label="Move selected to folder">
-							<option value="">Move selected to…</option>
-						</select>
+						{/* A button, not a select. The folder names stay out of sight until
+						    asked for — a permanently open list of folders is the clutter the
+						    rail already carries once. */}
+						<div class="mh__movewrap">
+							<button class="mh__btn mh__movebtn" type="button" aria-haspopup="true" aria-expanded="false">
+								Move to ▾
+							</button>
+							<div class="mh__movemenu" hidden role="menu"></div>
+						</div>
 						<button class="mh__btn mh__bulkunread" type="button">Mark unread</button>
 						<button class="mh__btn mh__bulkdel" type="button">Delete selected</button>
 						<button class="mh__btn mh__bulkdestroy" type="button" hidden>Destroy selected</button>

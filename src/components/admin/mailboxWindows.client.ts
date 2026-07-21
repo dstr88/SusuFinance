@@ -738,14 +738,17 @@ document.addEventListener('click', async (e) => {
 // this usable as an actual mail client rather than a demo.
 
 /**
- * Fill the bulk-move folder list for a panel.
+ * Build the Move-to menu for a panel.
  *
- * Rebuilt on every load because the current folder is excluded from its own list, and
- * "move these to where they already are" is a no-op that reads as a broken action.
+ * Rebuilt on every load because the folder currently being viewed is left out of its
+ * own menu — "move these to where they already are" is a no-op that reads as broken.
+ *
+ * Items are created with textContent, never innerHTML: folder names are
+ * operator-supplied text rendered in the admin origin.
  */
-function fillBulkMove(panel: HTMLElement, data: any): void {
-	const sel = q<HTMLSelectElement>(panel, '.mh__bulkmove');
-	if (!sel) return;
+function fillMoveMenu(panel: HTMLElement, data: any): void {
+	const menu = q<HTMLElement>(panel, '.mh__movemenu');
+	if (!menu) return;
 	const current = activeFolder(panel);
 	const folders = ((data.folders ?? []) as Array<{ path: string; specialUse: string | null }>)
 		.filter((f) => f.path !== current);
@@ -754,16 +757,33 @@ function fillBulkMove(panel: HTMLElement, data: any): void {
 		f.path.toUpperCase() === 'INBOX' ? 'Inbox'
 		: f.specialUse === '\\Sent' ? 'Sent'
 		: f.specialUse === '\\Archive' ? 'Archive'
+		: f.specialUse === '\\Junk' ? 'Spam'
+		: f.specialUse === '\\Trash' ? 'Trash'
 		: f.path.split(/[./]/).pop() || f.path;
 
-	sel.innerHTML = '<option value="">Move selected to…</option>';
-	for (const f of folders) {
-		const opt = document.createElement('option');
-		opt.value = f.path;
-		// textContent, not innerHTML: a folder name is operator-supplied text.
-		opt.textContent = label(f);
-		sel.appendChild(opt);
+	menu.innerHTML = '';
+	if (!folders.length) {
+		const hint = document.createElement('div');
+		hint.className = 'mh__movehint';
+		hint.textContent = 'No other folders';
+		menu.appendChild(hint);
+		return;
 	}
+	for (const f of folders) {
+		const item = document.createElement('button');
+		item.type = 'button';
+		item.className = 'mh__moveitem';
+		item.dataset.folder = f.path;
+		item.setAttribute('role', 'menuitem');
+		item.textContent = label(f);
+		menu.appendChild(item);
+	}
+}
+
+/** Close every open move menu. */
+function closeMoveMenus(): void {
+	document.querySelectorAll<HTMLElement>('.mh__movemenu').forEach((m) => { m.hidden = true; });
+	document.querySelectorAll<HTMLElement>('.mh__movebtn').forEach((b) => b.setAttribute('aria-expanded', 'false'));
 }
 
 /**
@@ -970,42 +990,7 @@ async function bulkAct(panel: HTMLElement, action: 'delete' | 'destroy'): Promis
 	}
 }
 
-document.addEventListener('change', async (e) => {
-	const mv = (e.target as Element).closest<HTMLSelectElement>('.mh__bulkmove');
-	if (mv?.value) {
-		const panel = mv.closest<HTMLElement>('.mh')!;
-		const ids = checkedIds(panel);
-		const target = mv.value;
-		mv.value = '';
-		if (!ids.length) { setStatus(panel, 'Nothing selected'); return; }
-
-		setStatus(panel, 'Moving…');
-		try {
-			const res = await fetch('/api/admin/mail/organize', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ mailbox: panel.dataset.mailbox, action: 'move', ids, folder: target }),
-			});
-			const data = await res.json().catch(() => ({}));
-			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-			const senders: string[] = [];
-			for (const id of data.done ?? []) {
-				const row = panel.querySelector<HTMLElement>(`.mhc[data-id="${CSS.escape(String(id))}"]`);
-				if (row?.dataset.from) senders.push(row.dataset.from);
-				row?.remove();
-			}
-			setStatus(panel, (data.failed ?? []).length
-				? `${data.done.length} moved, ${data.failed.length} failed`
-				: `${data.done.length} moved`);
-			offerRule(panel, senders, target);
-			const all = q<HTMLInputElement>(panel, '.mh__bulkall');
-			if (all) all.checked = false;
-			syncBulkBar(panel);
-		} catch (err) {
-			setStatus(panel, err instanceof Error ? err.message : 'Move failed');
-		}
-		return;
-	}
+document.addEventListener('change', (e) => {
 
 	const chk = (e.target as Element).closest<HTMLInputElement>('.mhc__chk');
 	if (chk) { syncBulkBar(chk.closest<HTMLElement>('.mh')!); return; }
@@ -1142,6 +1127,66 @@ document.addEventListener('drop', async (e) => {
 		// how an empty Trash ends up claiming two unread.
 		void refreshCounts(panel);
 		offerRule(panel, senders, folder);
+		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
+		if (all) all.checked = false;
+		syncBulkBar(panel);
+	} catch (err) {
+		setStatus(panel, err instanceof Error ? err.message : 'Move failed');
+	}
+});
+
+// ── Move-to menu ────────────────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+	const btn = (e.target as Element).closest<HTMLButtonElement>('.mh__movebtn');
+	if (!btn) return;
+	const menu = btn.parentElement?.querySelector<HTMLElement>('.mh__movemenu');
+	if (!menu) return;
+	const willOpen = menu.hidden;
+	closeMoveMenus();
+	menu.hidden = !willOpen;
+	btn.setAttribute('aria-expanded', String(willOpen));
+});
+
+// Clicking elsewhere or pressing Escape closes it. A menu that can only be dismissed
+// by choosing something is a trap.
+document.addEventListener('click', (e) => {
+	if (!(e.target as Element).closest('.mh__movewrap')) closeMoveMenus();
+});
+document.addEventListener('keydown', (e) => {
+	if (e.key === 'Escape') closeMoveMenus();
+});
+
+document.addEventListener('click', async (e) => {
+	const item = (e.target as Element).closest<HTMLButtonElement>('.mh__moveitem');
+	if (!item?.dataset.folder) return;
+	const panel = item.closest<HTMLElement>('.mh')!;
+	const target = item.dataset.folder;
+	closeMoveMenus();
+
+	const ids = checkedIds(panel);
+	if (!ids.length) { setStatus(panel, 'Select messages first'); return; }
+
+	setStatus(panel, 'Moving…');
+	try {
+		const res = await fetch('/api/admin/mail/organize', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mailbox: panel.dataset.mailbox, action: 'move', ids, folder: target }),
+		});
+		const data = await res.json().catch(() => ({}));
+		if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+
+		const senders: string[] = [];
+		for (const id of data.done ?? []) {
+			const row = panel.querySelector<HTMLElement>(`.mhc[data-id="${CSS.escape(String(id))}"]`);
+			if (row?.dataset.from) senders.push(row.dataset.from);
+			row?.remove();
+		}
+		setStatus(panel, (data.failed ?? []).length
+			? `${data.done.length} moved, ${data.failed.length} failed`
+			: `${data.done.length} moved`);
+		void refreshCounts(panel);
+		offerRule(panel, senders, target);
 		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
 		if (all) all.checked = false;
 		syncBulkBar(panel);
