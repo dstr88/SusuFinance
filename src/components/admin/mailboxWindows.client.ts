@@ -128,7 +128,11 @@ async function load(panel: HTMLElement) {
 		if (!data.ok) throw new Error(data.error ?? 'Could not load');
 
 		body.dataset.loaded = '1';
-		list.innerHTML = folder === '__drafts__' ? renderDrafts(data) : renderMessages(data, mailbox);
+		// Drafts shows composed drafts AND anything sitting in the IMAP Drafts folder,
+		// so it renders both lists rather than choosing one.
+		list.innerHTML = folder === '__drafts__'
+			? renderDrafts(data) + renderMessages(data, mailbox)
+			: renderMessages(data, mailbox);
 		if (!list.innerHTML) list.innerHTML = '<p class="mh__empty">Nothing here.</p>';
 
 		// Rebuild the Move-to menu for THIS folder: the one being viewed is excluded from
