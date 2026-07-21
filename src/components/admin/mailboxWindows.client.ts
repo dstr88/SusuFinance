@@ -130,6 +130,16 @@ async function load(panel: HTMLElement) {
 		body.dataset.loaded = '1';
 		list.innerHTML = folder === '__drafts__' ? renderDrafts(data) : renderMessages(data, mailbox);
 		if (!list.innerHTML) list.innerHTML = '<p class="mh__empty">Nothing here.</p>';
+
+		// Rebuild the Move-to menu for THIS folder: the one being viewed is excluded from
+		// its own menu, so the list differs per folder. Without this the menu opens empty,
+		// which looks like a broken control rather than a missing call.
+		fillMoveMenu(panel, data);
+
+		// A selection does not survive a re-render — the rows it referred to are gone.
+		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
+		if (all) all.checked = false;
+		syncBulkBar(panel);
 	} catch (err) {
 		list.innerHTML = `<p class="mh__empty">${escapeHtml(err instanceof Error ? err.message : 'Could not load')}</p>`;
 	} finally {
