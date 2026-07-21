@@ -3,8 +3,8 @@
  *         → messages for one window, newest first
  * POST  /api/admin/mail            { mailbox, to, cc?, subject, body, replyToId? }
  *         → compose or reply, sends via SMTP and records the row
- * PATCH /api/admin/mail            { id, read: true }
- *         → mark one inbound message read (our state, not the mail server's)
+ * PATCH /api/admin/mail            { id | ids[], mailbox, read?: boolean }
+ *         → mark messages read (default) or unread; our state, not the server's
  *
  * ── Isolation note ──────────────────────────────────────────────────────────
  * mail_messages carries no tenant_id (see migrations-pg/0026_mail.sql). It is operator
@@ -208,19 +208,31 @@ export const PATCH: APIRoute = async ({ request }) => {
 	try { body = await request.json(); }
 	catch { return json({ ok: false, error: 'Invalid JSON' }, 400); }
 
-	const id = String(body.id ?? '');
-	if (!id) return json({ ok: false, error: 'id is required' }, 400);
+	// One or many. `id` is shorthand for a single-element `ids`, so the same endpoint
+	// serves a row button and a bulk action.
+	const ids = Array.isArray(body.ids)
+		? body.ids.map(String).filter(Boolean)
+		: body.id ? [String(body.id)] : [];
+	if (!ids.length) return json({ ok: false, error: 'Nothing selected' }, 400);
 
 	// Scope the update to mailboxes this admin owns, so an id alone is not enough to
 	// touch someone else's window.
 	const allowed = findMailboxForAdmin(String(body.mailbox ?? ''), who);
 	if (!allowed) return json({ ok: false, error: 'Unknown mailbox' }, 404);
 
+	// Absent means read — that is the overwhelmingly common case and keeps every
+	// existing caller working unchanged.
+	const read = body.read === undefined ? true : Boolean(body.read);
+
+	const placeholders = ids.map(() => '?').join(',');
 	await db.execute({
-		sql: `UPDATE mail_messages SET read_at = now()
-		      WHERE id = ? AND mailbox = ? AND read_at IS NULL`,
-		args: [id, allowed.address],
+		sql: read
+			? `UPDATE mail_messages SET read_at = now()
+			   WHERE mailbox = ? AND id IN (${placeholders}) AND read_at IS NULL`
+			: `UPDATE mail_messages SET read_at = NULL
+			   WHERE mailbox = ? AND id IN (${placeholders})`,
+		args: [allowed.address, ...ids],
 	});
 
-	return json({ ok: true });
+	return json({ ok: true, count: ids.length });
 };

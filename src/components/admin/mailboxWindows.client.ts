@@ -283,7 +283,9 @@ function renderMessages(data: any, mailbox: string): string {
 					${m.send_error ? `<p class="mhc__err">Not sent: ${escapeHtml(m.send_error)}</p>` : ''}
 					<div class="mhc__acts">
 						${data.canSend && !out ? `<button class="mh__btn mhc__reply" type="button" data-id="${escapeHtml(m.id)}">Reply</button>` : ''}
-						${unread ? `<button class="mh__btn mhc__read" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>` : ''}
+						${!out ? (unread
+							? `<button class="mh__btn mhc__read" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark read</button>`
+							: `<button class="mh__btn mhc__unread" type="button" data-id="${escapeHtml(m.id)}" data-mailbox="${escapeHtml(mailbox)}">Mark unread</button>`) : ''}
 						${folderOptions(data, m)}
 						${inTrash(m)
 							? `<button class="mh__btn mhc__destroy" type="button" data-id="${escapeHtml(m.id)}" data-subject="${escapeHtml(m.subject || '(no subject)')}" title="Delete permanently — cannot be undone">Destroy</button>`
@@ -460,6 +462,33 @@ document.addEventListener('click', (e) => {
 			draftId: edit.dataset.draft,
 		});
 		return;
+	}
+});
+
+// Mark unread — the inverse of opening a message, for when it needs to stay on the
+// list as something still to deal with.
+document.addEventListener('click', async (e) => {
+	const btn = (e.target as Element).closest<HTMLButtonElement>('.mhc__unread');
+	if (!btn?.dataset.id) return;
+	const panel = btn.closest<HTMLElement>('.mh')!;
+	const card = btn.closest<HTMLElement>('.mhc');
+	btn.disabled = true;
+	try {
+		const res = await fetch('/api/admin/mail', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ id: btn.dataset.id, mailbox: btn.dataset.mailbox, read: false }),
+		});
+		if (!res.ok) throw new Error(String(res.status));
+		card?.classList.add('mhc--unread');
+		// Collapse it too: leaving an unread message open on screen contradicts the
+		// state that was just asked for.
+		card?.classList.remove('mhc--sel');
+		incrementUnread(panel);
+		btn.remove();
+	} catch {
+		btn.disabled = false;
+		setStatus(panel, 'Could not mark unread');
 	}
 });
 
@@ -805,6 +834,26 @@ function offerRule(panel: HTMLElement, senders: string[], folder: string): void 
  * Adjusted in place rather than re-fetched: the count is one number and a round trip to
  * decrement it would be slower than the click that caused it.
  */
+/** Raise the unread count by one, creating the badge if it had gone away. */
+function incrementUnread(panel: HTMLElement): void {
+	const bump = (host: HTMLElement | null, existing: HTMLElement | null, cls: string) => {
+		if (existing) {
+			existing.textContent = String(Number(existing.textContent?.replace(/\D/g, '') || 0) + 1);
+			return;
+		}
+		if (!host) return;
+		const badge = document.createElement('span');
+		badge.className = cls;
+		badge.textContent = '1';
+		host.appendChild(badge);
+	};
+
+	const bar = q<HTMLElement>(panel, '.mh__bar');
+	bump(bar, q<HTMLElement>(panel, '.mh__badge'), 'mh__badge');
+	const tab = q<HTMLElement>(panel, '.mh__rf--on');
+	bump(tab, tab?.querySelector<HTMLElement>('.mh__rfcount') ?? null, 'mh__rfcount');
+}
+
 function decrementUnread(panel: HTMLElement): void {
 	const bump = (el: HTMLElement | null) => {
 		if (!el) return;
@@ -966,6 +1015,28 @@ document.addEventListener('change', async (e) => {
 	const panel = all.closest<HTMLElement>('.mh')!;
 	panel.querySelectorAll<HTMLInputElement>('.mhc__chk').forEach((c) => { c.checked = all.checked; });
 	syncBulkBar(panel);
+});
+
+document.addEventListener('click', async (e) => {
+	const btn = (e.target as Element).closest<HTMLButtonElement>('.mh__bulkunread');
+	if (!btn) return;
+	const panel = btn.closest<HTMLElement>('.mh')!;
+	const ids = checkedIds(panel);
+	if (!ids.length) { setStatus(panel, 'Nothing selected'); return; }
+
+	setStatus(panel, 'Marking unread…');
+	try {
+		const res = await fetch('/api/admin/mail', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mailbox: panel.dataset.mailbox, ids, read: false }),
+		});
+		if (!res.ok) throw new Error(String(res.status));
+		setStatus(panel, `${ids.length} marked unread`);
+		load(panel);
+	} catch {
+		setStatus(panel, 'Could not mark unread');
+	}
 });
 
 document.addEventListener('click', (e) => {

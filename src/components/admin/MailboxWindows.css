@@ -409,8 +409,17 @@ select.mhc__move {
 }
 .mh__bulklabel { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
 .mh__bulkcount { color: var(--text-secondary, inherit); }
-.mh__bulk .mh__btn { visibility: hidden; }
-.mh__bulk--on .mh__btn { visibility: visible; }
+/* The move control stays visible at all times. Hiding it until something was
+   selected meant the only way to discover "Move to…" was to first guess that
+   checking a box would reveal it — a control nobody finds is a control that does
+   not exist. The destructive ones still wait for a selection, since those have
+   nothing useful to say without one. */
+.mh__bulk .mh__bulkdel,
+.mh__bulk .mh__bulkdestroy,
+.mh__bulk .mh__bulkunread { visibility: hidden; }
+.mh__bulk--on .mh__bulkdel,
+.mh__bulk--on .mh__bulkdestroy,
+.mh__bulk--on .mh__bulkunread { visibility: visible; }
 .mh__bulkdestroy {
 	color: var(--loss, #ef4444);
 	border-color: var(--loss-border, rgba(239,68,68,0.35));
