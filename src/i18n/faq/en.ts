@@ -25,6 +25,19 @@ export const items: FaqItem[] = [
 <p>While the circle is still forming, she can change the order of turns and add or remove people. Once the first round opens, the order is set and nobody can change it, including her.</p>`,
   },
   {
+    id: 'faq-my-link',
+    q: 'I got a link. What do I do?',
+    a: `<p>Open it and sign in. That is what puts you in the circle as yourself, with your name and your place in the order.</p>
+<p>Use an email address or Google account you will still have in a year. That account is how your circle knows you are you, so keep it safe. If you ever lose it, tell your organizer straight away.</p>
+<p>Your link works once and expires after seven days. If it has expired, ask your organizer for a new one.</p>`,
+  },
+  {
+    id: 'faq-how-i-pay',
+    q: 'How do I actually pay?',
+    a: `<p>From your wallet, the same way you would send USDC to anyone. SusuFinance does not take the payment and cannot take it for you. On the day, you send your share to whoever's turn it is.</p>
+<p>The app shows you how much, when it is due, and which address this round pays to. Check that address in the app before you send, every time. It is frozen when the round opens so it cannot change underneath you.</p>`,
+  },
+  {
     id: 'faq-holds-money',
     q: 'Does SusuFinance hold our money?',
     a: `<p>No. SusuFinance runs the administration of the circle, not the money. There is no pot here. When it is your turn, the others send USDC directly to your wallet.</p>

@@ -25,6 +25,19 @@ export const items: FaqItem[] = [
 <p>Mientras el círculo se está formando, ella puede cambiar el orden de los turnos y añadir o quitar personas. En cuanto se abre la primera ronda, el orden queda fijado y nadie puede cambiarlo, tampoco ella.</p>`,
   },
   {
+    id: 'faq-my-link',
+    q: 'Recibí un enlace. ¿Qué hago?',
+    a: `<p>Ábrelo e inicia sesión. Eso es lo que te coloca en el círculo como tú misma, con tu nombre y tu lugar en el orden.</p>
+<p>Usa un correo o una cuenta de Google que sigas teniendo dentro de un año. Esa cuenta es como tu círculo sabe que eres tú, así que consérvala. Si alguna vez la pierdes, avisa enseguida a tu organizadora.</p>
+<p>Tu enlace funciona una sola vez y caduca a los siete días. Si ya caducó, pídele otro a tu organizadora.</p>`,
+  },
+  {
+    id: 'faq-how-i-pay',
+    q: '¿Cómo pago exactamente?',
+    a: `<p>Desde tu billetera, igual que enviarías USDC a cualquier persona. SusuFinance no cobra el pago ni puede hacerlo por ti. Ese día, envías tu parte a quien le toque el turno.</p>
+<p>La aplicación te muestra cuánto, cuándo vence y a qué dirección paga esta ronda. Revisa esa dirección en la aplicación antes de enviar, siempre. Queda congelada al abrirse la ronda, así que no puede cambiar a tus espaldas.</p>`,
+  },
+  {
     id: 'faq-holds-money',
     q: '¿SusuFinance guarda nuestro dinero?',
     a: `<p>No. SusuFinance lleva la administración del círculo, no el dinero. Aquí no hay un bote común. Cuando llega tu turno, las demás envían los USDC directamente a tu billetera.</p>

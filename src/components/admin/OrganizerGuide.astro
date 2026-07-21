@@ -1,0 +1,104 @@
+---
+/**
+ * OrganizerGuide.astro — how to run a circle, on the page where you run it.
+ *
+ * English only, matching the rest of /admin. The member-facing FAQ is trilingual
+ * because members read it; this is the operator's own screen.
+ *
+ * Written against what the code actually does, including two steps it does NOT yet
+ * do. A guide that tells someone to click a button that is not there teaches them to
+ * distrust the guide.
+ */
+import './OrganizerGuide.css';
+---
+
+<section class="og">
+  <details class="og__wrap">
+    <summary class="og__summary">
+      <span class="og__chev" aria-hidden="true">▸</span>
+      <span class="og__title">Running a circle</span>
+      <span class="og__sub">setup order, and what is not built yet</span>
+    </summary>
+
+    <div class="og__body">
+      <p class="og__lede">
+        Order matters here. A circle can only be arranged while it is <em>forming</em> —
+        once the first round opens, the roster and the turn order are fixed for everyone,
+        including you.
+      </p>
+
+      <ol class="og__steps">
+        <li>
+          <strong>Create the circle.</strong> Name it, set the amount each person puts in
+          and how often. It starts as <em>forming</em>.
+        </li>
+        <li>
+          <strong>Put people in it.</strong> Drag them from “Waiting to be placed” onto the
+          tin, on the Circles page. Anyone who has signed up but is not in a circle waits
+          there.
+        </li>
+        <li>
+          <strong>Set the turn order.</strong> Drag the cards inside the tin. This is the
+          order the group agreed, and it is the last chance to change it.
+        </li>
+        <li>
+          <strong>Give each person a payout wallet.</strong> That is where her turn gets
+          paid. You can set it for her, or she can set her own once she has signed in.
+        </li>
+        <li>
+          <strong>Get each wallet proven.</strong> She sends a small amount from the wallet
+          to itself; that proves she controls it. <strong>Two weeks from setting an
+          address</strong> — after that her turn will not open until it is proven. Changing
+          a wallet restarts the two weeks.
+        </li>
+        <li>
+          <strong>Send each person her link.</strong> Single use, expires in seven days. It
+          binds her login to her place in the circle, so she arrives as herself.
+        </li>
+        <li>
+          <strong>Open round one.</strong> This ends forming. The roster locks, the turn
+          order freezes, this round’s payout address is snapshotted so it cannot be swapped
+          mid-round, and everyone except the recipient gets a payment due.
+        </li>
+      </ol>
+
+      <h3 class="og__h3">Add a second organizer on day one</h3>
+      <p>
+        Only an owner or admin can open a round. If you are unavailable, the circle stalls —
+        nobody’s money is stuck, because it was never pooled, but the rounds stop advancing
+        until someone with access opens them. Two people who can run it is the difference
+        between a pause and a dead circle.
+      </p>
+
+      <h3 class="og__h3">What you cannot do, on purpose</h3>
+      <ul class="og__list">
+        <li>
+          <strong>Move or remove anyone once a circle is running.</strong> Adding is an
+          admission vote, removing is an expulsion vote. You can propose; the group decides.
+        </li>
+        <li>
+          <strong>See anyone’s wallet balance.</strong> There is no code path to show one.
+          You see what was agreed and what happened, never what she holds.
+        </li>
+        <li>
+          <strong>Rank or score anyone.</strong> The app shows facts, never a rating.
+        </li>
+      </ul>
+
+      <h3 class="og__h3">Not built yet — plan around these</h3>
+      <ul class="og__list og__list--warn">
+        <li>
+          <strong>There is no button to add a member.</strong> Member rows come from the
+          join flow, where someone names an existing circle and a sponsor. For a brand new
+          group with no circle yet, there is currently no way to create them from this page.
+        </li>
+        <li>
+          <strong>Payments are not observed.</strong> Opening a round creates a payment due
+          for each member, and nothing marks them paid — no chain watcher exists yet. Until
+          it does, a circle can run correctly and still show everyone as unpaid. Do not
+          read that as anyone being late.
+        </li>
+      </ul>
+    </div>
+  </details>
+</section>

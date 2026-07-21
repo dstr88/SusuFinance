@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { getGA4Summary } from '@/lib/ga4';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
 import Notepads from '@/components/admin/Notepads.astro';
+import OrganizerGuide from '@/components/admin/OrganizerGuide.astro';
 import TrafficChart from '@/components/admin/TrafficChart.astro';
 
 // Guard — redirect non-admin users rather than returning a raw 4xx,
@@ -250,6 +251,9 @@ const [
 
 	<!-- ── Mail hero ────────────────────────────────────────────── -->
 	<MailboxWindows adminEmail={adminEmail} adminUserId={adminUserId} />
+
+	<!-- ── How to run a circle ──────────────────────────────────── -->
+	<OrganizerGuide />
 
 	<!-- ── Notepads ─────────────────────────────────────────────── -->
 	<Notepads />

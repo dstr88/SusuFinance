@@ -25,6 +25,19 @@ export const items: FaqItem[] = [
 <p>Tant que le cercle se forme, elle peut changer l'ordre des tours et ajouter ou retirer des personnes. Dès que le premier tour s'ouvre, l'ordre est fixé et personne ne peut le changer, elle non plus.</p>`,
   },
   {
+    id: 'faq-my-link',
+    q: "J'ai reçu un lien. Que dois-je faire ?",
+    a: `<p>Ouvrez-le et connectez-vous. C'est ce qui vous place dans le cercle en tant que vous-même, avec votre nom et votre place dans l'ordre.</p>
+<p>Utilisez une adresse e-mail ou un compte Google que vous aurez encore dans un an. Ce compte est ce qui permet à votre cercle de savoir que c'est bien vous, alors gardez-y accès. Si vous le perdez un jour, prévenez tout de suite votre organisatrice.</p>
+<p>Votre lien ne fonctionne qu'une fois et expire au bout de sept jours. S'il a expiré, demandez-en un nouveau à votre organisatrice.</p>`,
+  },
+  {
+    id: 'faq-how-i-pay',
+    q: 'Comment est-ce que je paie concrètement ?',
+    a: `<p>Depuis votre portefeuille, exactement comme vous enverriez des USDC à quelqu'un. SusuFinance ne prend pas le paiement et ne peut pas le faire à votre place. Le jour venu, vous envoyez votre part à celle dont c'est le tour.</p>
+<p>L'application vous indique le montant, la date et l'adresse à laquelle ce tour est versé. Vérifiez cette adresse dans l'application avant chaque envoi. Elle est figée à l'ouverture du tour, elle ne peut donc pas changer à votre insu.</p>`,
+  },
+  {
     id: 'faq-holds-money',
     q: 'SusuFinance détient-il notre argent ?',
     a: `<p>Non. SusuFinance gère l'administration du cercle, pas l'argent. Il n'y a pas de cagnotte ici. Quand c'est votre tour, les autres envoient les USDC directement dans votre portefeuille.</p>

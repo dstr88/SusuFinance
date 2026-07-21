@@ -1,0 +1,49 @@
+/* OrganizerGuide — presentation only. Collapsed by default: it is a reference, not
+   something to read past every day. */
+
+.og { width: 80%; margin: 0 auto 1.5rem; }
+@media (max-width: 900px) { .og { width: 100%; } }
+
+.og__wrap {
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+  border-radius: 10px;
+  background: var(--surface-card, rgba(255,255,255,0.02));
+}
+.og__summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  font-size: 15px;
+}
+.og__summary::-webkit-details-marker { display: none; }
+.og__chev { font-size: 12px; opacity: 0.5; transition: transform 0.15s; }
+.og__wrap[open] .og__chev { transform: rotate(90deg); }
+.og__title { font-weight: 600; }
+.og__sub { font-size: 13px; color: var(--text-muted); }
+
+.og__body {
+  padding: 0 1rem 1rem;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary, inherit);
+}
+.og__lede { margin: 0 0 0.9rem; }
+.og__h3 {
+  margin: 1.2rem 0 0.4rem;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, inherit);
+}
+.og__steps { margin: 0; padding-left: 1.2rem; }
+.og__steps li { margin-bottom: 0.5rem; }
+.og__list { margin: 0; padding-left: 1.2rem; }
+.og__list li { margin-bottom: 0.4rem; }
+
+/* The honest section. Marked so it reads as a caveat rather than an instruction —
+   these are things the guide is telling you NOT to expect. */
+.og__list--warn li { color: var(--loss, #ef4444); }
+.og__list--warn strong { color: var(--loss, #ef4444); }
