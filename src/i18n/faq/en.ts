@@ -29,33 +29,4 @@ export const items: FaqItem[] = [
     a: `<p>No. SusuFinance runs the administration of the circle, not the money. Your USDC stays in your own wallet, which you control. There is no pot here. When it is your turn, the others send USDC directly to your wallet.</p>
 <p>The app records what the circle agreed and what happened, so everyone can see that everyone paid. It never holds funds, and nobody else in your circle, including the organizer, can see your balance. There is nothing here for anyone to lose or run off with.</p>`,
   },
-  {
-    id: 'faq-payout-wallet',
-    q: 'What is a payout wallet, and why does mine need checking?',
-    a: `<p>It is where your turn gets paid in USDC. Before it is used, you prove the wallet is yours by sending a small amount from it to itself. That proves you control it without giving anyone your keys.</p>
-<p>You have two weeks from setting a wallet to prove it. Until then you will see a reminder. After two weeks, your turn cannot open until it is proven. That is deliberate: your turn is the moment money moves, and it should go to an address someone confirmed is yours.</p>
-<p>If you change your wallet later, the two weeks start again, because it is a different address nobody has checked.</p>`,
-  },
-  {
-    id: 'faq-move-me',
-    q: 'Can the organizer move me into a different circle, or out of one?',
-    a: `<p>Only before it starts. Once the first round opens, she cannot move you, remove you, or change the order.</p>
-<p>Adding someone to a running circle is a vote, and so is removing someone. She can propose. The group decides.</p>`,
-  },
-  {
-    id: 'faq-who-sees',
-    q: 'Who can see what I have paid?',
-    a: `<p>The people in your circle. That is the point of a susu: everyone can see that everyone paid.</p>
-<p>What nobody sees, including the organizer, is your wallet balance.</p>`,
-  },
-  {
-    id: 'faq-scores',
-    q: 'Does the app score me or rank us?',
-    a: `<p>No. It shows facts, like whether a payment came on time. It never turns those into a score, a rating, a tier, or a leaderboard. Nobody is ranked against anybody.</p>`,
-  },
-  {
-    id: 'faq-stops-paying',
-    q: 'What if someone stops paying?',
-    a: `<p>You will see it, because the circle shows what happened. What to do about it is the group's decision, not the app's. It will not chase, penalize, or report anyone.</p>`,
-  },
 ];

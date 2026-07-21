@@ -29,33 +29,4 @@ export const items: FaqItem[] = [
     a: `<p>Non. SusuFinance gère l'administration du cercle, pas l'argent. Vos USDC restent dans votre propre portefeuille, que vous contrôlez. Il n'y a pas de cagnotte ici. Quand c'est votre tour, les autres envoient les USDC directement dans votre portefeuille.</p>
 <p>L'application enregistre ce que le cercle a convenu et ce qui s'est passé, pour que chacune voie que chacune a payé. Elle ne détient jamais de fonds, et personne d'autre dans votre cercle, y compris l'organisatrice, ne peut voir votre solde. Il n'y a rien ici que quelqu'un puisse perdre ou emporter.</p>`,
   },
-  {
-    id: 'faq-payout-wallet',
-    q: "Qu'est-ce qu'un portefeuille de versement, et pourquoi doit-il être vérifié ?",
-    a: `<p>C'est là que votre tour vous est versé en USDC. Avant qu'il soit utilisé, vous prouvez que le portefeuille est le vôtre en vous envoyant un petit montant à vous-même. Cela prouve que vous le contrôlez sans donner vos clés à personne.</p>
-<p>Vous avez deux semaines après avoir indiqué un portefeuille pour le prouver. D'ici là, vous verrez un rappel. Passé deux semaines, votre tour ne peut pas s'ouvrir tant que ce n'est pas prouvé. C'est voulu : votre tour est le moment où l'argent bouge, et il doit aller vers une adresse dont quelqu'un a confirmé qu'elle est la vôtre.</p>
-<p>Si vous changez de portefeuille plus tard, les deux semaines recommencent, car c'est une autre adresse que personne n'a vérifiée.</p>`,
-  },
-  {
-    id: 'faq-move-me',
-    q: "L'organisatrice peut-elle me déplacer dans un autre cercle, ou m'en retirer ?",
-    a: `<p>Seulement avant le début. Dès que le premier tour s'ouvre, elle ne peut plus vous déplacer, vous retirer, ni changer l'ordre.</p>
-<p>Ajouter quelqu'un à un cercle en cours est un vote, et en retirer quelqu'un aussi. Elle peut proposer. C'est le groupe qui décide.</p>`,
-  },
-  {
-    id: 'faq-who-sees',
-    q: "Qui peut voir ce que j'ai payé ?",
-    a: `<p>Les personnes de votre cercle. C'est tout l'intérêt d'un susu : chacune voit que chacune a payé.</p>
-<p>Ce que personne ne voit, y compris l'organisatrice, c'est le solde de votre portefeuille.</p>`,
-  },
-  {
-    id: 'faq-scores',
-    q: "L'application me note-t-elle ou nous classe-t-elle ?",
-    a: `<p>Non. Elle montre des faits, comme le fait qu'un paiement soit arrivé à temps. Elle n'en fait jamais une note, un score, un niveau ou un classement. Personne n'est classée face à une autre.</p>`,
-  },
-  {
-    id: 'faq-stops-paying',
-    q: "Que se passe-t-il si quelqu'un arrête de payer ?",
-    a: `<p>Vous le verrez, car le cercle montre ce qui s'est passé. Ce qu'il faut faire est la décision du groupe, pas celle de l'application. Elle ne relance personne, ne sanctionne personne et ne signale personne.</p>`,
-  },
 ];
