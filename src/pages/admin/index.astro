@@ -3,6 +3,7 @@ import { requireAdminSession } from '@/lib/adminGuard';
 import { db } from '@/lib/db';
 import { getGA4Summary } from '@/lib/ga4';
 import MailboxWindows from '@/components/admin/MailboxWindows.astro';
+import PoolAlerts from '@/components/admin/PoolAlerts.astro';
 import Notepads from '@/components/admin/Notepads.astro';
 import OrganizerGuide from '@/components/admin/OrganizerGuide.astro';
 import Faq from '@/components/faq.astro';
@@ -249,6 +250,9 @@ const [
 </div>
 
 <div class="page">
+
+	<!-- ── Pooling findings — renders only when there are any ───── -->
+	<PoolAlerts />
 
 	<!-- ── Mail hero ────────────────────────────────────────────── -->
 	<MailboxWindows adminEmail={adminEmail} adminUserId={adminUserId} />

@@ -40,6 +40,29 @@ contribute in her own round; nine pay, and the total is 225.
 **What would break it:** any column, contract, or account that holds more than one
 member's money at once.
 
+### Holding it upstream
+
+The guarantee above covers this codebase. It cannot cover a wallet provider or a ramp
+partner, who could pool without anything here noticing — the only symptom would be
+contributions quietly failing to be observed, which reads as "nobody paid" rather than
+"someone is holding the money". Asking a partner to promise not to is not accountability.
+
+So the condition is monitored instead. A daily job reads the chain and looks for the two
+shapes a pool makes:
+
+- **A shared address** — several members recorded against the same one. That is what a
+  custodian handing many users one deposit address looks like from outside.
+- **A common destination** — one address collecting from several members while being
+  nobody's payout address. In a working circle a member pays the round's recipient
+  directly, so a shared sink is a collector.
+
+Findings surface on the operator's own screen and require a written explanation to
+dismiss. This is a check on the *shape of the money*, never on who anyone is, so it does
+not touch the attribution line below.
+
+**What would break it:** turning the check off, or letting findings be dismissed without
+a reason.
+
 ---
 
 ## No keys

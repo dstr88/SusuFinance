@@ -1,0 +1,32 @@
+# Checks the chain for signs that member funds are being pooled upstream.
+#
+# Daily, not hourly: pooling is a structural condition, not an event. It does not appear
+# and vanish between breakfast and lunch, and every run costs Etherscan quota shared with
+# observe-payments, which has the more time-sensitive job.
+#
+# Runs from the repository's DEFAULT branch. curl uses --fail so an HTTP error turns the
+# run red instead of exiting 0 while nothing was checked.
+name: pool-watch
+
+on:
+  schedule:
+    - cron: '41 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pool watch
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "CRON_SECRET is not set as a repository secret"; exit 1
+          fi
+          BASE="${APP_URL:-https://susufinance.com}"
+          curl -sS --fail --max-time 600 \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${BASE}/api/cron/pool-watch"

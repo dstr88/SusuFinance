@@ -1,0 +1,94 @@
+---
+/**
+ * PoolAlerts.astro — findings from the pooling detector, on the operator's own screen.
+ *
+ * Renders NOTHING when there is nothing to say. A panel that shows "0 alerts ✓" every
+ * day is a panel people stop reading, and this is the one thing that must be read the
+ * day it appears. Silence here means the last check found nothing.
+ *
+ * Not expanded from a summary, not behind a details toggle, not below the fold — a
+ * pooling signal is the whole "no pot" guarantee failing upstream, so it sits above
+ * everything else on the page.
+ */
+import './PoolAlerts.css';
+import { allOpenPoolAlerts } from '@/lib/circles/poolWatch';
+
+let alerts: Record<string, any>[] = [];
+try {
+	alerts = await allOpenPoolAlerts();
+} catch {
+	// Table missing (migration not run) reads as "no findings", not as a broken page.
+	alerts = [];
+}
+
+const label = (kind: string) =>
+	kind === 'shared_address' ? 'Shared address' : 'Common destination';
+const when = (v: unknown) => (v ? new Date(String(v)).toISOString().slice(0, 10) : '');
+---
+
+{alerts.length > 0 && (
+  <section class="pa">
+    <div class="pa__head">
+      <span class="pa__dot" aria-hidden="true"></span>
+      <span class="pa__title">Pooling check — {alerts.length} finding{alerts.length === 1 ? '' : 's'}</span>
+      <span class="pa__sub">money is not routing member-to-member the way it should</span>
+    </div>
+
+    <p class="pa__lede">
+      Each of these is a fact read off the chain, not an accusation. It needs an
+      explanation from whoever runs the wallets. If you get one you accept, mark it
+      explained and it will not come back as new.
+    </p>
+
+    <ul class="pa__list">
+      {alerts.map((a) => (
+        <li class="pa__item" data-kind={String(a.kind)} data-address={String(a.address)} data-tenant={String(a.tenant_id)}>
+          <div class="pa__row">
+            <span class="pa__kind">{label(String(a.kind))}</span>
+            <code class="pa__addr">{String(a.address)}</code>
+            <span class="pa__count">{Number(a.member_count)} members</span>
+          </div>
+          <div class="pa__detail">{String(a.detail)}</div>
+          <div class="pa__meta">
+            {a.tenant_name ? String(a.tenant_name) : String(a.tenant_id).slice(0, 8)}
+            · first seen {when(a.first_seen)} · last seen {when(a.last_seen)}
+            <button class="pa__resolve" type="button">Mark explained</button>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<script>
+	// Resolving asks for the explanation and stores it. An alert dismissed with no reason
+	// is just a red dot someone made go away; the note is the point of the button.
+	document.querySelectorAll('.pa__resolve').forEach((btn) => {
+		btn.addEventListener('click', async () => {
+			const item = (btn as HTMLElement).closest('.pa__item') as HTMLElement | null;
+			if (!item) return;
+			const note = window.prompt('What is the explanation? (kept with the finding)');
+			if (note === null) return;
+			if (!note.trim()) {
+				window.alert('An explanation is required to mark this explained.');
+				return;
+			}
+			(btn as HTMLButtonElement).disabled = true;
+			const res = await fetch('/api/admin/pool-alerts', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					tenantId: item.dataset.tenant,
+					kind: item.dataset.kind,
+					address: item.dataset.address,
+					note: note.trim(),
+				}),
+			});
+			if (res.ok) item.remove();
+			else {
+				(btn as HTMLButtonElement).disabled = false;
+				window.alert('Could not save that.');
+			}
+		});
+	});
+</script>
