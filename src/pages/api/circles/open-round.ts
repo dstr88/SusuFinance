@@ -67,7 +67,10 @@ export const POST: APIRoute = async ({ request }) => {
 
 		// Her payout wallet, and who she is (for the message).
 		const mRes = await db.execute({
-			sql: `SELECT payout_address, display_name FROM members WHERE tenant_id = ? AND id = ? LIMIT 1`,
+			sql: `SELECT payout_address, display_name, payout_address_set_at,
+			             (payout_address_set_at IS NOT NULL
+			              AND payout_address_set_at > now() - INTERVAL '14 days') AS in_grace
+			      FROM members WHERE tenant_id = ? AND id = ? LIMIT 1`,
 			args: [tenantId, recipientId],
 		});
 		if (!mRes.rows.length) return json({ ok: false, error: 'no_recipient' }, 409);
@@ -84,7 +87,36 @@ export const POST: APIRoute = async ({ request }) => {
 			       WHERE tenant_id = ? AND id = ?`,
 			args: [tenantId, recipientId],
 		});
-		if (!verified) return json({ ok: false, error: 'recipient_not_verified', recipientName }, 409);
+		// ── Two weeks to prove it, then the round will not open ──────────────────
+		//
+		// A hard block from day one is correct about the destination and wrong about the
+		// schedule: a woman who set her wallet yesterday and has not yet done the
+		// self-send would stop the whole circle's turn. So an unproven address warns for
+		// fourteen days from when it was set, and blocks after.
+		//
+		// The grace runs from the address, not from her: setting a NEW address starts a
+		// fresh fourteen days, because it is a different address nobody has proven.
+		//
+		// Fail-closed still holds where it matters. checkAlmstinsVerify returning false
+		// covers both "not proven" and "Verify unreachable", and once the grace has run
+		// out neither one opens a round.
+		const inGrace = Boolean((mRes.rows[0] as any).in_grace);
+		if (!verified && !inGrace) {
+			return json({ ok: false, error: 'recipient_not_verified', recipientName }, 409);
+		}
+
+		// Warned, not blocked. The caller is told plainly so the operator can chase her
+		// before the deadline rather than discovering it on the day her turn will not open.
+		const warning = !verified
+			? {
+				code: 'recipient_unverified_grace' as const,
+				recipientName,
+				daysLeft: Math.max(0, Math.ceil(
+					(new Date((mRes.rows[0] as any).payout_address_set_at).getTime()
+						+ 14 * 86_400_000 - Date.now()) / 86_400_000,
+				)),
+			}
+			: null;
 
 		// ── Open it (freeze the snapshot = anti-swap), then complete the prior open ──
 		const opened = await db.execute({
@@ -124,7 +156,7 @@ export const POST: APIRoute = async ({ request }) => {
 			args: [tenantId, contractId, JSON.stringify({ round: roundIndex, recipient_member_id: recipientId })],
 		});
 
-		return json({ ok: true, opened: { roundIndex, recipientName } });
+		return json({ ok: true, warning, opened: { roundIndex, recipientName } });
 	} catch (err) {
 		console.error('[api/circles/open-round] failed', err);
 		return json({ ok: false, error: 'open_failed' }, 500);

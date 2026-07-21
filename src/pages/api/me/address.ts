@@ -54,7 +54,8 @@ export const POST: APIRoute = async ({ request }) => {
 		// clash means the address already belongs to someone else in the programme.
 		const res = await db.execute({
 			sql: `UPDATE members
-			         SET wallet_address = ?, payout_address = ?, address_verified_at = NULL, updated_at = now()
+			         SET wallet_address = ?, payout_address = ?, address_verified_at = NULL,
+			       payout_address_set_at = now(), updated_at = now()
 			       WHERE tenant_id = ? AND user_id = ?
 			       RETURNING id`,
 			args: [address, address, tenantId, userId],
