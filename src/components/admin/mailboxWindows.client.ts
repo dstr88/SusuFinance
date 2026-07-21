@@ -321,8 +321,46 @@ document.addEventListener('click', (e) => {
 	if (!row || (e.target as Element).closest('.mh__btn, .mhc__att, .mhc__chk')) return;
 	const wasOpen = row.classList.contains('mhc--sel');
 	row.closest('.mh__list')?.querySelectorAll('.mhc--sel').forEach((r) => r.classList.remove('mhc--sel'));
-	if (!wasOpen) row.classList.add('mhc--sel');
+	if (!wasOpen) {
+		row.classList.add('mhc--sel');
+		// Opening a message marks it read, because that is what opening a message means.
+		// Requiring a separate "Mark read" click made the panel disagree with the person
+		// using it: they had plainly read it, and the count still said otherwise.
+		void markRead(row);
+	}
 });
+
+/**
+ * Mark one message read, in the database and in the panel.
+ *
+ * No-ops when the row is already read, so re-opening a message costs nothing and
+ * cannot drive the badge below the truth.
+ */
+async function markRead(row: HTMLElement): Promise<void> {
+	if (!row.classList.contains('mhc--unread')) return;
+	const panel = row.closest<HTMLElement>('.mh')!;
+	const id = row.dataset.id;
+	if (!id) return;
+
+	// Cleared first so a second click cannot fire a second request while this one is
+	// still in flight.
+	row.classList.remove('mhc--unread');
+	row.querySelector('.mhc__read')?.remove();
+	decrementUnread(panel);
+
+	try {
+		const res = await fetch('/api/admin/mail', {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ id, mailbox: panel.dataset.mailbox }),
+		});
+		if (!res.ok) throw new Error(String(res.status));
+	} catch {
+		// Put it back rather than showing read state the server does not agree with.
+		row.classList.add('mhc--unread');
+		setStatus(panel, 'Could not mark read');
+	}
+}
 
 // ── Compose / reply / drafts ──────────────────────────────────────────────
 /**
@@ -781,6 +819,47 @@ function decrementUnread(panel: HTMLElement): void {
 	if (tab) bump(tab.querySelector<HTMLElement>('.mh__rfcount'));
 }
 
+/**
+ * Re-read the unread counts for every folder in this panel.
+ *
+ * Called after anything that moves mail between folders. The badges are server-rendered
+ * once; without this they keep describing the arrangement the page loaded with.
+ */
+async function refreshCounts(panel: HTMLElement): Promise<void> {
+	try {
+		const res = await fetch(`/api/admin/mail?mailbox=${encodeURIComponent(panel.dataset.mailbox!)}&limit=1`);
+		const data = await res.json();
+		if (!data.ok) return;
+
+		const bar = q<HTMLElement>(panel, '.mh__badge');
+		if (bar) {
+			if (!data.unread) bar.remove();
+			else bar.textContent = String(data.unread);
+		}
+
+		// Per-folder counts are not in the list response, so ask each tab for its own.
+		for (const tab of Array.from(panel.querySelectorAll<HTMLElement>('.mh__rf'))) {
+			const folder = tab.dataset.folder;
+			if (!folder || folder === '__drafts__') continue;
+			const r = await fetch(`/api/admin/mail?mailbox=${encodeURIComponent(panel.dataset.mailbox!)}&folder=${encodeURIComponent(folder)}&limit=1`);
+			const d = await r.json();
+			if (!d.ok) continue;
+
+			let badge = tab.querySelector<HTMLElement>('.mh__rfcount');
+			const n = Number(d.folderUnread ?? 0);
+			if (!n) { badge?.remove(); continue; }
+			if (!badge) {
+				badge = document.createElement('span');
+				badge.className = 'mh__rfcount';
+				tab.appendChild(badge);
+			}
+			badge.textContent = String(n);
+		}
+	} catch {
+		// Stale counts are a smaller problem than a panel that errors while tidying up.
+	}
+}
+
 function checkedIds(panel: HTMLElement): string[] {
 	return Array.from(panel.querySelectorAll<HTMLInputElement>('.mhc__chk:checked'))
 		.map((c) => c.dataset.id!)
@@ -987,6 +1066,10 @@ document.addEventListener('drop', async (e) => {
 		setStatus(panel, (data.failed ?? []).length
 			? `${data.done.length} moved, ${data.failed.length} failed`
 			: `${data.done.length} moved`);
+		// The rail counts came from the server at page load, so after moving mail between
+		// folders they describe where things WERE. A count that outlives its messages is
+		// how an empty Trash ends up claiming two unread.
+		void refreshCounts(panel);
 		offerRule(panel, senders, folder);
 		const all = q<HTMLInputElement>(panel, '.mh__bulkall');
 		if (all) all.checked = false;

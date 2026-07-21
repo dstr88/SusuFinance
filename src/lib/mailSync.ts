@@ -329,15 +329,20 @@ async function pollFolder(
 
 			const spam = readSpamVerdict(parsed.headers as Map<string, unknown> | undefined);
 
-			// Converge with the placeholder row written at send time.
+			// Converge with any local row for this message that has no UID.
 			//
-			// sendFromMailbox records a row immediately so a sent message appears in the
-			// panel at once rather than after the next poll. That row has no UID. When the
-			// server's own copy arrives here it carries the same Message-ID, so without
-			// this the panel would show the message twice — once from us, once from Sent.
-			// Drop the placeholder and let the server copy stand, since it is the one with
-			// a UID and therefore the one that dedupes correctly on later polls.
-			if (direction === 'out' && parsed.messageId) {
+			// Two things create one: sendFromMailbox records a sent message immediately so
+			// it appears without waiting for a poll, and moveMessage re-files a row and
+			// clears its UID because UIDs are per-folder and the new one is not known yet.
+			// In both cases the server's own copy arrives here carrying the same
+			// Message-ID, so without this the panel shows the message twice.
+			//
+			// This was previously scoped to direction='out', which covered sending and
+			// missed moving entirely — so every message moved between folders quietly
+			// became two rows, and an unread count could outlive the messages it counted.
+			// The UID-bearing copy is the one to keep: it is the one later polls dedupe
+			// against.
+			if (parsed.messageId) {
 				await db.execute({
 					sql: `DELETE FROM mail_messages
 					      WHERE mailbox = ? AND message_id = ? AND uid IS NULL`,

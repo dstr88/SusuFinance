@@ -101,6 +101,14 @@ export const GET: APIRoute = async ({ request }) => {
 		args: [box.address],
 	});
 
+	// Unread within the requested folder, so the rail badge can be corrected without a
+	// page reload after mail moves between folders.
+	const folderUnread = await db.execute({
+		sql: `SELECT COUNT(*) AS n FROM mail_messages
+		      WHERE mailbox = ? AND folder = ? AND direction = 'in' AND read_at IS NULL`,
+		args: [box.address, folder],
+	});
+
 	// Attachments for exactly the messages being returned. Scoped by mailbox as well as
 	// message id so the join can never reach a file from a mailbox this admin can't see.
 	const atts = await db.execute({
@@ -148,6 +156,7 @@ export const GET: APIRoute = async ({ request }) => {
 		folder,
 		folders,
 		unread: Number((unread.rows[0] as Record<string, unknown>)?.n ?? 0),
+		folderUnread: Number((folderUnread.rows[0] as Record<string, unknown>)?.n ?? 0),
 		messages,
 	});
 };
