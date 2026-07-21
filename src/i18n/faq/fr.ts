@@ -45,6 +45,52 @@ export const items: FaqItem[] = [
 <p>L'application enregistre ce que le cercle a convenu et ce qui s'est passé, pour que chacune voie que chacune a payé. Personne d'autre dans votre cercle, y compris l'organisatrice, ne peut voir votre solde.</p>`,
   },
   {
+    id: 'faq-my-screen',
+    q: 'Où puis-je voir mon cercle ?',
+    a: `<p>Connectez-vous et ouvrez votre panneau de compte, en haut à droite de la page. Tout ce qui vous concerne s'y trouve.</p>
+<p>Pour chaque cercle où vous êtes, vous verrez votre carte, tout vote qui vous attend, et un espace pour soumettre une question au groupe. Vous y verrez aussi votre portefeuille de versement, s'il a été prouvé, et la liste de ce qui est entré et sorti.</p>
+<p>Vous ne verrez le solde de personne, et personne ne voit le vôtre. Ce que vous voyez des autres, c'est ce qu'elles ont payé et quand : exactement ce qu'elles voient de vous.</p>`,
+  },
+  {
+    id: 'faq-my-wallet-setup',
+    q: "Comment configurer mon portefeuille et prouver qu'il est à moi ?",
+    a: `<p>Ouvrez votre panneau de compte. Votre portefeuille de versement est en haut ; si votre organisatrice en a indiqué un pour vous, il y est déjà et vous pouvez le changer.</p>
+<p>En dessous, un bouton permet de le vérifier. Le prouver consiste à vous envoyer un petit montant depuis ce portefeuille vers lui-même, puis à appuyer sur vérifier. Rien ne quitte votre portefeuille à part ce petit test, et aucune clé ne sort jamais de vos mains.</p>
+<p>Deux choses à savoir. Vous avez <strong>deux semaines</strong> après avoir indiqué un portefeuille pour le prouver, sinon votre tour ne pourra pas s'ouvrir. Et si vous changez de portefeuille plus tard, les deux semaines recommencent, car c'est une nouvelle adresse que personne n'a vérifiée.</p>`,
+  },
+  {
+    id: 'faq-my-card',
+    q: 'Que signifient les marques sur ma carte ?',
+    a: `<p>Votre carte, c'est votre historique dans ce cercle. La rangée de marques correspond au cycle en cours, une marque par tour, dans l'ordre :</p>
+<ul>
+<li><strong>★</strong> payé à temps, ou en avance</li>
+<li><strong>☆</strong> payé, mais en retard, ou régularisé ensuite. Cela reste une étoile.</li>
+<li><strong>◆</strong> votre tour. Le cercle vous a payée, vous ne deviez rien.</li>
+<li><strong>○</strong> délai de grâce dépassé et toujours impayé</li>
+<li><strong>·</strong> pas encore dû, ou encore dans le délai de grâce</li>
+</ul>
+<p>En dessous figurent vos totaux sur tous les cycles, qui ne sont jamais compressés ni moyennés. Il n'y a aucune note nulle part, et aucune comparaison avec les autres. C'est un relevé de ce qui s'est passé, pas un jugement sur vous.</p>`,
+  },
+  {
+    id: 'faq-late',
+    q: "Et si je paie en retard, ou que j'en saute un ?",
+    a: `<p>Votre cercle fixe un nombre de jours de grâce, et pendant ces jours-là rien n'est noté contre vous. Payer après cela donne quand même une étoile, simplement creuse : la carte dit en retard, pas mauvaise.</p>
+<p>Un seul état signifie une dette ouverte : délai dépassé et toujours impayé. Même alors, l'application ne fait rien contre vous. Elle ne vous facture rien, ne vous bloque pas, ne vous relance pas et ne prévient personne en dehors de votre cercle. La suite se règle entre vous et les femmes avec qui vous épargnez, comme un susu l'a toujours fait.</p>`,
+  },
+  {
+    id: 'faq-voting',
+    q: 'Quand est-ce que je vote ?',
+    a: `<p>Quand le groupe doit décider au sujet d'une personne. Quelqu'un qui demande à entrer, quelqu'un qu'on retire, ou une question soulevée par une membre. Le vote apparaît dans votre panneau de compte, avec le cercle concerné.</p>
+<p>Votre organisatrice ne peut ni ajouter ni retirer quelqu'un seule dans un cercle en cours. Elle peut le proposer. C'est le groupe qui décide, et vous en faites partie.</p>
+<p>Vous pouvez vous-même soulever une question depuis ce même panneau, dans l'espace sous votre cercle.</p>`,
+  },
+  {
+    id: 'faq-show-record',
+    q: "Puis-je montrer mon historique à quelqu'un, par exemple un prêteur ?",
+    a: `<p>Oui, et c'est bien l'intérêt de le tenir. Depuis votre panneau de compte, vous pouvez télécharger votre carte sous forme de fichier, signé par SusuFinance, pour que la personne qui le lit puisse voir qu'il n'a pas été modifié.</p>
+<p>Il est à vous : à vous de l'envoyer ou non. Personne ne peut le partager à votre place, l'organisatrice ne peut pas l'exporter à votre sujet, et la signature atteste seulement que le relevé vient de nous sans modification. Ce n'est pas une note de crédit et cela ne dit pas si vous êtes un bon ou un mauvais risque. C'est la preuve de ce que vous avez fait ; ce que cela vaut, c'est à la personne qui le lit d'en juger.</p>`,
+  },
+  {
     id: 'faq-trust',
     q: "Comment savoir que ce n'est pas une arnaque ?",
     a: `<p>La réponse honnête, c'est que vous n'avez rien à nous confier, parce que nous ne détenons jamais votre argent. Il n'y a pas de compte à alimenter ici, ni de solde que nous pourrions bloquer. Si cette application disparaissait demain, vos USDC seraient toujours dans votre portefeuille.</p>

@@ -45,6 +45,52 @@ export const items: FaqItem[] = [
 <p>La aplicación registra lo que el círculo acordó y lo que ocurrió, para que todas vean que todas pagaron. Nadie más en tu círculo, incluida la organizadora, puede ver tu saldo.</p>`,
   },
   {
+    id: 'faq-my-screen',
+    q: '¿Dónde veo mi círculo?',
+    a: `<p>Inicia sesión y abre tu panel de cuenta, arriba a la derecha. Todo lo tuyo está ahí.</p>
+<p>Por cada círculo en el que estés verás tu tarjeta, cualquier votación pendiente para ti y un espacio para plantear algo al grupo. También verás tu billetera de pago, si ha sido verificada, y una lista de lo que ha entrado y salido.</p>
+<p>No verás el saldo de nadie, y nadie ve el tuyo. Lo que ves de las demás es lo que pagaron y cuándo, que es exactamente lo que ellas ven de ti.</p>`,
+  },
+  {
+    id: 'faq-my-wallet-setup',
+    q: '¿Cómo configuro mi billetera y demuestro que es mía?',
+    a: `<p>Abre tu panel de cuenta. Tu billetera de pago está arriba; si tu organizadora puso una por ti, ya está ahí y puedes cambiarla.</p>
+<p>Debajo hay un botón para comprobarla. Demostrarla consiste en enviarte a ti misma una cantidad pequeña desde esa billetera y luego pulsar comprobar. Nada sale de tu billetera salvo esa prueba pequeña, y ninguna clave sale nunca de tus manos.</p>
+<p>Dos cosas importantes. Tienes <strong>dos semanas</strong> desde que indicas una billetera para demostrarla, y si no lo haces, tu turno no podrá abrirse. Y si cambias de billetera más adelante, las dos semanas empiezan de nuevo, porque es una dirección nueva que nadie ha verificado.</p>`,
+  },
+  {
+    id: 'faq-my-card',
+    q: '¿Qué significan las marcas de mi tarjeta?',
+    a: `<p>Tu tarjeta es tu historial en ese círculo. La fila de marcas es el ciclo actual, una marca por turno, en orden:</p>
+<ul>
+<li><strong>★</strong> pagado a tiempo, o antes</li>
+<li><strong>☆</strong> pagado, pero tarde, o regularizado después. Sigue siendo una estrella.</li>
+<li><strong>◆</strong> tu turno. El círculo te pagó, así que no debías nada.</li>
+<li><strong>○</strong> pasado el plazo de gracia y aún sin pagar</li>
+<li><strong>·</strong> aún no vence, o todavía dentro del plazo de gracia</li>
+</ul>
+<p>Debajo están tus totales de todos los ciclos, que nunca se comprimen ni se promedian. No hay ninguna puntuación en ninguna parte ni comparación con nadie. Es un registro de lo que pasó, no un juicio sobre ti.</p>`,
+  },
+  {
+    id: 'faq-late',
+    q: '¿Y si pago tarde o me salto uno?',
+    a: `<p>Tu círculo fija unos días de gracia, y dentro de esos días no se anota nada en tu contra. Pagar después sigue dando una estrella, solo que hueca: la tarjeta dice tarde, no mala.</p>
+<p>Solo un estado significa deuda abierta: pasado el plazo y aún sin pagar. Incluso entonces, la aplicación no hace nada contra ti. No te cobra, no te bloquea, no te persigue y no avisa a nadie fuera de tu círculo. Lo que pase después es entre tú y las mujeres con las que ahorras, que es como siempre ha funcionado un susu.</p>`,
+  },
+  {
+    id: 'faq-voting',
+    q: '¿Cuándo voto?',
+    a: `<p>Cuando el grupo tiene que decidir sobre una persona. Alguien que pide entrar, alguien a quien se saca, o algo que planteó una integrante. La votación aparece en tu panel de cuenta, junto al círculo al que pertenece.</p>
+<p>Tu organizadora no puede añadir ni sacar a nadie por su cuenta en un círculo en marcha. Puede proponerlo. El grupo decide, y tú formas parte del grupo.</p>
+<p>Tú misma puedes plantear algo desde ese mismo panel, en el espacio bajo tu círculo.</p>`,
+  },
+  {
+    id: 'faq-show-record',
+    q: '¿Puedo enseñar mi historial a alguien, por ejemplo a un prestamista?',
+    a: `<p>Sí, y para eso sirve llevarlo. Desde tu panel de cuenta puedes descargar tu tarjeta como archivo, firmado por SusuFinance para que quien lo lea pueda ver que no ha sido alterado.</p>
+<p>Es tuyo: tú decides si lo envías o no. Nadie puede compartirlo por ti, la organizadora no puede exportarlo sobre ti, y la firma solo acredita que el registro viene de nosotros sin cambios. No es una puntuación de crédito y no dice si eres buen o mal riesgo. Es prueba de lo que hiciste; lo que valga, lo juzga quien lo lea.</p>`,
+  },
+  {
     id: 'faq-trust',
     q: '¿Cómo sé que esto no es una estafa?',
     a: `<p>La respuesta honesta es que no tienes que confiarnos nada, porque nunca tenemos tu dinero. Aquí no hay una cuenta que llenar ni un saldo que podamos congelar. Si esta aplicación desapareciera mañana, tus USDC seguirían en tu billetera.</p>

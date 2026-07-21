@@ -45,6 +45,52 @@ export const items: FaqItem[] = [
 <p>The app records what the circle agreed and what happened, so everyone can see that everyone paid. Nobody else in your circle, including the organizer, can see your balance.</p>`,
   },
   {
+    id: 'faq-my-screen',
+    q: 'Where do I see my circle?',
+    a: `<p>Sign in and open your account panel, top right of the page. Everything of yours is there.</p>
+<p>For each circle you are in you will see your card, any vote waiting for you, and a box to raise something with the group. You will also see your payout wallet, whether it has been proven, and a list of what has come in and gone out.</p>
+<p>You will not see anyone else's balance, and nobody sees yours. What you see about the others is what they paid and when, which is the same thing they see about you.</p>`,
+  },
+  {
+    id: 'faq-my-wallet-setup',
+    q: 'How do I set up my wallet and prove it is mine?',
+    a: `<p>Open your account panel. Your payout wallet is near the top; if your organizer set one for you, it is already there and you can change it.</p>
+<p>Under it there is a button to check it. Proving it means sending a small amount from that wallet back to itself, then pressing check. Nothing leaves your wallet except that small test, and no key ever leaves your hands.</p>
+<p>Two things worth knowing. You have <strong>two weeks</strong> from setting a wallet to prove it, and if you do not, your turn cannot open until you do. And if you change your wallet later, the two weeks start again, because it is a new address nobody has checked.</p>`,
+  },
+  {
+    id: 'faq-my-card',
+    q: 'What do the marks on my card mean?',
+    a: `<p>Your card is your record in that circle. The row of marks is the current cycle, one mark per turn, in order:</p>
+<ul>
+<li><strong>★</strong> paid on time, or early</li>
+<li><strong>☆</strong> paid, but late, or made good afterwards. Still a star.</li>
+<li><strong>◆</strong> your turn. The circle paid you, so nothing was owed by you.</li>
+<li><strong>○</strong> past the grace period and still unpaid</li>
+<li><strong>·</strong> not due yet, or still inside the grace days</li>
+</ul>
+<p>Underneath are your lifetime counts across every cycle, which never get compressed or averaged away. There is no score anywhere on it and no comparison to anyone else. It is a record of what happened, not a judgment about you.</p>`,
+  },
+  {
+    id: 'faq-late',
+    q: 'What if I pay late, or miss one?',
+    a: `<p>Your circle sets a number of grace days, and inside those days nothing is marked against you. Paying after that still earns a star, just a hollow one — the card says late, not bad.</p>
+<p>Only one state means an open debt: past grace and still unpaid. Even then the app does nothing to you. It does not charge you, lock you out, chase you, or tell anyone outside your circle. What happens next is between you and the women you save with, which is how a susu has always worked.</p>`,
+  },
+  {
+    id: 'faq-voting',
+    q: 'When do I get to vote?',
+    a: `<p>When the group has to decide something about a person. Someone asking to join, someone being removed, or something a member raised herself. The vote appears in your account panel with the circle it belongs to.</p>
+<p>Your organizer cannot add or remove anyone in a running circle on her own. She can propose it. The group decides, and that includes you.</p>
+<p>You can raise something yourself from the same panel, in the box under your circle.</p>`,
+  },
+  {
+    id: 'faq-show-record',
+    q: 'Can I show my record to someone, like a lender?',
+    a: `<p>Yes, and that is the point of keeping it. From your account panel you can download your card as a file, signed by SusuFinance so whoever reads it can tell it has not been altered.</p>
+<p>It is yours to send or not send. Nobody can share it for you, the organizer cannot export it about you, and the signature says only that the record came from us unchanged. It is not a credit score and does not claim you are a good or bad risk. It is evidence of what you did, and what it is worth is for the person reading it to judge.</p>`,
+  },
+  {
     id: 'faq-trust',
     q: 'How do I know this is not a scam?',
     a: `<p>The honest answer is that you do not have to trust us with anything, because we never hold your money. There is no account here to fund and no balance for us to freeze. If this app disappeared tomorrow, your USDC would still be in your wallet.</p>
