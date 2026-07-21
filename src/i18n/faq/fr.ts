@@ -22,7 +22,8 @@ export const items: FaqItem[] = [
 <li>Elle fixe le montant en USDC que chacune verse, et à quelle fréquence.</li>
 <li>Elle ajoute tout le monde et envoie un lien à chacune.</li>
 <li>Vous ouvrez votre lien et vous vous connectez.</li></ol>
-<p>C'est tout. Vous y êtes.</p>`,
+<p>C'est tout. Vous y êtes.</p>
+<p>Un cercle a besoin d'au moins trois d'entre vous.</p>`,
   },
   {
     id: 'faq-my-link',

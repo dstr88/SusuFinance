@@ -300,7 +300,7 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 			const j = await res.json().catch(() => ({}));
 			const a = t.drill.activate;
 			if (j?.ok) { setActivateMsg(a.done(Number(j.activated?.rounds ?? 0))); await load(); }
-			else setActivateMsg(j?.error === 'need_two_turns' ? a.needTurns : j?.error === 'not_forming' ? a.notForming : a.err);
+			else setActivateMsg(j?.error === 'need_three_turns' ? a.needTurns : j?.error === 'not_forming' ? a.notForming : a.err);
 		} catch { setActivateMsg(t.drill.activate.err); }
 		finally { setActivating(false); }
 	}, [contractId, load, t]);

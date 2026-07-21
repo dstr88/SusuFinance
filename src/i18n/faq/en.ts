@@ -27,7 +27,8 @@ export const items: FaqItem[] = [
 <li>She sets how much USDC each person pays, and how often.</li>
 <li>She adds everyone and sends each of you a link.</li>
 <li>You open your link and sign in.</li></ol>
-<p>That is it. You are in.</p>`,
+<p>That is it. You are in.</p>
+<p>A circle needs at least three of you.</p>`,
   },
   {
     id: 'faq-my-link',
@@ -166,7 +167,8 @@ export const items: FaqItem[] = [
     q: 'How do I start a circle?',
     a: `<ol><li>Open the Circles page and choose New circle.</li>
 <li>Name it, set the amount each person pays and how often.</li></ol>
-<p>It starts as forming, which is the only time you can arrange it.</p>`,
+<p>It starts as forming, which is the only time you can arrange it.</p>
+<p>A circle needs at least three members before it can start.</p>`,
   },
   {
     id: 'faq-admin-place',
@@ -214,7 +216,8 @@ export const items: FaqItem[] = [
     audience: 'admin',
     q: 'What happens if I am unavailable?',
     a: `<p>The circle stalls. Only an organizer can open each new round.</p>
-<p>Nobody's money is stuck, because it was never pooled. Add a second organizer on day one.</p>`,
+<p>Nobody's money is stuck, because it was never pooled.</p>
+<p>Add a second organizer on day one — the button is in your account menu, top right.</p>`,
   },
   {
     id: 'faq-admin-balances',

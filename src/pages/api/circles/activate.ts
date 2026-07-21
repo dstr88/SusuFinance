@@ -77,8 +77,14 @@ export const POST: APIRoute = async ({ request }) => {
 				args: [tenantId, contractId],
 			});
 			turnHolders = (mRes.rows as any[]).map((r) => ({ memberId: String(r.member_id), slot: Number(r.turn_order) }));
-			// A rotation needs at least two people to rotate between.
-			if (turnHolders.length < 2) return json({ ok: false, error: 'need_two_turns' }, 409);
+			// Three, not two. Two is the arithmetic floor — a rotation needs someone to
+			// rotate between — but a susu is a group activity, and two people alternating
+			// is one lending to the other and being repaid next month. Three is where it
+			// becomes a group holding each other to something.
+			//
+			// Decided Jul 20. The code now states the rule rather than permitting a shape
+			// the product does not mean.
+			if (turnHolders.length < 3) return json({ ok: false, error: 'need_three_turns' }, 409);
 		}
 
 		// Flip forming → active FIRST — the guard is the lock, so only one activation
