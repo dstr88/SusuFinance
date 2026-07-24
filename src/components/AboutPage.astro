@@ -1,8 +1,14 @@
 ---
 // Shared About page template (EN · ES · FR). Strings come from src/i18n/about.ts.
 // Wrappers: src/pages/about.astro (en), /about/es.astro (es), /about/fr.astro (fr).
+//
+// Layout note: Layout.astro's <main> is display:flex (row). .about-page is a single
+// flex child that fills it, then lays out its own two columns.
+//
+// Responsive shape:
+//   • laptop (>= 860px): hero is a left column beside the content.
+//   • phone  (< 860px):  hero stacks on TOP of the content, full width.
 import Layout from "@/layouts/Layout.astro";
-import DonnieSelfie from "@/assets/DonnieSelfie.jpeg";
 import type { AboutContent } from "@/i18n/about";
 
 interface Props {
@@ -19,214 +25,276 @@ const langs = [
 
 <Layout lang={t.lang} title={t.meta.title}>
   <style>
+    /* Fill Layout's flex <main>, then run our own two-column grid inside. */
+    .about-page {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 1fr; /* phone: single column, hero stacks on top */
+    }
+
+    /* ── Hero: the opening ────────────────────────────────────────────── */
+    .about-hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(120% 80% at 50% -10%, var(--accent-soft), transparent 60%),
+        var(--surface-bg);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 3.25rem 1.75rem 3rem;
+    }
+    .hero-inner {
+      position: relative;
+      max-width: 40rem;
+      margin: 0 auto;
+    }
+
+    /* Explicit row + link sizing so the Layout's global nav styles can't leak in
+       (they were turning this into a vertical stack of oversized links). */
     .lang-toggle {
-      position: fixed;
-      top: 1.25rem;
-      right: 1.25rem;
-      z-index: 50;
-      display: inline-flex;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-end;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.45rem 0.85rem;
-      border-radius: 999px;
-      border: 1px solid var(--border-bright);
-      background: var(--surface-card);
-      font-size: 0.82rem;
-      font-weight: 600;
+      gap: 0.85rem;
+      margin-bottom: 1.75rem;
     }
     .lang-toggle a {
-      color: var(--text-secondary);
+      display: inline-block;
+      flex: 0 0 auto;
+      width: auto;
+      padding: 0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1;
+      color: var(--text-muted);
       text-decoration: none;
       transition: color 0.15s;
     }
     .lang-toggle a:hover { color: var(--text-primary); }
-    .lang-toggle a[aria-current="true"] { color: var(--text-primary); font-weight: 700; }
+    .lang-toggle a[aria-current="true"] { color: var(--accent); }
 
-    .about-hero {
-      background: var(--surface-bg);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 4rem 2rem;
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
     }
-
-    .hero-inner {
-      max-width: 48rem;
-      margin: 0 auto;
-      display: flex;
-      gap: 3rem;
-      align-items: center;
-    }
-
-    .hero-photo {
-      flex-shrink: 0;
-    }
-
-    .hero-photo img {
-      width: 200px;
-      height: 200px;
-      border-radius: 8px;
-      object-fit: cover;
-    }
-
-    .hero-copy h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    .hero-copy p {
+    .hero-inner > p {
       color: var(--text-secondary);
-      font-size: 1.125rem;
+      font-size: 1.2rem;
       line-height: 1.6;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1.1rem;
     }
-
-    .about-content {
-      max-width: 48rem;
-      margin: 0 auto;
-      padding: 3rem 2rem;
-    }
-
-    .section {
-      margin-bottom: 3rem;
-    }
-
-    .section h2 {
+    .hero-inner > p:first-of-type {
+      color: var(--text-primary);
       font-size: 1.5rem;
       font-weight: 600;
+      line-height: 1.32;
+      margin-bottom: 1.35rem;
+      letter-spacing: -0.01em;
+    }
+    .hero-inner > p:last-child { margin-bottom: 0; }
+
+    /* ── Body ─────────────────────────────────────────────────────────── */
+    .about-content {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 3rem 1.75rem 4rem;
+    }
+    .section { margin-bottom: 3.25rem; }
+
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 1.15rem;
+      letter-spacing: -0.01em;
     }
+    .section > p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+    .section > p:last-child { margin-bottom: 0; }
 
-    .section p {
+    /* ── Safety: each promise is its own card ─────────────────────────── */
+    .safety-list {
+      list-style: none;
+      margin: 1.5rem 0 0;
+      padding: 0;
+      display: grid;
+      gap: 0.85rem;
+    }
+    .safety-list li {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
       color: var(--text-secondary);
       line-height: 1.7;
-      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    .safety-list li strong {
+      display: block;
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
     }
 
-    .section ul {
+    /* ── Cost ─────────────────────────────────────────────────────────── */
+    .section--cost p {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    /* ── Beta note ────────────────────────────────────────────────────── */
+    .section--beta {
+      background: var(--surface-card-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 3.25rem;
+    }
+    .section--beta h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .section--beta p {
       color: var(--text-secondary);
-      line-height: 1.7;
-      margin-left: 1.5rem;
-      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      margin: 0;
     }
 
-    .section li {
-      margin-bottom: 0.75rem;
-    }
-
+    /* ── Close ────────────────────────────────────────────────────────── */
     .mission-callout {
-      background: var(--accent-soft);
-      border-left: 4px solid var(--accent);
-      padding: 1.5rem;
-      margin: 1.5rem 0;
-      border-radius: 4px;
+      background:
+        radial-gradient(140% 120% at 0% 0%, var(--accent-soft), transparent 55%),
+        var(--surface-card);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 3.25rem;
     }
-
     .mission-callout p {
       color: var(--text-primary);
       margin: 0;
+      font-size: 1.12rem;
       line-height: 1.7;
     }
 
+    /* ── Reach ────────────────────────────────────────────────────────── */
+    .section--reach { margin-bottom: 0; }
+    .section--reach h2 { font-size: 1.15rem; }
+    .section--reach p { color: var(--text-secondary); }
+    .section--reach a, .section--reach strong { color: var(--accent); font-weight: 600; }
+
+    /* ── Laptop: hero becomes the left column ─────────────────────────── */
+    @media (min-width: 860px) {
+      .about-page {
+        grid-template-columns: minmax(19rem, 23rem) 1fr;
+        align-items: start;
+      }
+      .about-hero {
+        border-bottom: none;
+        border-right: 1px solid var(--border-subtle);
+        padding: 4rem 2.25rem;
+        /* Stays in view as the longer content column scrolls past it. */
+        position: sticky;
+        top: 0;
+      }
+      .hero-inner { max-width: none; margin: 0; }
+      .about-content {
+        margin: 0;
+        padding: 4rem 3rem 5rem;
+      }
+    }
+
+    /* ── Phone tightening ─────────────────────────────────────────────── */
     @media (max-width: 600px) {
-      .hero-inner {
-        flex-direction: column;
-        gap: 2rem;
-      }
-
-      .hero-photo img {
-        width: 150px;
-        height: 150px;
-      }
-
-      .hero-copy h1 {
-        font-size: 1.5rem;
-      }
+      .about-hero { padding: 2.75rem 1.35rem 2.5rem; }
+      .hero-inner > p:first-of-type { font-size: 1.4rem; }
+      .hero-inner > p { font-size: 1.1rem; }
+      .about-content { padding: 2.5rem 1.35rem 3.5rem; }
+      .section { margin-bottom: 2.75rem; }
+      .mission-callout { padding: 1.5rem 1.4rem; }
     }
   </style>
 
-  <nav class="lang-toggle" aria-label="Language">
-    {langs.map((l) => (
-      <a href={l.href} aria-current={t.lang === l.code ? "true" : undefined}>{l.label}</a>
-    ))}
-  </nav>
-
-  <div class="about-hero">
-    <div class="hero-inner">
-      <div class="hero-photo">
-        <img
-          src={DonnieSelfie.src}
-          alt={t.hero.photoAlt}
-          width={200}
-          height={200}
-          loading="lazy"
-        />
-      </div>
-      <div class="hero-copy">
-        <h1>{t.hero.greeting}</h1>
-        <p>{t.hero.line1}</p>
-        <p>{t.hero.line2}</p>
+  <div class="about-page">
+    <div class="about-hero">
+      <div class="hero-inner">
+        <nav class="lang-toggle" aria-label="Language">
+          {langs.map((l) => (
+            <a href={l.href} aria-current={t.lang === l.code ? "true" : undefined}>{l.label}</a>
+          ))}
+        </nav>
+        <span class="hero-eyebrow">SusuFinance</span>
+        <p>{t.hero.p1}</p>
+        <p>{t.hero.p2}</p>
+        <p>{t.hero.p3}</p>
       </div>
     </div>
-  </div>
 
-  <div class="about-content">
-    <div class="section">
-      <h2>{t.problem.heading}</h2>
-      <p>{t.problem.p1}</p>
-      <p>{t.problem.p2}</p>
-      <p>{t.problem.p3}</p>
-    </div>
+    <div class="about-content">
+      <div class="section">
+        <h2>{t.how.heading}</h2>
+        <p>{t.how.p1}</p>
+        <p>{t.how.p2}</p>
+        <p>{t.how.p3}</p>
+        <p>{t.how.p4}</p>
+      </div>
 
-    <div class="mission-callout">
-      <p set:html={t.callout}></p>
-    </div>
+      <div class="section">
+        <h2>{t.record.heading}</h2>
+        <p>{t.record.p1}</p>
+        <p>{t.record.p2}</p>
+        <p>{t.record.p3}</p>
+      </div>
 
-    <div class="section">
-      <h2>{t.why.heading}</h2>
-      <p set:html={t.why.p1}></p>
-      <p set:html={t.why.p2}></p>
-      <p set:html={t.why.p3}></p>
-      <p set:html={t.why.p4}></p>
-    </div>
+      <div class="section">
+        <h2>{t.safety.heading}</h2>
+        <p>{t.safety.intro}</p>
+        <ul class="safety-list">
+          {t.safety.items.map((item) => <li set:html={item}></li>)}
+        </ul>
+      </div>
 
-    <div class="section">
-      <h2>{t.believe.heading}</h2>
-      <p>{t.believe.intro}</p>
-      <ul>
-        {t.believe.items.map((item) => <li set:html={item}></li>)}
-      </ul>
-    </div>
+      <div class="section section--cost">
+        <h2>{t.cost.heading}</h2>
+        <p>{t.cost.body}</p>
+      </div>
 
-    <div class="section">
-      <h2>{t.matters.heading}</h2>
-      <p>{t.matters.p1}</p>
-      <p>{t.matters.p2}</p>
-      <p>{t.matters.p3}</p>
-    </div>
+      <div class="section">
+        <h2>{t.start.heading}</h2>
+        <p>{t.start.body}</p>
+      </div>
 
-    <div class="section">
-      <h2>{t.building.heading}</h2>
-      <p>{t.building.intro}</p>
-      <ul>
-        {t.building.items.map((item) => <li>{item}</li>)}
-      </ul>
-      <p>{t.building.outro}</p>
-    </div>
+      <div class="section--beta">
+        <h2>{t.beta.heading}</h2>
+        <p>{t.beta.body}</p>
+      </div>
 
-    <div class="section">
-      <h2>{t.beta.heading}</h2>
-      <p>{t.beta.p1}</p>
-      <p>{t.beta.p2}</p>
-    </div>
+      <div class="mission-callout">
+        <p>{t.close}</p>
+      </div>
 
-    <div class="section">
-      <h2>{t.reach.heading}</h2>
-      <p set:html={t.reach.body}></p>
+      <div class="section section--reach">
+        <h2>{t.reach.heading}</h2>
+        <p set:html={t.reach.body}></p>
+      </div>
     </div>
   </div>
 </Layout>

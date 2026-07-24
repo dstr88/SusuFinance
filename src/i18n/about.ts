@@ -4,207 +4,173 @@
 // Rendered by src/components/AboutPage.astro; thin wrappers at
 // src/pages/about.astro (en), /about/es.astro (es), /about/fr.astro (fr).
 //
+// Member-facing: it speaks to the woman signing up, not a founder story.
 // Strings that carry inline <strong> are rendered with set:html in the
-// component (callout, why.*, believe.items, reach.body); everything else is
-// plain text via {} auto-escaping.
+// component (safety.items and reach.body); everything else is plain text via
+// {} auto-escaping.
 
 import type { Lang } from '@/lib/i18n/locale';
 
 export interface AboutContent {
   lang: Lang;
   meta: { title: string };
-  hero: {
-    photoAlt: string;
-    greeting: string;
-    line1: string;
-    line2: string;
-  };
-  problem: { heading: string; p1: string; p2: string; p3: string };
-  callout: string; // HTML
-  why: { heading: string; p1: string; p2: string; p3: string; p4: string }; // each HTML
-  believe: { heading: string; intro: string; items: string[] }; // items HTML
-  matters: { heading: string; p1: string; p2: string; p3: string };
-  building: { heading: string; intro: string; items: string[]; outro: string };
-  beta: { heading: string; p1: string; p2: string };
+  hero: { p1: string; p2: string; p3: string };
+  how: { heading: string; p1: string; p2: string; p3: string; p4: string };
+  record: { heading: string; p1: string; p2: string; p3: string };
+  safety: { heading: string; intro: string; items: string[] }; // items HTML
+  cost: { heading: string; body: string };
+  start: { heading: string; body: string };
+  beta: { heading: string; body: string };
+  close: string;
   reach: { heading: string; body: string }; // HTML
 }
 
 export const en: AboutContent = {
   lang: 'en',
-  meta: { title: 'About SusuFinance — Built by a Teacher Who Felt the Problem' },
+  meta: { title: 'About SusuFinance — Your Susu, Kept Honest' },
   hero: {
-    photoAlt: 'Donnie Starkey',
-    greeting: `Hi. I'm Donnie.`,
-    line1: `I'm a teacher and builder.`,
-    line2: `I built SusuFinance because I felt the problem personally.`,
+    p1: `You already know how to save. You've done it for years, a little each day into a circle of women you trust, until it's your turn to carry the whole sum home.`,
+    p2: `What you've never had is a bank that would have you. So your money sits in cedis that lose value every month, or in a paper book that can be lost, or with a collector who might not come back. You do everything right, and the system still doesn't count you.`,
+    p3: `SusuFinance is your susu, kept honest. Same circle, same trust, same turn coming around. But your savings hold their value in dollars instead of leaking, the record is yours and can't be lost or disputed, and no one, not even us, can touch your money. You keep proving you're dependable. Now you finally have documentation to show for it, visible only to you and those you choose to share it with.`,
   },
-  problem: {
-    heading: 'The Problem I Hit',
-    p1: `I bought some Bitcoin and Ethereum about four years ago. I took "not your keys, not your coins" seriously, so I moved it into a self-custody wallet. I also knew I needed to diversify, so I spread my holdings across several wallets — if one was ever compromised, the rest stayed safe.`,
-    p2: `Then tax season arrived. I had no idea what I actually owned, what it cost me, or where it was. I had fragments across different places — a spreadsheet, an exchange CSV, some scribbled notes, and a lot of confusion. To reconstruct the history, I had to spend weeks digging through transaction hashes and receipt emails. I tried tax software, but it never saw the full picture, so I couldn't trust the numbers it gave me.`,
-    p3: `That's when I realized the bigger problem: there was no tool that let me see my full picture even if I connected my wallets. A wallet connection is just another attack surface, so I avoid them. And there was no way to verify that an address was safe before I sent money to it.`,
+  how: {
+    heading: 'How it works',
+    p1: `You and three to ten people you trust form a circle. You agree together on how much each person puts in, how often, and whose turn comes when. SusuFinance does not set those rules. Your circle does.`,
+    p2: `Everyone contributes on schedule. When your turn comes around, the full amount is yours, all at once, to do what a slow trickle never could: pay a term of school fees, restock your table, cover an emergency, plant a season.`,
+    p3: `There is no central pot. Money goes straight from each member to whoever's turn it is, so nothing sits in the middle for anyone to hold, lose, or run off with. And because your savings are kept in dollars, they hold their value while you wait for your turn, instead of shrinking a little every month.`,
+    p4: `A susu does not earn interest and does not charge it. You take out what you put in. The gift is the timing: a full lump sum, when you need it, from money you saved a little at a time.`,
   },
-  callout: `<strong>I'm a teacher.</strong> I know that the best tool is the one that explains itself and earns trust by being clear, not clever. I know that people don't need jargon; they need clarity. And I know that when something matters, you have to build it right or not at all.`,
-  why: {
-    heading: 'Why I Built SusuFinance This Way',
-    p1: `<strong>No wallet connection, ever.</strong> The moment you hand your wallet to an app, you've created a new risk. SusuFinance reads your blockchain data the same way you can on Etherscan—publicly. Your keys stay safe because they never leave your wallet.`,
-    p2: `<strong>Bookkeeping as infrastructure.</strong> Accountability requires documentation. SusuFinance isn't a trading tool or a price tracker. It's a record. Every asset, every transaction, every cost basis. Because you can't manage what you can't measure, and you can't prove your position without a history.`,
-    p3: `<strong>Safety before the click.</strong> I built the wallet checker to answer one question: "Is this address safe before I send?" Scams, sanctions, honeypots, phishing—they all happen after the click. The checker lets you verify first.`,
-    p4: `<strong>Clear over clever.</strong> The docs are plain English. The error messages tell you what went wrong and what to do. The safety verdicts don't hide behind a risk score; they tell you what we actually know and don't know.`,
+  record: {
+    heading: 'Your record belongs to you',
+    p1: `Every contribution you make becomes part of your own susu card: the weeks you've paid, the cycles you've completed, a permanent record in your name.`,
+    p2: `It is not a score. SusuFinance does not rank you, does not sell your record, and does not show it to anyone. It is yours. When you want to join a new circle, or show a lender that you have kept your word for years, you choose to share it. No one sees it unless you decide they should.`,
+    p3: `Your discipline finally travels with you.`,
   },
-  believe: {
-    heading: 'What I Believe',
-    intro: `Crypto is infrastructure that lets individuals move, store, and manage their own money without asking permission. But infrastructure only works if people can trust it. Trust doesn't come from marketing; it comes from:`,
+  safety: {
+    heading: 'Built to keep your money safe',
+    intro: `SusuFinance is built around one idea: your money is yours, and no one, including us, should be able to touch it. Here is how we keep that promise.`,
     items: [
-      `<strong>Honest design decisions.</strong> Building constraints into the architecture (no wallet connection) instead of hiding behind promises.`,
-      `<strong>Transparency.</strong> Saying what we store, what we don't, what could go wrong, and how we protect it.`,
-      `<strong>Completeness.</strong> Solving the full problem—not just the exciting part, but the boring bookkeeping part that actually matters.`,
-      `<strong>Clarity.</strong> Writing for people, not algorithms. Explaining in English, not jargon.`,
+      `<strong>We do not collect what we do not need.</strong> No name, no ID, no KYC to open an account or join a circle. The app is built to hold nothing about you worth stealing.`,
+      `<strong>We never hold your money or your keys.</strong> Your savings sit in your own account, secured on the blockchain (built on Base, Coinbase's network). The only key that can move your money lives on your own phone. There is no master key, and anyone can verify that on the public chain. No one at SusuFinance can move or freeze a single coin of yours.`,
+      `<strong>There is no pot, no pool, no honeypot.</strong> Every member holds her own money in her own account. Nothing is ever gathered in one place, so there is nothing to steal and no interest to skim.`,
+      `<strong>Lose your phone, and your circle helps you back in.</strong> Not us. Your circle. Any one member can freeze your account instantly to keep it safe, and a frozen account still holds every coin. Connecting a new phone takes a few members and a short waiting period, so an honest loss is always recoverable, and a thief can never rush it.`,
     ],
   },
-  matters: {
-    heading: 'Why This Matters Right Now',
-    p1: `Crypto's moving from speculation into infrastructure. Stablecoins for remittances, Bitcoin as reserve assets, DeFi as the backbone of cross-border payments. The users arriving aren't degens—they're people who need the infrastructure to actually work.`,
-    p2: `They need tools that don't break, don't betray, and don't ask them to trust blindly. They need documentation so they can prove what they own. They need safety so they don't send funds to the wrong place.`,
-    p3: `That's what SusuFinance is. Not a bet on price, not a playground. Infrastructure.`,
+  cost: {
+    heading: 'What it costs',
+    body: `Nothing. SusuFinance is free.`,
   },
-  building: {
-    heading: `What I'm Building Toward`,
-    intro: `SusuFinance today is a portfolio tracker + safety checker + bookkeeping tool. The roadmap is longer:`,
-    items: [
-      `A MetaMask Snap that checks addresses before you sign, so safety reaches into your wallet itself.`,
-      `Deeper integration with tax professionals and advisories so SusuFinance isn't just a tool you use—it's a layer your accountant and your advisor both understand.`,
-      `Ecosystem tooling that lets other builders plug safety and accountability into their products.`,
-    ],
-    outro: `The north star: make it obvious that the best crypto product is the one that doesn't ask you to trust it blindly. Make documentation and verification as easy as the transaction itself.`,
+  start: {
+    heading: 'What you need to start',
+    body: `A phone, and people you trust. If you do not have your own phone, borrowing one to check your card is fine. Everything else, you already have: you know how to save, and you know who to save with.`,
   },
   beta: {
-    heading: 'A Note on Beta',
-    p1: `SusuFinance is in beta. That's not an apology; it's a description. We're still learning what advisories need, what emerging-market users need, what the next layer of security looks like. We're building in public and iterating based on real feedback.`,
-    p2: `Being in beta doesn't mean the code is unstable or that your data is at risk. It means we're still deciding what comes next based on what you tell us actually matters.`,
+    heading: 'A note while we grow',
+    body: `SusuFinance is new, and some pieces described here are still reaching every circle. What never changes is the promise underneath: we never hold your money, and your record is always yours.`,
   },
+  close: `For generations, women have built security out of trust and small, faithful contributions, long before any bank offered to help. SusuFinance does not replace that. It protects it. Same circle. Same trust. Now with a record that is yours, savings that hold their worth, and the certainty that no one can ever come between you and your money.`,
   reach: {
-    heading: 'How to Reach Me',
-    body: `If you have feedback, questions, or just want to talk about where this is heading, I read every message. Email me at <strong>hello@susufinance.com</strong> or find me on LinkedIn.`,
+    heading: 'Questions?',
+    body: `We read every message. Email us at <strong>hello@susufinance.com</strong>.`,
   },
 };
 
 export const es: AboutContent = {
   lang: 'es',
-  meta: { title: 'Sobre SusuFinance — Hecho por un educador que vivió el problema' },
+  meta: { title: 'Sobre SusuFinance — Tu susu, con un registro honesto' },
   hero: {
-    photoAlt: 'Donnie Starkey',
-    greeting: 'Hola. Soy Donnie.',
-    line1: 'Soy educador y desarrollador.',
-    line2: 'Construí SusuFinance porque viví el problema en carne propia.',
+    p1: `Ya sabes ahorrar. Lo has hecho durante años, un poco cada día en un círculo de mujeres en las que confías, hasta que llega tu turno de llevarte la suma completa a casa.`,
+    p2: `Lo que nunca has tenido es un banco que te acepte. Así que tu dinero se queda en cedis que pierden valor cada mes, o en un cuaderno de papel que se puede perder, o con un cobrador que quizás no regrese. Haces todo bien, y el sistema aun así no te cuenta.`,
+    p3: `SusuFinance es tu susu, con un registro honesto. El mismo círculo, la misma confianza, el mismo turno que vuelve. Pero tus ahorros mantienen su valor en dólares en lugar de escurrirse, el registro es tuyo y no se puede perder ni disputar, y nadie, ni siquiera nosotros, puede tocar tu dinero. Sigues demostrando que eres confiable. Ahora por fin tienes constancia de ello, visible solo para ti y para quienes tú decidas mostrársela.`,
   },
-  problem: {
-    heading: 'El Problema que Viví',
-    p1: `Compré algo de Bitcoin y Ethereum hace unos cuatro años. Me tomé en serio el principio «not your keys, not your coins» (si no son tus llaves, no son tus monedas), así que lo pasé a una billetera de custodia propia. También sabía que necesitaba diversificar, así que repartí mis tenencias en varias billeteras — si una se veía comprometida, las demás quedaban a salvo.`,
-    p2: `Luego llegó la temporada de impuestos. No tenía idea de qué poseía realmente, cuánto me había costado ni dónde estaba. Tenía fragmentos repartidos en distintos lugares — una hoja de cálculo, un CSV de un exchange, algunas notas garabateadas y mucha confusión. Para reconstruir el historial, tuve que pasar semanas hurgando entre hashes de transacciones y correos de recibos. Probé software de impuestos, pero nunca veía el panorama completo, así que no podía confiar en los números que me daba.`,
-    p3: `Ahí fue cuando me di cuenta del problema más grande: no había ninguna herramienta que me dejara ver mi panorama completo aunque conectara mis billeteras. Una conexión de billetera no es más que otra superficie de ataque, así que las evito. Y no había forma de verificar que una dirección fuera segura antes de enviarle dinero.`,
+  how: {
+    heading: 'Cómo funciona',
+    p1: `Tú y entre tres y diez personas de confianza forman un círculo. Acuerdan juntas cuánto aporta cada una, con qué frecuencia y a quién le toca cuándo. SusuFinance no fija esas reglas. Tu círculo lo hace.`,
+    p2: `Todas aportan según lo acordado. Cuando llega tu turno, el monto completo es tuyo, todo de una vez, para hacer lo que un goteo lento nunca podría: pagar un trimestre de colegiatura, reabastecer tu puesto, cubrir una emergencia, sembrar una temporada.`,
+    p3: `No hay un fondo central. El dinero va directo de cada integrante a quien le toca el turno, así que nada queda en medio para que alguien lo guarde, lo pierda o se lo lleve. Y como tus ahorros se mantienen en dólares, conservan su valor mientras esperas tu turno, en vez de encogerse un poco cada mes.`,
+    p4: `Un susu no gana intereses ni los cobra. Sacas lo que pones. El regalo es el momento oportuno: una suma completa, cuando la necesitas, de un dinero que ahorraste poco a poco.`,
   },
-  callout: `<strong>Soy educador.</strong> Sé que la mejor herramienta es la que se explica sola y se gana la confianza siendo clara, no astuta. Sé que la gente no necesita jerga; necesita claridad. Y sé que cuando algo importa, hay que construirlo bien o no construirlo.`,
-  why: {
-    heading: 'Por Qué Construí SusuFinance Así',
-    p1: `<strong>Sin conexión de billetera, nunca.</strong> En el momento en que le entregas tu billetera a una aplicación, creas un riesgo nuevo. SusuFinance lee los datos de tu blockchain de la misma forma en que tú puedes hacerlo en Etherscan: públicamente. Tus llaves permanecen seguras porque nunca salen de tu billetera.`,
-    p2: `<strong>Contabilidad como infraestructura.</strong> La rendición de cuentas exige documentación. SusuFinance no es una herramienta de trading ni un rastreador de precios. Es un registro. Cada activo, cada transacción, cada base de costo. Porque no puedes gestionar lo que no puedes medir, y no puedes probar tu posición sin un historial.`,
-    p3: `<strong>Seguridad antes del clic.</strong> Construí el verificador de billeteras para responder una sola pregunta: «¿Es segura esta dirección antes de enviar?». Las estafas, las sanciones, los honeypots y el phishing ocurren todos después del clic. El verificador te deja comprobar primero.`,
-    p4: `<strong>Claro antes que astuto.</strong> La documentación está en lenguaje sencillo. Los mensajes de error te dicen qué salió mal y qué hacer. Los veredictos de seguridad no se esconden tras un puntaje de riesgo; te dicen lo que de verdad sabemos y lo que no.`,
+  record: {
+    heading: 'Tu registro te pertenece',
+    p1: `Cada aporte que haces pasa a formar parte de tu propia tarjeta susu: las semanas que has pagado, los ciclos que has completado, un registro permanente a tu nombre.`,
+    p2: `No es una calificación. SusuFinance no te clasifica, no vende tu registro y no se lo muestra a nadie. Es tuyo. Cuando quieras unirte a un nuevo círculo, o mostrarle a un prestamista que has cumplido tu palabra durante años, tú eliges compartirlo. Nadie lo ve a menos que tú lo decidas.`,
+    p3: `Tu disciplina por fin viaja contigo.`,
   },
-  believe: {
-    heading: 'En Qué Creo',
-    intro: `El cripto es infraestructura que permite a las personas mover, guardar y gestionar su propio dinero sin pedir permiso. Pero la infraestructura solo funciona si la gente puede confiar en ella. La confianza no viene del marketing; viene de:`,
+  safety: {
+    heading: 'Hecho para mantener tu dinero seguro',
+    intro: `SusuFinance se construye sobre una sola idea: tu dinero es tuyo, y nadie, incluidos nosotros, debería poder tocarlo. Así cumplimos esa promesa.`,
     items: [
-      `<strong>Decisiones de diseño honestas.</strong> Integrar las limitaciones en la arquitectura (sin conexión de billetera) en lugar de esconderse tras promesas.`,
-      `<strong>Transparencia.</strong> Decir qué guardamos, qué no, qué podría salir mal y cómo lo protegemos.`,
-      `<strong>Integridad.</strong> Resolver el problema completo — no solo la parte emocionante, sino la aburrida parte contable que de verdad importa.`,
-      `<strong>Claridad.</strong> Escribir para personas, no para algoritmos. Explicar en lenguaje sencillo, sin jerga.`,
+      `<strong>No recopilamos lo que no necesitamos.</strong> Sin nombre, sin identificación, sin KYC para abrir una cuenta o unirte a un círculo. La aplicación está hecha para no guardar nada tuyo que valga la pena robar.`,
+      `<strong>Nunca guardamos tu dinero ni tus llaves.</strong> Tus ahorros están en tu propia cuenta, protegidos en la blockchain (construida sobre Base, la red de Coinbase). La única llave que puede mover tu dinero vive en tu propio teléfono. No hay llave maestra, y cualquiera puede verificarlo en la cadena pública. Nadie en SusuFinance puede mover ni congelar una sola moneda tuya.`,
+      `<strong>No hay fondo, ni bolsa común, ni honeypot.</strong> Cada integrante guarda su propio dinero en su propia cuenta. Nada se junta nunca en un solo lugar, así que no hay nada que robar ni intereses que descontar.`,
+      `<strong>Si pierdes tu teléfono, tu círculo te ayuda a volver.</strong> Nosotros no. Tu círculo. Cualquier integrante puede congelar tu cuenta al instante para protegerla, y una cuenta congelada conserva cada moneda. Conectar un teléfono nuevo requiere a varias integrantes y un breve período de espera, de modo que una pérdida honesta siempre se puede recuperar, y un ladrón nunca puede apresurarlo.`,
     ],
   },
-  matters: {
-    heading: 'Por Qué Esto Importa Ahora',
-    p1: `El cripto está pasando de la especulación a la infraestructura. Stablecoins para remesas, Bitcoin como activo de reserva, DeFi como columna vertebral de los pagos transfronterizos. Los usuarios que están llegando no son especuladores — son personas que necesitan que la infraestructura realmente funcione.`,
-    p2: `Necesitan herramientas que no fallen, que no traicionen y que no les pidan confiar a ciegas. Necesitan documentación para poder probar lo que poseen. Necesitan seguridad para no enviar fondos al lugar equivocado.`,
-    p3: `Eso es SusuFinance. No una apuesta al precio, no un patio de juegos. Infraestructura.`,
+  cost: {
+    heading: 'Cuánto cuesta',
+    body: `Nada. SusuFinance es gratis.`,
   },
-  building: {
-    heading: 'Hacia Dónde Voy',
-    intro: `SusuFinance hoy es un rastreador de portafolio + verificador de seguridad + herramienta de contabilidad. La hoja de ruta es más larga:`,
-    items: [
-      `Un Snap de MetaMask que verifica direcciones antes de que firmes, para que la seguridad llegue hasta tu propia billetera.`,
-      `Integración más profunda con profesionales de impuestos y asesores, para que SusuFinance no sea solo una herramienta que usas — sea una capa que tanto tu contador como tu asesor entiendan.`,
-      `Herramientas de ecosistema que permitan a otros desarrolladores integrar seguridad y rendición de cuentas en sus productos.`,
-    ],
-    outro: `La estrella guía: dejar en claro que el mejor producto cripto es el que no te pide confiar a ciegas. Hacer que la documentación y la verificación sean tan fáciles como la transacción misma.`,
+  start: {
+    heading: 'Qué necesitas para empezar',
+    body: `Un teléfono, y personas en las que confíes. Si no tienes tu propio teléfono, pedir uno prestado para revisar tu tarjeta está bien. Todo lo demás ya lo tienes: sabes ahorrar y sabes con quién ahorrar.`,
   },
   beta: {
-    heading: 'Una Nota Sobre la Beta',
-    p1: `SusuFinance está en beta. Eso no es una disculpa; es una descripción. Seguimos aprendiendo qué necesitan los asesores, qué necesitan los usuarios de mercados emergentes y cómo se ve la siguiente capa de seguridad. Construimos en público e iteramos con base en comentarios reales.`,
-    p2: `Estar en beta no significa que el código sea inestable ni que tus datos estén en riesgo. Significa que todavía estamos decidiendo qué viene después según lo que nos digas que de verdad importa.`,
+    heading: 'Una nota mientras crecemos',
+    body: `SusuFinance es nuevo, y algunas de las partes descritas aquí todavía están llegando a todos los círculos. Lo que nunca cambia es la promesa de fondo: nunca guardamos tu dinero, y tu registro siempre es tuyo.`,
   },
+  close: `Durante generaciones, las mujeres han construido seguridad a partir de la confianza y de aportes pequeños y constantes, mucho antes de que algún banco se ofreciera a ayudar. SusuFinance no reemplaza eso. Lo protege. El mismo círculo. La misma confianza. Ahora con un registro que es tuyo, ahorros que conservan su valor y la certeza de que nadie podrá jamás interponerse entre tú y tu dinero.`,
   reach: {
-    heading: 'Cómo Contactarme',
-    body: `Si tienes comentarios, preguntas o solo quieres hablar sobre hacia dónde va esto, leo cada mensaje. Escríbeme a <strong>hello@susufinance.com</strong> o encuéntrame en LinkedIn.`,
+    heading: '¿Preguntas?',
+    body: `Leemos cada mensaje. Escríbenos a <strong>hello@susufinance.com</strong>.`,
   },
 };
 
 export const fr: AboutContent = {
   lang: 'fr',
-  meta: { title: `À propos d'SusuFinance — Créé par un enseignant qui a vécu le problème` },
+  meta: { title: 'À propos de SusuFinance — Votre susu, avec un registre honnête' },
   hero: {
-    photoAlt: 'Donnie Starkey',
-    greeting: 'Bonjour. Je suis Donnie.',
-    line1: 'Je suis enseignant et créateur.',
-    line2: `J'ai créé SusuFinance parce que j'ai vécu le problème personnellement.`,
+    p1: `Vous savez déjà épargner. Vous le faites depuis des années, un peu chaque jour dans un cercle de femmes en qui vous avez confiance, jusqu'à ce que ce soit votre tour de rapporter toute la somme à la maison.`,
+    p2: `Ce que vous n'avez jamais eu, c'est une banque qui veuille de vous. Alors votre argent dort dans des cedis qui perdent de la valeur chaque mois, ou dans un cahier en papier qui peut se perdre, ou chez un collecteur qui ne reviendra peut-être pas. Vous faites tout comme il faut, et le système ne vous compte toujours pas.`,
+    p3: `SusuFinance, c'est votre susu, avec un registre honnête. Le même cercle, la même confiance, le même tour qui revient. Mais votre épargne garde sa valeur en dollars au lieu de fondre, le registre est le vôtre et ne peut être ni perdu ni contesté, et personne, pas même nous, ne peut toucher à votre argent. Vous continuez de prouver que vous êtes fiable. Vous en avez enfin une preuve, visible seulement par vous et par ceux à qui vous choisissez de la montrer.`,
   },
-  problem: {
-    heading: `Le problème que j'ai rencontré`,
-    p1: `J'ai acheté du Bitcoin et de l'Ethereum il y a environ quatre ans. J'ai pris au sérieux le principe « not your keys, not your coins » (si ce ne sont pas vos clés, ce ne sont pas vos pièces), alors je les ai transférés dans un portefeuille en auto-conservation. Je savais aussi qu'il fallait diversifier, donc j'ai réparti mes avoirs sur plusieurs portefeuilles — si l'un était un jour compromis, les autres restaient à l'abri.`,
-    p2: `Puis la période des impôts est arrivée. Je n'avais aucune idée de ce que je possédais réellement, de ce que cela m'avait coûté, ni d'où cela se trouvait. J'avais des fragments éparpillés à différents endroits — un tableur, un CSV d'une plateforme d'échange, quelques notes griffonnées et beaucoup de confusion. Pour reconstituer l'historique, j'ai dû passer des semaines à fouiller dans les hachages de transactions et les courriels de reçus. J'ai essayé des logiciels d'impôts, mais ils ne voyaient jamais le tableau complet, donc je ne pouvais pas me fier aux chiffres qu'ils me donnaient.`,
-    p3: `C'est là que j'ai compris le problème plus profond : aucun outil ne me permettait de voir mon tableau complet, même en connectant mes portefeuilles. Une connexion de portefeuille n'est qu'une surface d'attaque de plus, alors je les évite. Et il n'existait aucun moyen de vérifier qu'une adresse était sûre avant de lui envoyer de l'argent.`,
+  how: {
+    heading: 'Comment ça marche',
+    p1: `Vous et trois à dix personnes de confiance formez un cercle. Vous décidez ensemble combien chacune verse, à quelle fréquence, et à qui revient chaque tour. SusuFinance ne fixe pas ces règles. Votre cercle le fait.`,
+    p2: `Chacune verse selon le calendrier convenu. Quand vient votre tour, la somme entière est à vous, d'un seul coup, pour faire ce qu'un filet lent ne permettrait jamais : payer un trimestre de frais de scolarité, réapprovisionner votre étal, faire face à une urgence, semer une saison.`,
+    p3: `Il n'y a pas de caisse centrale. L'argent va directement de chaque membre à celle dont c'est le tour, donc rien ne reste au milieu pour que quelqu'un le garde, le perde ou l'emporte. Et comme votre épargne est conservée en dollars, elle garde sa valeur pendant que vous attendez votre tour, au lieu de diminuer un peu chaque mois.`,
+    p4: `Un susu ne rapporte pas d'intérêts et n'en prélève pas. Vous retirez ce que vous versez. Le cadeau, c'est le moment : une somme entière, quand vous en avez besoin, d'un argent que vous avez épargné petit à petit.`,
   },
-  callout: `<strong>Je suis enseignant.</strong> Je sais que le meilleur outil est celui qui s'explique de lui-même et gagne la confiance en étant clair, pas astucieux. Je sais que les gens n'ont pas besoin de jargon ; ils ont besoin de clarté. Et je sais que lorsqu'une chose compte vraiment, il faut la construire correctement ou pas du tout.`,
-  why: {
-    heading: `Pourquoi j'ai construit SusuFinance ainsi`,
-    p1: `<strong>Aucune connexion de portefeuille, jamais.</strong> Dès l'instant où vous confiez votre portefeuille à une application, vous créez un nouveau risque. SusuFinance lit les données de votre blockchain de la même manière que vous pouvez le faire sur Etherscan : publiquement. Vos clés restent en sécurité parce qu'elles ne quittent jamais votre portefeuille.`,
-    p2: `<strong>La comptabilité comme infrastructure.</strong> La responsabilité exige de la documentation. SusuFinance n'est pas un outil de trading ni un suiveur de prix. C'est un registre. Chaque actif, chaque transaction, chaque prix de revient. Parce qu'on ne peut pas gérer ce qu'on ne peut pas mesurer, et qu'on ne peut pas prouver sa position sans historique.`,
-    p3: `<strong>La sécurité avant le clic.</strong> J'ai créé le vérificateur de portefeuilles pour répondre à une seule question : « Cette adresse est-elle sûre avant que j'envoie ? » Les arnaques, les sanctions, les honeypots, le phishing — tout cela arrive après le clic. Le vérificateur vous permet de vérifier d'abord.`,
-    p4: `<strong>Clair plutôt qu'astucieux.</strong> La documentation est en langage clair et simple. Les messages d'erreur vous disent ce qui n'a pas fonctionné et quoi faire. Les verdicts de sécurité ne se cachent pas derrière un score de risque ; ils vous disent ce que nous savons réellement et ce que nous ignorons.`,
+  record: {
+    heading: 'Votre registre vous appartient',
+    p1: `Chaque versement que vous faites vient s'ajouter à votre propre carte susu : les semaines où vous avez payé, les cycles que vous avez terminés, un registre permanent à votre nom.`,
+    p2: `Ce n'est pas une note. SusuFinance ne vous classe pas, ne vend pas votre registre et ne le montre à personne. Il est à vous. Quand vous voulez rejoindre un nouveau cercle, ou montrer à un prêteur que vous avez tenu parole pendant des années, c'est vous qui choisissez de le partager. Personne ne le voit à moins que vous ne le décidiez.`,
+    p3: `Votre discipline voyage enfin avec vous.`,
   },
-  believe: {
-    heading: 'Ce en quoi je crois',
-    intro: `La cryptomonnaie est une infrastructure qui permet aux individus de déplacer, conserver et gérer leur propre argent sans demander la permission. Mais une infrastructure ne fonctionne que si les gens peuvent lui faire confiance. La confiance ne vient pas du marketing ; elle vient de :`,
+  safety: {
+    heading: 'Conçu pour garder votre argent en sécurité',
+    intro: `SusuFinance repose sur une seule idée : votre argent est le vôtre, et personne, nous compris, ne devrait pouvoir y toucher. Voici comment nous tenons cette promesse.`,
     items: [
-      `<strong>Des décisions de conception honnêtes.</strong> Intégrer les contraintes dans l'architecture (aucune connexion de portefeuille) au lieu de se cacher derrière des promesses.`,
-      `<strong>La transparence.</strong> Dire ce que nous stockons, ce que nous ne stockons pas, ce qui pourrait mal tourner et comment nous le protégeons.`,
-      `<strong>L'exhaustivité.</strong> Résoudre le problème en entier — pas seulement la partie passionnante, mais la partie comptable ennuyeuse qui compte vraiment.`,
-      `<strong>La clarté.</strong> Écrire pour les gens, pas pour les algorithmes. Expliquer en langage simple, pas en jargon.`,
+      `<strong>Nous ne collectons pas ce dont nous n'avons pas besoin.</strong> Pas de nom, pas de pièce d'identité, pas de KYC pour ouvrir un compte ou rejoindre un cercle. L'application est conçue pour ne rien détenir de vous qui vaille la peine d'être volé.`,
+      `<strong>Nous ne détenons jamais votre argent ni vos clés.</strong> Votre épargne se trouve dans votre propre compte, sécurisée sur la blockchain (construite sur Base, le réseau de Coinbase). La seule clé qui peut déplacer votre argent se trouve sur votre propre téléphone. Il n'y a pas de clé maîtresse, et n'importe qui peut le vérifier sur la chaîne publique. Personne chez SusuFinance ne peut déplacer ni geler une seule de vos pièces.`,
+      `<strong>Il n'y a pas de caisse, pas de pot commun, pas de honeypot.</strong> Chaque membre garde son propre argent dans son propre compte. Rien n'est jamais rassemblé au même endroit, donc il n'y a rien à voler ni d'intérêts à prélever.`,
+      `<strong>Si vous perdez votre téléphone, votre cercle vous aide à revenir.</strong> Pas nous. Votre cercle. N'importe quelle membre peut geler votre compte à l'instant pour le protéger, et un compte gelé conserve chaque pièce. Connecter un nouveau téléphone demande quelques membres et un court délai d'attente, de sorte qu'une perte honnête est toujours récupérable, et qu'un voleur ne peut jamais la précipiter.`,
     ],
   },
-  matters: {
-    heading: 'Pourquoi cela compte maintenant',
-    p1: `La cryptomonnaie passe de la spéculation à l'infrastructure. Les stablecoins pour les transferts de fonds, le Bitcoin comme actif de réserve, la DeFi comme colonne vertébrale des paiements transfrontaliers. Les utilisateurs qui arrivent ne sont pas des spéculateurs — ce sont des gens qui ont besoin que l'infrastructure fonctionne vraiment.`,
-    p2: `Ils ont besoin d'outils qui ne tombent pas en panne, qui ne trahissent pas et qui ne leur demandent pas de faire confiance aveuglément. Ils ont besoin de documentation pour pouvoir prouver ce qu'ils possèdent. Ils ont besoin de sécurité pour ne pas envoyer de fonds au mauvais endroit.`,
-    p3: `C'est cela, SusuFinance. Pas un pari sur le prix, pas un terrain de jeu. Une infrastructure.`,
+  cost: {
+    heading: 'Combien ça coûte',
+    body: `Rien. SusuFinance est gratuit.`,
   },
-  building: {
-    heading: 'Ce que je construis',
-    intro: `SusuFinance est aujourd'hui un suiveur de portefeuille + un vérificateur de sécurité + un outil de comptabilité. La feuille de route est plus longue :`,
-    items: [
-      `Un Snap MetaMask qui vérifie les adresses avant que vous signiez, pour que la sécurité atteigne votre portefeuille lui-même.`,
-      `Une intégration plus profonde avec les fiscalistes et les conseillers, pour qu'SusuFinance ne soit pas seulement un outil que vous utilisez — mais une couche que votre comptable et votre conseiller comprennent tous les deux.`,
-      `Des outils d'écosystème qui permettent à d'autres créateurs d'intégrer la sécurité et la responsabilité dans leurs produits.`,
-    ],
-    outro: `L'étoile polaire : rendre évident que le meilleur produit cryptographique est celui qui ne vous demande pas de lui faire confiance aveuglément. Rendre la documentation et la vérification aussi simples que la transaction elle-même.`,
+  start: {
+    heading: `Ce qu'il vous faut pour commencer`,
+    body: `Un téléphone, et des personnes de confiance. Si vous n'avez pas votre propre téléphone, en emprunter un pour consulter votre carte convient très bien. Tout le reste, vous l'avez déjà : vous savez épargner, et vous savez avec qui.`,
   },
   beta: {
-    heading: 'Une note sur la version bêta',
-    p1: `SusuFinance est en version bêta. Ce n'est pas une excuse ; c'est une description. Nous apprenons encore ce dont les conseillers ont besoin, ce dont les utilisateurs des marchés émergents ont besoin, et à quoi ressemble la prochaine couche de sécurité. Nous construisons en public et itérons à partir de retours réels.`,
-    p2: `Être en version bêta ne signifie pas que le code est instable ni que vos données sont en danger. Cela signifie que nous décidons encore de la suite en fonction de ce que vous nous dites qui compte vraiment.`,
+    heading: 'Un mot pendant que nous grandissons',
+    body: `SusuFinance est récent, et certaines parties décrites ici arrivent encore dans tous les cercles. Ce qui ne change jamais, c'est la promesse au fond : nous ne détenons jamais votre argent, et votre registre est toujours le vôtre.`,
   },
+  close: `Depuis des générations, les femmes bâtissent leur sécurité à partir de la confiance et de petites contributions fidèles, bien avant qu'une banque ne propose son aide. SusuFinance ne remplace pas cela. Il le protège. Le même cercle. La même confiance. Désormais avec un registre qui est le vôtre, une épargne qui garde sa valeur, et la certitude que personne ne pourra jamais s'interposer entre vous et votre argent.`,
   reach: {
-    heading: 'Comment me joindre',
-    body: `Si vous avez des commentaires, des questions ou si vous voulez simplement discuter de la direction que prend tout cela, je lis chaque message. Écrivez-moi à <strong>hello@susufinance.com</strong> ou trouvez-moi sur LinkedIn.`,
+    heading: 'Des questions ?',
+    body: `Nous lisons chaque message. Écrivez-nous à <strong>hello@susufinance.com</strong>.`,
   },
 };
