@@ -59,7 +59,74 @@ export const POST: APIRoute = async ({ request }) => {
 			       ORDER BY round_index ASC LIMIT 1`,
 			args: [tenantId, contractId],
 		});
-		if (!nextRes.rows.length) return json({ ok: false, error: 'no_scheduled_round' }, 409);
+		// ── No scheduled round left = the rotation is finished ───────────────────
+		//
+		// Advancing IS the operator confirming the just-paid round is done. When there
+		// is nothing left to open but a final round is still open, this advance closes
+		// it out: the last payout is done, so the round completes, the circle completes,
+		// and everyone hears the cycle is finished. Without this the final round stayed
+		// open forever and 'cycle_complete' — fully built and translated — never fired.
+		if (!nextRes.rows.length) {
+			const openRes = await db.execute({
+				sql: `SELECT id, round_index, recipient_member_id FROM rounds
+				       WHERE tenant_id = ? AND contract_id = ? AND status = 'open'
+				       ORDER BY round_index DESC LIMIT 1`,
+				args: [tenantId, contractId],
+			});
+			if (!openRes.rows.length) return json({ ok: false, error: 'no_scheduled_round' }, 409);
+			const finalRound: any = openRes.rows[0];
+			const finalRoundId = String(finalRound.id);
+			const finalRecipientId = finalRound.recipient_member_id ? String(finalRound.recipient_member_id) : '';
+
+			// Complete the final round. Guarded to status='open' so a double-click is a
+			// harmless no-op rather than a second completion.
+			const done = await db.execute({
+				sql: `UPDATE rounds SET status = 'completed'
+				       WHERE tenant_id = ? AND id = ? AND status = 'open'`,
+				args: [tenantId, finalRoundId],
+			});
+			if ((done.rowsAffected ?? 0) === 0) return json({ ok: false, error: 'already_completed' }, 409);
+
+			// Close the circle (guarded to 'active' — same idempotence).
+			await db.execute({
+				sql: `UPDATE contracts SET status = 'completed', updated_at = now()
+				       WHERE tenant_id = ? AND id = ? AND status = 'active'`,
+				args: [tenantId, contractId],
+			});
+
+			await db.execute({
+				sql: `INSERT INTO contract_events (tenant_id, contract_id, actor, action, detail, at)
+				      VALUES (?, ?, 'organizer', 'cycle_completed', ?, now())`,
+				args: [tenantId, contractId, JSON.stringify({ final_round: Number(finalRound.round_index) })],
+			});
+
+			// Notices (non-fatal): the final recipient's payout is in — same signal every
+			// other round's recipient got when the next one opened — and every rotation
+			// member hears the cycle is complete.
+			try {
+				const cRes = await db.execute({
+					sql: `SELECT name FROM contracts WHERE tenant_id = ? AND id = ? LIMIT 1`,
+					args: [tenantId, contractId],
+				});
+				const contractName = cRes.rows?.[0] ? String((cRes.rows[0] as any).name ?? '') : '';
+				if (finalRecipientId) {
+					await notify({ memberId: finalRecipientId, contractId, kind: 'payout_observed', eventKey: finalRoundId, vars: { contractName } });
+				}
+				const mem = await db.execute({
+					sql: `SELECT member_id FROM contract_members
+					       WHERE tenant_id = ? AND contract_id = ? AND left_at IS NULL AND turn_order IS NOT NULL`,
+					args: [tenantId, contractId],
+				});
+				for (const row of (mem.rows ?? []) as Record<string, any>[]) {
+					const mid = row.member_id ? String(row.member_id) : '';
+					if (mid) await notify({ memberId: mid, contractId, kind: 'cycle_complete', eventKey: contractId, vars: { contractName } });
+				}
+			} catch (err) {
+				console.warn('[api/circles/open-round] cycle-complete notify failed (non-fatal)', err);
+			}
+
+			return json({ ok: true, cycleComplete: true });
+		}
 		const next: any = nextRes.rows[0];
 		const roundId = String(next.id);
 		const roundIndex = Number(next.round_index);

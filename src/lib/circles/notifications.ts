@@ -32,7 +32,7 @@ export type NotificationKind =
 	| 'gentle_late'       // past grace and still open — her eyes only, no shame
 	| 'cycle_complete';   // 🎉 — always written
 
-type Locale = 'en' | 'fr';
+type Locale = 'en' | 'fr' | 'es';
 
 export interface NotifyVars {
 	contractName?: string;
@@ -108,7 +108,16 @@ function render(kind: NotificationKind, locale: Locale, discreet: boolean, v: No
 			your_turn: { subject: 'Une mise à jour vous attend', text: `Vous avez une mise à jour dans SusuFinance.\n${link}` },
 			cycle_complete: { subject: 'Une mise à jour vous attend', text: `Vous avez une mise à jour dans SusuFinance.\n${link}` },
 		};
-		return (locale === 'fr' ? fr : en)[kind];
+		const es: Record<NotificationKind, { subject: string; text: string }> = {
+			reminder: { subject: 'Tienes un recordatorio', text: `Tienes un recordatorio en SusuFinance.\n${link}` },
+			due_today: { subject: 'Tienes un recordatorio', text: `Tienes un recordatorio en SusuFinance.\n${link}` },
+			gentle_late: { subject: 'Tienes un recordatorio', text: `Tienes un recordatorio en SusuFinance.\n${link}` },
+			payment_confirmed: { subject: 'Pago confirmado', text: `Tu pago fue confirmado.\n${link}` },
+			payout_observed: { subject: 'Pago recibido', text: `Se recibió un pago.\n${link}` },
+			your_turn: { subject: 'Tienes una novedad', text: `Tienes una novedad en SusuFinance.\n${link}` },
+			cycle_complete: { subject: 'Tienes una novedad', text: `Tienes una novedad en SusuFinance.\n${link}` },
+		};
+		return (locale === 'fr' ? fr : locale === 'es' ? es : en)[kind];
 	}
 
 	const g = GLYPH[kind] + ' ';
@@ -123,6 +132,18 @@ function render(kind: NotificationKind, locale: Locale, discreet: boolean, v: No
 			cycle_complete: { subject: `${g}${name} : cycle terminé`, text: `Le cycle de ${name} est terminé. Bravo.\n${link}` },
 		};
 		return fr[kind];
+	}
+	if (locale === 'es') {
+		const es: Record<NotificationKind, { subject: string; text: string }> = {
+			reminder: { subject: `${g}${name}: ${amt} a pagar el ${due}`, text: `Tu contribución para ${name} vence el ${due}: ${amt}.\n${link}` },
+			due_today: { subject: `${g}${name}: ${amt} a pagar hoy`, text: `Tu contribución para ${name} vence hoy: ${amt}.\n${link}` },
+			gentle_late: { subject: `${g}${name}: contribución aún abierta`, text: `Tu contribución para ${name} sigue abierta: ${amt}. Cuando puedas, puedes completarla.\n${link}` },
+			payment_confirmed: { subject: `${g}${amt} recibidos — ${name}`, text: `Tu contribución para ${name} fue recibida: ${amt}.\n${link}` },
+			payout_observed: { subject: `${g}Tu pago está completo — ${name}`, text: `Tu pago de ${name} está completo. La ronda te ha pagado.\n${link}` },
+			your_turn: { subject: `${g}${name}: es tu turno`, text: `Es tu turno en ${name}. Tu dirección de pago está verificada, y esta ronda te paga.\n${link}` },
+			cycle_complete: { subject: `${g}${name}: ciclo completo`, text: `El ciclo de ${name} está completo. Bien hecho.\n${link}` },
+		};
+		return es[kind];
 	}
 	const en: Record<NotificationKind, { subject: string; text: string }> = {
 		reminder: { subject: `${g}${name}: ${amt} due ${due}`, text: `Your contribution to ${name} is due ${due}: ${amt}.\n${link}` },
@@ -181,7 +202,7 @@ export async function notify(opts: {
 		return { inApp: false, emailed: false };
 	}
 
-	const locale: Locale = m.locale === 'fr' ? 'fr' : 'en';
+	const locale: Locale = m.locale === 'fr' ? 'fr' : m.locale === 'es' ? 'es' : 'en';
 	const discreet = pref.discreet === true;
 	const contractId = opts.contractId ?? null;
 	const bodyRef = `${opts.kind}:${opts.eventKey}`;

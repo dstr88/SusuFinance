@@ -201,7 +201,9 @@ export default function ProgrammeStats({ lang }: { lang: Lang }) {
 
 				<section className="ps-card">
 					<h2 className="ps-card__title">{t.stats.ops}</h2>
-					<p className="ps-empty">{t.stats.opsNotBuilt}</p>
+					<p className={d.ops.notificationsBuilt ? 'ps-hint ps-hint--tight' : 'ps-empty'}>
+						{d.ops.notificationsBuilt ? t.stats.opsBuilt : t.stats.opsNotBuilt}
+					</p>
 				</section>
 			</div>
 

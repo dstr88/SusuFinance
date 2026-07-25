@@ -272,7 +272,7 @@ export default function MemberCards({ lang, contractId, isAdmin = false }: { lan
 			const j = await res.json().catch(() => ({}));
 			const o = t.drill.openRound;
 			if (j?.ok) {
-				setOpenMsg(o.opened(Number(j.opened?.roundIndex ?? 0), j.opened?.recipientName ?? ''));
+				setOpenMsg(j.cycleComplete ? o.cycleComplete : o.opened(Number(j.opened?.roundIndex ?? 0), j.opened?.recipientName ?? ''));
 				await load();
 			} else {
 				const name = j?.recipientName ?? '';

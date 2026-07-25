@@ -290,6 +290,7 @@ export interface CirclesLocale {
 		safetyRiskNone: string;
 		ops: string;
 		opsNotBuilt: string;
+		opsBuilt: string;
 		export: string;
 		exportHint: string;
 		noData: string;
@@ -341,6 +342,7 @@ export interface CirclesLocale {
 			notVerified: (name: string) => string;
 			noAddress: (name: string) => string;
 			noScheduled: string;
+			cycleComplete: string;
 			err: string;
 		};
 		/** Operator activates a forming circle — freezes the turn order into rounds. */
@@ -485,6 +487,7 @@ const EN: CirclesLocale = {
 			notVerified: (name) => `Can't open: ${name || 'the recipient'}'s payout wallet is not verified with Verify.`,
 			noAddress: (name) => `Can't open: ${name || 'the recipient'} has no payout wallet set yet.`,
 			noScheduled: 'No more rounds to open.',
+			cycleComplete: 'Cycle complete. Every round has paid out. 🎉',
 			err: 'Could not open the round. Try again.',
 		},
 		activate: {
@@ -653,6 +656,7 @@ const EN: CirclesLocale = {
 		safetyRiskNone: 'Every open round has a verified recipient.',
 		ops: 'Reminders',
 		opsNotBuilt: 'Notifications are not built yet — nothing has been sent.',
+		opsBuilt: 'Notifications and reminders are live — in-app, with opt-in email.',
 		export: 'Export programme report',
 		exportHint: 'Aggregates only. No member rows leave this programme.',
 		noData: '—',
@@ -790,6 +794,7 @@ const FR: CirclesLocale = {
 			notVerified: (name) => `Impossible d'ouvrir : le portefeuille de versement de ${name || 'la bénéficiaire'} n'est pas vérifié avec Verify.`,
 			noAddress: (name) => `Impossible d'ouvrir : ${name || 'la bénéficiaire'} n'a pas encore de portefeuille de versement.`,
 			noScheduled: 'Plus aucun tour à ouvrir.',
+			cycleComplete: 'Cycle terminé. Chaque tour a été versé. 🎉',
 			err: 'Impossible d’ouvrir le tour. Réessayez.',
 		},
 		activate: {
@@ -957,6 +962,7 @@ const FR: CirclesLocale = {
 		safetyRiskNone: 'Chaque tour ouvert a une bénéficiaire vérifiée.',
 		ops: 'Rappels',
 		opsNotBuilt: 'Les notifications ne sont pas encore construites — rien n’a été envoyé.',
+		opsBuilt: 'Les notifications et rappels sont actifs — dans l’app, avec e-mail optionnel.',
 		export: 'Exporter le rapport du programme',
 		exportHint: 'Agrégats uniquement. Aucune ligne de membre ne quitte ce programme.',
 		noData: '—',
@@ -1214,6 +1220,7 @@ const ES: CirclesLocale = {
 			notVerified: (name) => `No se puede abrir: la billetera de pago de ${name || 'la receptora'} no está verificada con Verify.`,
 			noAddress: (name) => `No se puede abrir: ${name || 'la receptora'} aún no tiene billetera de pago.`,
 			noScheduled: 'No hay más rondas por abrir.',
+			cycleComplete: 'Ciclo completo. Cada ronda ha pagado. 🎉',
 			err: 'No se pudo abrir la ronda. Inténtalo de nuevo.',
 		},
 		activate: {
@@ -1263,6 +1270,7 @@ const ES: CirclesLocale = {
 		safetyRiskNone: 'Cada ronda abierta tiene una receptora verificada.',
 		ops: 'Recordatorios',
 		opsNotBuilt: 'Las notificaciones aún no están construidas — no se ha enviado nada.',
+		opsBuilt: 'Las notificaciones y recordatorios están activos — en la app, con correo opcional.',
 		export: 'Exportar el informe del programa',
 		exportHint: 'Solo agregados. Ninguna fila de integrante sale de este programa.',
 		noData: '—',

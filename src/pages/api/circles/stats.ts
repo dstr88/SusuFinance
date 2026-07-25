@@ -245,9 +245,9 @@ export const GET: APIRoute = async ({ request }) => {
 				verifiedShare: activeMembers > 0 ? (Number(v.verified) || 0) / activeMembers : null,
 				openRoundsUnverifiedRecipient: Number((riskRes.rows[0] as any)?.n) || 0,
 			},
-			// Honest zero-state rather than a fabricated number: the notifications table
-			// does not exist yet, so nothing has been sent and we say so.
-			ops: { notificationsBuilt: false },
+			// Notifications and reminders are live (in-app + opt-in email, idempotent
+			// per member per event). The panel says so rather than the old zero-state.
+			ops: { notificationsBuilt: true },
 			updatedAt: new Date().toISOString(),
 		});
 	} catch (err) {
