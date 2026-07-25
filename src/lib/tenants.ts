@@ -1,7 +1,6 @@
 import crypto from 'node:crypto';
 import nodemailer from 'nodemailer';
 import { db } from './db';
-import { ensureFreeSubscription } from './subscriptions';
 
 const TENANT_ALERT_EMAIL = 'donnie@titaniumhut.com';
 
@@ -360,8 +359,6 @@ ON CONFLICT DO NOTHING`,
 	}
 
 	if (await tryCasActiveTenant(tenantId)) {
-		// Provision a free subscription row for every new tenant
-		await ensureFreeSubscription(tenantId).catch(() => { /* non-fatal */ });
 		await sendTenantAlert(userId, tenantId);
 		return tenantId;
 	}
@@ -378,8 +375,6 @@ ON CONFLICT DO NOTHING`,
 	}
 
 	if (await tryCasActiveTenant(tenantId)) {
-		// Provision a free subscription row for every new tenant
-		await ensureFreeSubscription(tenantId).catch(() => { /* non-fatal */ });
 		await sendTenantAlert(userId, tenantId);
 		return tenantId;
 	}

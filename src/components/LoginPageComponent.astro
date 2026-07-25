@@ -211,14 +211,6 @@ const isLockedOut = message === 'LOCKED_OUT';
     </script>
   )}
 
-  <!-- Wallet error hint and default hint as data attrs so JS can reference them -->
-  <div
-    id="demo-hint-data"
-    hidden
-    data-hint={t.hero.walletHint}
-    data-error-hint={t.hero.walletErrorHint}
-  ></div>
-
   <script>
     // ── CSRF refresh ──────────────────────────────────────────────────
     (async () => {
@@ -345,154 +337,9 @@ const isLockedOut = message === 'LOCKED_OUT';
       });
     })();
 
-    // ── Demo invite modal (30s timer, reset on interaction) ──────────
-    (() => {
-      const overlay  = document.getElementById('hesitationOverlay');
-      const closeBtn = document.getElementById('hesitationClose');
 
-      if (!overlay) return;
 
-      let timer: ReturnType<typeof setTimeout>;
-      const DELAY = 30_000;
-      let shown = false;
 
-      function showModal() {
-        if (shown) return;
-        shown = true;
-        overlay!.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function resetTimer() {
-        clearTimeout(timer);
-        if (!shown) timer = setTimeout(showModal, DELAY);
-      }
-
-      function dismiss() {
-        overlay!.classList.add('hidden');
-        document.body.style.overflow = '';
-      }
-
-      closeBtn?.addEventListener('click', dismiss);
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) dismiss();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') dismiss();
-      });
-
-      ['click', 'keydown', 'scroll', 'mousemove', 'touchstart'].forEach(ev => {
-        document.addEventListener(ev, resetTimer, { passive: true });
-      });
-      resetTimer();
-    })();
-
-    // ── Portfolio card tilt (desktop, reduced-motion respected) ─────
-    (() => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      if (window.matchMedia('(max-width: 64rem)').matches) return;
-      const card  = document.getElementById('portfolioPreviewCard');
-      const right = card?.closest('.landing__right') as HTMLElement | null;
-      if (!card || !right) return;
-      right.addEventListener('mousemove', (e: MouseEvent) => {
-        const rect = right.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width  - 0.5) * 14;
-        const y = ((e.clientY - rect.top)  / rect.height - 0.5) * -10;
-        (card as HTMLElement).style.transform = `perspective(600px) rotateY(${x}deg) rotateX(${y}deg) translateY(var(--float-offset, 0px))`;
-      });
-      right.addEventListener('mouseleave', () => {
-        (card as HTMLElement).style.transform = '';
-      });
-    })();
-
-    // ── Wallet demo form ──────────────────────────────────────────────
-    (() => {
-      const EVM_RE        = /^0x[a-fA-F0-9]{40}$/;
-      const BTC_BECH_RE   = /^bc1[a-zA-HJ-NP-Z0-9]{25,}$/;
-      const BTC_LEGACY_RE = /^[13][a-zA-HJ-NP-Z0-9]{25,34}$/;
-      const LTC_BECH_RE   = /^ltc1[a-zA-HJ-NP-Z0-9]{25,}$/;
-      const LTC_LEGACY_RE = /^[LM][a-zA-HJ-NP-Z0-9]{25,34}$/;
-      const SOL_RE        = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-
-      function isKnownAddress(addr: string): boolean {
-        return EVM_RE.test(addr) || BTC_BECH_RE.test(addr) || BTC_LEGACY_RE.test(addr)
-          || LTC_BECH_RE.test(addr) || LTC_LEGACY_RE.test(addr) || SOL_RE.test(addr);
-      }
-
-      const form  = document.getElementById('demoForm') as HTMLFormElement | null;
-      const hint  = document.getElementById('demoHint') as HTMLElement | null;
-      const data  = document.getElementById('demo-hint-data') as HTMLElement | null;
-      const defaultHint = data?.dataset.hint ?? '';
-      const errorHint   = data?.dataset.errorHint ?? '';
-
-      if (!form) return;
-
-      const input = form.querySelector('.landing__demo-input') as HTMLInputElement | null;
-
-      input?.addEventListener('input', () => {
-        if (hint) { hint.textContent = defaultHint; hint.classList.remove('demo-hint--error'); }
-      });
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const btn     = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
-        const address = input?.value.trim() ?? '';
-
-        if (address && !isKnownAddress(address)) {
-          if (hint) { hint.textContent = errorHint; hint.classList.add('demo-hint--error'); }
-          return;
-        }
-
-        if (btn) btn.disabled = true;
-        window.location.href = address
-          ? `/api/demo/start?address=${encodeURIComponent(address)}`
-          : '/api/demo/start';
-      });
-    })();
-
-    // ── Tool carousel (auto-scroll: Check · Track · Verify) ───────────
-    (() => {
-      const track = document.getElementById('toolTrack');
-      if (!track) return;
-      const count = track.children.length;
-      const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('.tool-dot'));
-      const indicator = document.getElementById('toolDotsIndicator');
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      let i = 0;
-      let timer: ReturnType<typeof setInterval> | null = null;
-
-      function render() {
-        track!.style.transform = `translateX(${-i * 100}%)`;
-        dots.forEach((d, k) => d.setAttribute('aria-selected', k === i ? 'true' : 'false'));
-        const active = dots[i];
-        if (indicator && active) {
-          indicator.style.transform = `translateX(${active.offsetLeft + active.offsetWidth / 2 - 10}px)`;
-        }
-      }
-      function go(n: number) { i = (n + count) % count; render(); }
-      function stop() { if (timer) { clearInterval(timer); timer = null; } }
-      function start() { if (reduce) return; stop(); timer = setInterval(() => go(i + 1), 4500); }
-
-      dots.forEach((d) => d.addEventListener('click', () => { go(Number(d.dataset.i)); start(); }));
-      document.getElementById('toolPrev')?.addEventListener('click', () => { go(i - 1); start(); });
-      document.getElementById('toolNext')?.addEventListener('click', () => { go(i + 1); start(); });
-
-      const root = document.querySelector('.tool-carousel');
-      root?.addEventListener('pointerenter', stop);
-      root?.addEventListener('pointerleave', start);
-      root?.addEventListener('focusin', stop);
-      root?.addEventListener('focusout', start);
-
-      let x0: number | null = null;
-      track.addEventListener('pointerdown', (e) => { x0 = e.clientX; stop(); });
-      track.addEventListener('pointerup', (e) => {
-        if (x0 !== null) { const dx = e.clientX - x0; if (Math.abs(dx) > 40) go(dx < 0 ? i + 1 : i - 1); x0 = null; }
-        start();
-      });
-
-      render();
-      start();
-    })();
   </script>
 
   <style>

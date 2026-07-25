@@ -6,7 +6,6 @@ import DemoBanner from "@/components/DemoBanner.astro";
 import { getAuthSession } from '@/lib/authSession';
 import { db } from '@/lib/db';
 import { isDemoRequest } from '@/lib/demo';
-import { getActivePlan } from '@/lib/subscriptions';
 import kingSolomon from '@/assets/KingSolomon.png';
 
 import minerva from '@/assets/Minerva.png';
@@ -141,26 +140,6 @@ const tCircles = getCirclesLocale(navLang);
 
 
 // ── Promo expiry banner ───────────────────────────────────────────────────────
-const PROMO_EXPIRY_SENTINEL = '9999-12-31T23:59:59Z';
-let promoDaysLeft: number | null = null;
-let promoExpiryDisplay: string | null = null;
-if (tenantId) {
-  try {
-    const plan = await getActivePlan(tenantId);
-    const expiresAt = (plan as any).promoExpiresAt as string | undefined;
-    if (expiresAt && expiresAt !== PROMO_EXPIRY_SENTINEL) {
-      const msLeft = new Date(expiresAt).getTime() - Date.now();
-      const days = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
-      if (days <= 30 && days > 0) {
-        promoDaysLeft = days;
-        const dateLocale = navLang === 'es' ? 'es-ES' : navLang === 'fr' ? 'fr-FR' : 'en-US';
-        promoExpiryDisplay = new Intl.DateTimeFormat(dateLocale, {
-          month: 'long', day: 'numeric', year: 'numeric'
-        }).format(new Date(expiresAt));
-      }
-    }
-  } catch { /* non-fatal */ }
-}
 
 const memberSinceDisplay = memberSinceIso
   ? new Intl.DateTimeFormat(navLang === 'es' ? 'es-ES' : navLang === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(memberSinceIso))
@@ -241,19 +220,6 @@ const memberSinceDisplay = memberSinceIso
 		)}
 
 		{isDemo && <DemoBanner />}
-		{promoDaysLeft !== null && (
-			<div class="promo-expiry-banner">
-				<span class="promo-expiry-banner__icon">⏳</span>
-				<span class="promo-expiry-banner__text">
-					<strong>{tNav.chrome.promoDays(promoDaysLeft!)}</strong>
-					{promoExpiryDisplay ? ` (${promoExpiryDisplay})` : ''}.
-					{tNav.chrome.promoKeep}
-				</span>
-				<a href="/dashboard/billing" class="promo-expiry-banner__btn">
-					{tNav.chrome.promoViewPlans}
-				</a>
-			</div>
-		)}
 		<div class="chrome">
 			<header class="chrome__header" id="chrome-header">
 				<div>
@@ -731,7 +697,7 @@ window.__chromeI18n = chromeI18n;
 	document.getElementById('delete-account-btn')?.addEventListener('click', async () => {
 		const confirmed = confirm('Are you sure? This will permanently delete everything you have stored. This cannot be undone.');
 		if (!confirmed) return;
-		const confirmed2 = confirm('Last chance — all your tins, entries, and subscription data will be permanently and irreversibly deleted. Continue?');
+		const confirmed2 = confirm('Last chance — everything in your account will be permanently and irreversibly deleted. Continue?');
 		if (!confirmed2) return;
 		try {
 			const res = await fetch('/api/account/delete', { method: 'POST' });
