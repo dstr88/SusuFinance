@@ -30,6 +30,7 @@
  */
 
 import { db } from '../db';
+import { notify } from './notifications';
 
 /** Free-tier Etherscan allows ~5 calls/sec; stay well under and cap the run. */
 const MAX_LOOKUPS_PER_RUN = 60;
@@ -99,6 +100,9 @@ function toAmount(value: string, decimals: string): number {
  */
 export async function observePayments(): Promise<ObserveResult> {
 	const out: ObserveResult = { checked: 0, paid: 0, partial: 0, errors: [] };
+	// Newly-observed payments to confirm (✅) after the matching loop, so email
+	// latency never interleaves with the chain lookups.
+	const paidNotices: { memberId: string; contractId: string; contributionId: unknown; contractName: string; amount: number; currency: string }[] = [];
 	const { apiKey, chainId } = config();
 	if (!apiKey) {
 		out.errors.push('ETHERSCAN_API_KEY not set');
@@ -110,12 +114,14 @@ export async function observePayments(): Promise<ObserveResult> {
 	// round with no snapshot predates the anti-swap freeze and is skipped rather than
 	// matched against a moving target.
 	const rows = await db.execute({
-		sql: `SELECT c.id, c.tenant_id, c.member_id, c.expected_amount, c.due_date,
+		sql: `SELECT c.id, c.tenant_id, c.member_id, c.contract_id, c.expected_amount, c.due_date,
 		             r.payout_address_snapshot AS dest,
-		             m.wallet_address AS payer
+		             m.wallet_address AS payer,
+		             ct.name AS contract_name, ct.currency AS currency
 		      FROM contributions c
-		      JOIN rounds r  ON r.id = c.round_id AND r.tenant_id = c.tenant_id
-		      JOIN members m ON m.id = c.member_id AND m.tenant_id = c.tenant_id
+		      JOIN rounds r     ON r.id  = c.round_id    AND r.tenant_id  = c.tenant_id
+		      JOIN contracts ct ON ct.id = c.contract_id AND ct.tenant_id = c.tenant_id
+		      JOIN members m    ON m.id  = c.member_id    AND m.tenant_id  = c.tenant_id
 		      WHERE c.status = 'pending'
 		        AND r.status = 'open'
 		        AND r.payout_address_snapshot IS NOT NULL
@@ -173,8 +179,35 @@ export async function observePayments(): Promise<ObserveResult> {
 				args: [status, String(match.hash), amount, Number(match.timeStamp ?? 0), item.id as number],
 			});
 
-			if (status === 'paid') out.paid++;
-			else out.partial++;
+			if (status === 'paid') {
+				out.paid++;
+				paidNotices.push({
+					memberId: String(item.member_id),
+					contractId: String(item.contract_id),
+					contributionId: item.id,
+					contractName: String(item.contract_name ?? ''),
+					amount,
+					currency: String(item.currency ?? 'USDC'),
+				});
+			} else {
+				out.partial++;
+			}
+		}
+	}
+
+	// Confirm each newly-observed payment (✅). Idempotent, and non-fatal: a
+	// notification failure must never break payment observation.
+	for (const n of paidNotices) {
+		try {
+			await notify({
+				memberId: n.memberId,
+				contractId: n.contractId,
+				kind: 'payment_confirmed',
+				eventKey: String(n.contributionId),
+				vars: { contractName: n.contractName, amount: n.amount, currency: n.currency },
+			});
+		} catch (e) {
+			out.errors.push(`notify ${n.contributionId}: ${e instanceof Error ? e.message : e}`);
 		}
 	}
 

@@ -1,0 +1,32 @@
+# Sends circle contribution reminders (T-2 by default) and opt-in due-day nudges.
+#
+# Once a day, not hourly: a reminder is a date fact, and every notice is idempotent
+# (claimed by a unique key), so a member is reminded exactly once per contribution no
+# matter how often this runs. Paid contributions are silent by construction.
+#
+# Runs from the repository's DEFAULT branch. curl uses --fail so an HTTP error turns
+# the run red instead of exiting 0 while nothing was sent.
+name: reminders
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send reminders
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "CRON_SECRET is not set as a repository secret"; exit 1
+          fi
+          BASE="${APP_URL:-https://susufinance.com}"
+          curl -sS --fail --max-time 300 \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${BASE}/api/cron/reminders"
