@@ -17,7 +17,6 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "db:migrate": "node --env-file-if-exists=.env src/scripts/pgMigrate.mjs",
-    "db:migrate:turso": "node src/scripts/dbMigrate.mjs",
     "seed:addresses": "node src/scripts/seedKnownAddresses.mjs",
     "seed:circle": "node --env-file-if-exists=.env src/scripts/seedDemoCircle.mjs",
     "seed:beta": "node --env-file-if-exists=.env src/scripts/seedBetaCircle.mjs",
@@ -36,6 +35,9 @@
     "@types/pdfkit": "^0.17.5",
     "@types/pg": "^8.20.0",
     "@types/qrcode": "^1.5.6",
+    "@zerodev/ecdsa-validator": "^5.4.9",
+    "@zerodev/passkey-validator": "^5.6.0",
+    "@zerodev/sdk": "^5.5.10",
     "astro": "^6.4.8",
     "bcryptjs": "^3.0.3",
     "canonicalize": "^3.0.0",
@@ -55,6 +57,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "stripe": "^20.4.1",
+    "viem": "^2.55.7",
     "zod": "^3.25.76"
   },
   "devDependencies": {
