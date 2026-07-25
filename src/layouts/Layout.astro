@@ -27,9 +27,6 @@ const user = session?.user ?? null;
 const isDemo = !user?.id && isDemoRequest(Astro.request);
 const tenantId = session?.tenantId ?? null;
 
-// Tax section (Summary + yearEnd/*) is owner-gated — hide its nav entry from
-// everyone else so the demo has no dead-end links into /tax-login.
-
 // Avatar: use OAuth profile image if available, otherwise pick a random default
 const defaultAvatars = [kingSolomon, minerva];
 const defaultAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];

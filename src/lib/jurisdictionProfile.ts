@@ -12,7 +12,11 @@
  */
 
 import { db } from './db';
-import type { CostBasisMethod } from './yearEnd/lotSelection';
+
+// Cost-basis method a jurisdiction defaults to. Once shared with the year-end tax
+// engine (now removed); kept here because the jurisdiction settings feature still
+// records it.
+export type CostBasisMethod = 'fifo' | 'hifo' | 'lifo' | 'spec_id';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
