@@ -15,7 +15,7 @@
 // The lobby server-seeds `initial` so this paints without a spinner on a slow
 // bundle; every action refetches /api/me/circles for the fresh list.
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getCirclesLocale } from '@/i18n/dashboard/circles';
 import type { Lang } from '@/lib/i18n/locale';
 import type { MemberCircle, MemberVote } from '@/lib/circles/memberAccount';
@@ -32,6 +32,20 @@ interface MemberInfo {
 interface InitialAccount {
 	member: MemberInfo | null;
 	circles: MemberCircle[];
+}
+interface NoteItem {
+	id: string;
+	kind: string;
+	title: string;
+	body: string;
+	createdAt: string;
+	read: boolean;
+}
+interface PrefState {
+	reminders: boolean;
+	due_day_nudge: boolean;
+	discreet: boolean;
+	email_opt_in: boolean;
 }
 
 interface Props {
@@ -69,6 +83,58 @@ export default function MemberAccount({ lang, initial }: Props) {
 	const [activity, setActivity] = useState<ActivityItem[] | null>(null);
 	const [activityReason, setActivityReason] = useState<string | null>(null);
 	const [activityTruncated, setActivityTruncated] = useState(false);
+
+	// Her in-app inbox — the notices written for her (reminders, payment confirmations).
+	// The private channel: behind her login, nothing on a shared lock screen.
+	const [notes, setNotes] = useState<NoteItem[]>([]);
+	const [unread, setUnread] = useState(0);
+	const [prefs, setPrefs] = useState<PrefState>({ reminders: true, due_day_nudge: false, discreet: false, email_opt_in: false });
+	const [hasEmail, setHasEmail] = useState(false);
+
+	const loadNotes = useCallback(async () => {
+		try {
+			const res = await fetch('/api/me/notifications', { headers: { Accept: 'application/json' } });
+			const data = await res.json();
+			if (data?.ok) {
+				setNotes(Array.isArray(data.notifications) ? data.notifications : []);
+				setUnread(Number(data.unread) || 0);
+			}
+		} catch { /* keep the last good view */ }
+	}, []);
+
+	const loadPrefs = useCallback(async () => {
+		try {
+			const res = await fetch('/api/me/preferences', { headers: { Accept: 'application/json' } });
+			const data = await res.json();
+			if (data?.ok && data.prefs) { setPrefs(data.prefs); setHasEmail(Boolean(data.hasEmail)); }
+		} catch { /* keep defaults */ }
+	}, []);
+
+	useEffect(() => { void loadNotes(); void loadPrefs(); }, [loadNotes, loadPrefs]);
+
+	const togglePref = useCallback(async (key: keyof PrefState) => {
+		const next = !prefs[key];
+		setPrefs((p) => ({ ...p, [key]: next }));
+		try {
+			await fetch('/api/me/preferences', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [key]: next }) });
+		} catch { void loadPrefs(); }
+	}, [prefs, loadPrefs]);
+
+	const markAllRead = useCallback(async () => {
+		setNotes((ns) => ns.map((n) => ({ ...n, read: true })));
+		setUnread(0);
+		try {
+			await fetch('/api/me/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+		} catch { void loadNotes(); }
+	}, [loadNotes]);
+
+	const markOne = useCallback(async (id: string) => {
+		setNotes((ns) => ns.map((n) => (n.id === id ? { ...n, read: true } : n)));
+		setUnread((u) => Math.max(0, u - 1));
+		try {
+			await fetch('/api/me/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+		} catch { void loadNotes(); }
+	}, [loadNotes]);
 
 	const refetch = useCallback(async () => {
 		try {
@@ -204,11 +270,43 @@ export default function MemberAccount({ lang, initial }: Props) {
 			<summary className="ma__trigger">
 				<span className="ma__avatar" aria-hidden="true">{initialOf(label)}</span>
 				<span className="ma__triggerlabel">{t.me.trigger}</span>
+				{unread > 0 && <span className="ma__unread" aria-label={String(unread)}>{unread}</span>}
 				<span className="ma__caret" aria-hidden="true">▾</span>
 			</summary>
 
 			<div className="ma__panel" role="dialog" aria-label={t.me.heading}>
 				<p className="ma__name">{label}</p>
+
+				{/* Her inbox — reminders and confirmations, her private record. */}
+				<section className="ma__inbox">
+					<div className="ma__inboxhead">
+						<span className="ma__inboxtitle">
+							{t.me.notifications.heading}{unread > 0 ? ` · ${unread}` : ''}
+						</span>
+						{unread > 0 && (
+							<button type="button" className="ma__inboxread" onClick={markAllRead}>
+								{t.me.notifications.markAllRead}
+							</button>
+						)}
+					</div>
+					{notes.length === 0 ? (
+						<p className="ma__inboxnone">{t.me.notifications.none}</p>
+					) : (
+						<ul className="ma__inboxlist">
+							{notes.map((n) => (
+								<li
+									key={n.id}
+									className={`ma__note${n.read ? '' : ' ma__note--unread'}`}
+									onClick={() => { if (!n.read) void markOne(n.id); }}
+								>
+									<span className="ma__notetitle">{n.title}</span>
+									{n.body && <span className="ma__notebody">{firstLine(n.body)}</span>}
+									<span className="ma__notewhen">{fmtNoteWhen(n.createdAt, lang)}</span>
+								</li>
+							))}
+						</ul>
+					)}
+				</section>
 
 				{/* Her payout wallet — where her turn pays. She sets it; the app never
 				    holds it. Verification (self-send) is deferred, so it reads
@@ -380,6 +478,29 @@ export default function MemberAccount({ lang, initial }: Props) {
 					<a className="ma__record" href="/me/card">{t.me.card.open}</a>
 				)}
 
+				{/* Notification preferences — hers to switch off. */}
+				<section className="ma__prefs">
+					<span className="ma__prefstitle">{t.me.prefs.heading}</span>
+					<label className="ma__pref">
+						<input type="checkbox" checked={prefs.reminders} onChange={() => togglePref('reminders')} />
+						<span>{t.me.prefs.reminders}</span>
+					</label>
+					<label className="ma__pref">
+						<input type="checkbox" checked={prefs.due_day_nudge} onChange={() => togglePref('due_day_nudge')} />
+						<span>{t.me.prefs.dueDayNudge}</span>
+					</label>
+					<label className="ma__pref">
+						<input type="checkbox" checked={prefs.discreet} onChange={() => togglePref('discreet')} />
+						<span>{t.me.prefs.discreet}</span>
+					</label>
+					{hasEmail && (
+						<label className="ma__pref">
+							<input type="checkbox" checked={prefs.email_opt_in} onChange={() => togglePref('email_opt_in')} />
+							<span>{t.me.prefs.email}</span>
+						</label>
+					)}
+				</section>
+
 				<form className="ma__logout" method="post" action="/api/logout">
 					<button type="submit" className="ma__logoutbtn">{t.me.logout}</button>
 				</form>
@@ -457,6 +578,20 @@ function fmtMonthYear(iso: string, lang: Lang): string {
 	if (Number.isNaN(d.getTime())) return iso;
 	const loc = lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : 'en-US';
 	return d.toLocaleDateString(loc, { month: 'short', year: 'numeric' });
+}
+
+// The stored body ends with the link URL on its own line; the inbox is already in the
+// app, so show only the human sentence.
+function firstLine(s: string): string {
+	return (s ?? '').split('\n')[0];
+}
+
+// Notice timestamps are ISO strings from the API.
+function fmtNoteWhen(iso: string, lang: Lang): string {
+	const d = new Date(iso);
+	if (Number.isNaN(d.getTime())) return '';
+	const loc = lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : 'en-US';
+	return d.toLocaleDateString(loc, { month: 'short', day: 'numeric' });
 }
 
 function initialOf(name: string): string {

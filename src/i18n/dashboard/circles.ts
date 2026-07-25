@@ -165,6 +165,18 @@ export interface CirclesLocale {
 			done: string;
 		};
 		err: string;
+		notifications: {
+			heading: string;
+			markAllRead: string;
+			none: string;
+		};
+		prefs: {
+			heading: string;
+			reminders: string;
+			dueDayNudge: string;
+			discreet: string;
+			email: string;
+		};
 		logout: string;
 		/** Her susu card — her record in one circle, decorated. Not a score. */
 		card: {
@@ -525,6 +537,18 @@ const EN: CirclesLocale = {
 			done: 'Sent to the group ✓',
 		},
 		err: 'That did not go through. Try again.',
+		notifications: {
+			heading: 'Notifications',
+			markAllRead: 'Mark all read',
+			none: "You're all caught up.",
+		},
+		prefs: {
+			heading: 'Preferences',
+			reminders: 'Reminders',
+			dueDayNudge: 'Nudge on the due day',
+			discreet: 'Discreet mode',
+			email: 'Email me too',
+		},
 		logout: 'Log out',
 		card: {
 			memberSince: (date) => `Member since ${date}`,
@@ -817,6 +841,18 @@ const FR: CirclesLocale = {
 			done: 'Envoyé au groupe ✓',
 		},
 		err: 'Cela n’a pas abouti. Réessayez.',
+		notifications: {
+			heading: 'Notifications',
+			markAllRead: 'Tout marquer comme lu',
+			none: 'Vous êtes à jour.',
+		},
+		prefs: {
+			heading: 'Préférences',
+			reminders: 'Rappels',
+			dueDayNudge: 'Rappel le jour même',
+			discreet: 'Mode discret',
+			email: 'M’envoyer aussi un e-mail',
+		},
 		logout: 'Se déconnecter',
 		card: {
 			memberSince: (date) => `Membre depuis ${date}`,
@@ -1045,6 +1081,18 @@ const ES: CirclesLocale = {
 			done: 'Enviado al grupo ✓',
 		},
 		err: 'No se pudo completar. Inténtalo de nuevo.',
+		notifications: {
+			heading: 'Notificaciones',
+			markAllRead: 'Marcar todo como leído',
+			none: 'Estás al día.',
+		},
+		prefs: {
+			heading: 'Preferencias',
+			reminders: 'Recordatorios',
+			dueDayNudge: 'Aviso el día del vencimiento',
+			discreet: 'Modo discreto',
+			email: 'Enviarme también un correo',
+		},
 		logout: 'Cerrar sesión',
 		card: {
 			memberSince: (date) => `Integrante desde ${date}`,

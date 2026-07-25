@@ -20,6 +20,7 @@ import { db } from '@/lib/db';
 import { requireTenantSession } from '@/lib/requireTenantSession';
 import { getAuthSession } from '@/lib/authSession';
 import { checkAlmstinsVerify } from '@/lib/circles/almstinsVerify';
+import { notify } from '@/lib/circles/notifications';
 
 export const prerender = false;
 
@@ -127,6 +128,11 @@ export const POST: APIRoute = async ({ request }) => {
 		if ((opened.rowsAffected ?? 0) === 0) return json({ ok: false, error: 'already_opened' }, 409);
 
 		// Advancing means the previous round is done — complete any other open round.
+			const prevRes = await db.execute({
+				sql: `SELECT id, recipient_member_id FROM rounds
+				       WHERE tenant_id = ? AND contract_id = ? AND status = 'open' AND id <> ?`,
+				args: [tenantId, contractId, roundId],
+			});
 		await db.execute({
 			sql: `UPDATE rounds SET status = 'completed'
 			       WHERE tenant_id = ? AND contract_id = ? AND status = 'open' AND id <> ?`,
@@ -155,6 +161,24 @@ export const POST: APIRoute = async ({ request }) => {
 			      VALUES (?, ?, 'organizer', 'round_opened', ?, now())`,
 			args: [tenantId, contractId, JSON.stringify({ round: roundIndex, recipient_member_id: recipientId })],
 		});
+
+			// Notices (non-fatal — a notification failure must never undo a round open):
+			// the new recipient learns it is her turn; each just-completed round's
+			// recipient learns her payout is in.
+			try {
+				const cRes = await db.execute({
+					sql: `SELECT name FROM contracts WHERE tenant_id = ? AND id = ? LIMIT 1`,
+					args: [tenantId, contractId],
+				});
+				const contractName = cRes.rows?.[0] ? String((cRes.rows[0] as any).name ?? '') : '';
+				await notify({ memberId: recipientId, contractId, kind: 'your_turn', eventKey: roundId, vars: { contractName } });
+				for (const pv of (prevRes.rows ?? []) as Record<string, any>[]) {
+					const pid = pv.recipient_member_id ? String(pv.recipient_member_id) : '';
+					if (pid) await notify({ memberId: pid, contractId, kind: 'payout_observed', eventKey: String(pv.id), vars: { contractName } });
+				}
+			} catch (err) {
+				console.warn('[api/circles/open-round] notify failed (non-fatal)', err);
+			}
 
 		return json({ ok: true, warning, opened: { roundIndex, recipientName } });
 	} catch (err) {

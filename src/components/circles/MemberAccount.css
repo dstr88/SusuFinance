@@ -505,3 +505,28 @@
 .ma__actdate { grid-area: date; font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
 .ma__actempty { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
 .ma__acttrunc { font-size: 0.68rem; color: var(--text-muted); margin: 0.45rem 0 0; font-style: italic; }
+
+/* ── Inbox (in-app notices) ──────────────────────────────────────────────────
+   Her private channel: reminders and confirmations behind her login. Unread items
+   carry an accent left-border; a tap marks one read, the header button marks all. */
+.ma__inbox { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); }
+.ma__inboxhead { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
+.ma__inboxtitle { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); }
+.ma__inboxread { font: inherit; font-size: 0.75rem; background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; }
+.ma__inboxread:hover { color: var(--text-primary); }
+.ma__inboxnone { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+.ma__inboxlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; max-height: 15rem; overflow-y: auto; }
+.ma__note { display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.6rem; border-radius: 0.5rem; border: 1px solid var(--border-subtle); border-left: 3px solid transparent; background: var(--surface-card); }
+.ma__note--unread { border-left-color: var(--accent); background: var(--surface-card-2); cursor: pointer; }
+.ma__notetitle { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
+.ma__notebody { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; }
+.ma__notewhen { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Unread count on the trigger. */
+.ma__unread { display: inline-flex; align-items: center; justify-content: center; min-width: 1.1rem; height: 1.1rem; padding: 0 0.3rem; border-radius: 999px; background: var(--accent); color: var(--surface-bg); font-size: 0.7rem; font-weight: 700; }
+
+/* ── Preferences (hers to switch off) ────────────────────────────────────── */
+.ma__prefs { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); }
+.ma__prefstitle { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); }
+.ma__pref { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; color: var(--text-secondary); cursor: pointer; }
+.ma__pref input { accent-color: var(--accent); }
