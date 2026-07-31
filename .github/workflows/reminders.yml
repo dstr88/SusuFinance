@@ -27,6 +27,6 @@ jobs:
             echo "CRON_SECRET is not set as a repository secret"; exit 1
           fi
           BASE="${APP_URL:-https://susufinance.com}"
-          curl -sS --fail --max-time 300 \
+          curl -sS --fail --retry 3 --retry-all-errors --retry-delay 10 --max-time 300 \
             -H "x-cron-secret: ${CRON_SECRET}" \
             "${BASE}/api/cron/reminders"

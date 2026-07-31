@@ -5,7 +5,9 @@
 # a star appearing within the quarter hour.
 #
 # Runs from the repository's DEFAULT branch. curl uses --fail so an HTTP error turns the
-# run red instead of exiting 0 while nothing was observed.
+# run red instead of exiting 0 while nothing was observed. --retry + --retry-all-errors
+# rides out transient DNS/network blips on the runner so they don't fire false-alarm
+# emails; a real, persistent failure still turns the run red.
 name: observe-payments
 
 on:
@@ -27,6 +29,6 @@ jobs:
             echo "CRON_SECRET is not set as a repository secret"; exit 1
           fi
           BASE="${APP_URL:-https://susufinance.com}"
-          curl -sS --fail --max-time 300 \
+          curl -sS --fail --retry 3 --retry-all-errors --retry-delay 10 --max-time 300 \
             -H "x-cron-secret: ${CRON_SECRET}" \
             "${BASE}/api/cron/observe-payments"
